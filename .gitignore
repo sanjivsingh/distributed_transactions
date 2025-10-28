@@ -1,0 +1,93 @@
+--- Byte-compiled / Optimised files ---
+
+pycache/
+*.pyc
+*.pyd
+*.pyo
+*.pylintrc # Pylint cache
+
+--- IDEs and Editors ---
+
+JetBrains (PyCharm, IntelliJ)
+
+.idea/
+*.iws
+*.iml
+*.ipr
+
+VS Code
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+Atom
+
+.atom/
+
+Vim/NeoVim
+
+*.swp
+*.swo
+
+--- Environments ---
+
+Virtual environment folders
+
+venv/
+env/
+/bin/activate
+/Scripts/activate
+
+Conda environment
+
+.conda/
+.env
+
+Pipenv
+
+Pipfile.lock # Only ignore if you manage dependencies manually
+
+--- Dependency / Package Management ---
+
+Pip freeze/requirements file output
+
+requirements.txt # Only ignore if it is generated dynamically
+
+Build artifacts
+
+dist/
+build/
+*.egg-info/
+.tox/
+
+Installer logs
+
+*.log
+
+--- Testing and Coverage ---
+
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
+
+--- Operating System Files ---
+
+.DS_Store
+Thumbs.db
+
+--- Data and Database ---
+
+*.sqlite3
+.db
+!data/ # Keep the data directory, but ignore contents:
+data/
+!data/.gitkeep
+
+--- Jupyter / IPython Notebooks ---
+
+.ipynb_checkpoints

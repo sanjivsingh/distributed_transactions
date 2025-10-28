@@ -1,0 +1,50 @@
+[
+    {
+        "Id": 1,
+        "Name": "Item A",
+        "Details": {
+            "IsAvailable": true,
+            "Price": "10.550000000000000710542735760100185871124267578125"
+        },
+        "Tags": [
+            "electronics",
+            "sale"
+        ]
+    },
+    {
+        "Id": 2,
+        "Name": "Item B",
+        "Details": {
+            "IsAvailable": false,
+            "Price": "25.550000000000000710542735760100185871124267578125"
+        },
+        "Tags": [
+            "book",
+            "novel"
+        ]
+    },
+    {
+        "Id": 3,
+        "Name": "Item C",
+        "Details": {
+            "IsAvailable": null,
+            "Price": null
+        },
+        "Tags": null
+    },
+    {
+        "Id": 4,
+        "Name": "Item D",
+        "Details": {
+            "IsAvailable": null,
+            "Price": null
+        },
+        "Tags": []
+    },
+    {
+        "Id": 5,
+        "Name": "Item E",
+        "Details": null,
+        "Tags": []
+    }
+]

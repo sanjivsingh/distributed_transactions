@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<data>
+  <item>
+    <Id>1</Id>
+    <Name>Item A</Name>
+    <Details>
+      <Price>10.55</Price>
+      <IsAvailable>True</IsAvailable>
+    </Details>
+    <Tags>
+      <item>electronics</item>
+      <item>sale</item>
+    </Tags>
+    <Addresses>
+      <item>
+        <Street>123 Main St</Street>
+        <City>Anytown</City>
+        <Zip>12345</Zip>
+      </item>
+      <item>
+        <Street>456 Side St</Street>
+        <City>Othertown</City>
+        <Zip>67890</Zip>
+      </item>
+    </Addresses>
+  </item>
+  <item>
+    <Id>2</Id>
+    <Name>Item B</Name>
+    <Details>
+      <Price>25.55</Price>
+      <IsAvailable>False</IsAvailable>
+    </Details>
+    <Tags>
+      <item>book</item>
+      <item>novel</item>
+    </Tags>
+    <Addresses>
+      <item>
+        <Street>123 Main St</Street>
+        <City>Anytown</City>
+        <Zip>12345</Zip>
+      </item>
+    </Addresses>
+  </item>
+  <item>
+    <Id>3</Id>
+    <Name>Item C</Name>
+    <Details>
+      <Price>None</Price>
+      <IsAvailable>None</IsAvailable>
+    </Details>
+    <Tags>None</Tags>
+  </item>
+  <item>
+    <Id>4</Id>
+    <Name>Item D</Name>
+    <Details>
+      <Price>None</Price>
+      <IsAvailable>None</IsAvailable>
+    </Details>
+    <Tags/>
+  </item>
+  <item>
+    <Id>5</Id>
+    <Name>Item E</Name>
+    <Details>None</Details>
+    <Tags/>
+  </item>
+</data>

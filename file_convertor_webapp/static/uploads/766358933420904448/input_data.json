@@ -1,0 +1,63 @@
+[
+        {
+            "Id": 1,
+            "Name": "Item A",
+            "Details": {
+                "Price": 10.55,
+                "IsAvailable": true
+            },
+            "Tags": ["electronics", "sale"],
+            "Addresses": [
+                {
+                    "Street": "123 Main St",
+                    "City": "Anytown",
+                    "Zip": "12345"
+                },
+                {
+                    "Street": "456 Side St",
+                    "City": "Othertown",
+                    "Zip": "67890"
+                }
+            ]
+        },
+        {
+            "Id": 2,
+            "Name": "Item B",
+            "Details": {
+                "Price": 25.55,
+                "IsAvailable": false
+            },
+            "Tags": ["book", "novel"],
+            "Addresses": [
+                {
+                    "Street": "123 Main St",
+                    "City": "Anytown",
+                    "Zip": "12345"
+                }
+            ]
+        },
+        {
+            "Id": 3,
+            "Name": "Item C",
+            "Details": {
+                "Price": null,
+                "IsAvailable": null
+            },
+            "Tags": null
+        },
+        {
+            "Id": 4,
+            "Name": "Item D",
+            "Details": {
+                "Price": null,
+                "IsAvailable": null
+            },
+            "Tags": []
+        },
+        {
+            "Id": 5,
+            "Name": "Item E",
+            "Details": null,
+            "Tags": []
+        }
+]

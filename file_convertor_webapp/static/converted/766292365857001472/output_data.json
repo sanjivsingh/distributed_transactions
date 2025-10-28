@@ -1,0 +1,88 @@
+[
+    {
+        "Id": "1",
+        "Name": "Item A",
+        "Details": {
+            "Price": "10.55",
+            "IsAvailable": "True"
+        },
+        "Tags": {
+            "item": "sale"
+        },
+        "Addresses": {
+            "item": [
+                {
+                    "Street": "123 Main St",
+                    "City": "Anytown",
+                    "Zip": "12345"
+                },
+                {
+                    "Street": "456 Side St",
+                    "City": "Othertown",
+                    "Zip": "67890"
+                }
+            ]
+        }
+    },
+    {},
+    {},
+    {
+        "Street": "123 Main St",
+        "City": "Anytown",
+        "Zip": "12345"
+    },
+    {
+        "Street": "456 Side St",
+        "City": "Othertown",
+        "Zip": "67890"
+    },
+    {
+        "Id": "2",
+        "Name": "Item B",
+        "Details": {
+            "Price": "25.55",
+            "IsAvailable": "False"
+        },
+        "Tags": {
+            "item": "novel"
+        },
+        "Addresses": {
+            "item": {
+                "Street": "123 Main St",
+                "City": "Anytown",
+                "Zip": "12345"
+            }
+        }
+    },
+    {},
+    {},
+    {
+        "Street": "123 Main St",
+        "City": "Anytown",
+        "Zip": "12345"
+    },
+    {
+        "Id": "3",
+        "Name": "Item C",
+        "Details": {
+            "Price": "None",
+            "IsAvailable": "None"
+        },
+        "Tags": "None"
+    },
+    {
+        "Id": "4",
+        "Name": "Item D",
+        "Details": {
+            "Price": "None",
+            "IsAvailable": "None"
+        },
+        "Tags": null
+    },
+    {
+        "Id": "5",
+        "Name": "Item E",
+        "Details": "None",
+        "Tags": null
+    }
+]

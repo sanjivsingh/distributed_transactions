@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Users</title>
+</head>
+<body>
+    <h1>Online Users</h1>
+    <div id="user-list">
+        <p>Connecting...</p>
+    </div>
+    <div id="status">Status: Connecting...</div>
+
+    <script>
+        let userId = prompt("Enter your user ID:");
+        let ws = new WebSocket(`ws://${window.location.host}/ws/${userId}`);
+
+        ws.onopen = function(event) {
+            document.getElementById("status").innerText = "Status: Connected";
+            // Send heartbeat every 5 seconds
+            setInterval(() => {
+                ws.send("heartbeat");
+            }, 5000);
+        };
+
+        ws.onmessage = function(event) {
+            let data = JSON.parse(event.data);
+            if (data.type === "online_users") {
+                let users = data.users;
+                let list = "<ul>";
+                users.forEach(function(user) {
+                    if (userId == user){
+                        list += "<li><strong>** " + user + " **</strong></li>";
+                    }else {
+                        list += "<li>" + user + "</li>";
+                    }
+                });
+                list += "</ul>";
+                document.getElementById("user-list").innerHTML = list;
+            } else if (data.type === "heartbeat_ack") {
+                console.log("Heartbeat acknowledged");
+            }
+        };
+
+        ws.onclose = function(event) {
+            document.getElementById("status").innerText = "Status: Disconnected";
+        };
+
+        ws.onerror = function(error) {
+            console.error("WebSocket error:", error);
+            document.getElementById("status").innerText = "Status: Error";
+        };
+    </script>
+</body>
+</html>

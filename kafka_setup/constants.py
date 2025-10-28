@@ -1,0 +1,7 @@
+KAFKA_BROKER = "broker"
+CONVERSION_TOPIC = "topic"
+CONVERSION_CONSUMER_GROUP = "conversion_consumer_group"
+NUMBER_OF_PARTITIONS = "partitions"
+NUMBER_OF_REPLICAS  = "replicas"
+DUPLICATE_CHECK = "duplicate_check"
+DB_NULL_LIMIT = "DB_NULl_LIMIT"

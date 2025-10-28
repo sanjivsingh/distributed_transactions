@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Users</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Online Users</h1>
+    <div id="user-list">
+        <p>Loading...</p>
+    </div>
+
+    <script>
+        let userId = prompt("Enter your user ID:");
+
+        function sendHeartbeat() {
+            $.post("/heartbeat", { user_id: userId }, function(data) {
+                console.log("Heartbeat sent:", data);
+            });
+        }
+
+        function fetchOnlineUsers() {
+            $.get("/online_users", function(data) {
+                let users = data.online_users;
+                let list = "<ul>";
+                users.forEach(function(user) {
+                    if (userId == user){
+                        list += "<li><strong>** " + user + " **</strong></li>";
+                    } else {
+                        list += "<li>" + user + "</li>";
+                    }
+                });
+                list += "</ul>";
+                $("#user-list").html(list);
+            });
+        }
+
+        // Send heartbeat every 5 seconds
+        setInterval(sendHeartbeat, 5000);
+
+        // Fetch online users every 3 seconds
+        setInterval(fetchOnlineUsers, 3000);
+
+        // Initial fetch
+        fetchOnlineUsers();
+    </script>
+</body>
+</html>

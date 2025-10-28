@@ -1,0 +1,2 @@
+pymysql==1.1.1
+DBUtils==2.0.1

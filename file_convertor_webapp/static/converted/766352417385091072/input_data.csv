@@ -1,0 +1,6 @@
+Id,Name,Details,Tags,Addresses
+1,Item A,"{'Price': 10.55, 'IsAvailable': True}","['electronics', 'sale']","[{'Street': '123 Main St', 'City': 'Anytown', 'Zip': '12345'}, {'Street': '456 Side St', 'City': 'Othertown', 'Zip': '67890'}]"
+2,Item B,"{'Price': 25.55, 'IsAvailable': False}","['book', 'novel']","[{'Street': '123 Main St', 'City': 'Anytown', 'Zip': '12345'}]"
+3,Item C,"{'Price': None, 'IsAvailable': None}",,
+4,Item D,"{'Price': None, 'IsAvailable': None}",[],
+5,Item E,,[],

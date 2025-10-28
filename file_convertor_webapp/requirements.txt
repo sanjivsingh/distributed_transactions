@@ -1,0 +1,13 @@
+fastapi==0.104.0
+redis==5.0.1
+types-redis==4.6.0.7
+typing-extensions==4.8.0
+uvicorn==0.23.2
+pyarrow==21.0.0
+debugpy==1.8.17
+python-multipart
+sqlalchemy==2.0.20
+pyyaml==6.0.2
+requests==2.31.0
+pymysql==1.1.1
+pymysqlpool==1.0.2
