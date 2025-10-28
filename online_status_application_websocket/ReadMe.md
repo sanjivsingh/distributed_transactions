@@ -22,6 +22,8 @@ This is a real-time web application that tracks and displays online users using 
 
 ![Architecture Diagram](architecture.png)
 
+![Architecture Diagram](architecture.png)
+
 ## Prerequisites
 
 - Python 3.8+
