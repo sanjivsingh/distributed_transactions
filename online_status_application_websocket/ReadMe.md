@@ -18,6 +18,10 @@ This is a real-time web application that tracks and displays online users using 
 - **Frontend**: HTML/JS with native WebSocket for real-time interaction.
 - **Communication**: Persistent WebSocket for heartbeats and receiving updates; no polling.
 
+### Architecture Diagram
+
+![Architecture Diagram](architecture.png)
+
 ## Prerequisites
 
 - Python 3.8+
@@ -98,6 +102,9 @@ The current AJAX approach works but introduces delays (up to 3-5 seconds) and un
 -   **Import Errors**: Ensure you're in the virtual environment and dependencies are installed.
 -   **Logs**: Check console output for errors; logging is configured via commons.logger.
 -   **No Updates**: If updates don't appear, check WebSocket connection status in the browser dev tools.
+
+
+
 
 ### Development
 ## Code Structure:
