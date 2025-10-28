@@ -22,7 +22,7 @@ This is a real-time web application that tracks and displays online users using 
 
 ![Architecture Diagram](architecture.png)
 
-![Architecture Diagram](architecture.png)
+![Block Diagram](Block_Diagram.png)
 
 ## Prerequisites
 
