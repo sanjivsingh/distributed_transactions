@@ -1,6 +1,6 @@
 import pymysql
 from pymysql.cursors import DictCursor
-from typing import List
+from typing import List, Optional, Tuple, Any
 from file_convertor_webapp.models import ConversionRequest
 from commons import logger
 
@@ -14,7 +14,7 @@ class MysqlDatabaseConnection:
         self.database = 'conversion_db'
         self.table = 'conversion_request'
         self.port = 3306
-        self.connection = None
+        self.connection : pymysql.Connection[DictCursor]
 
         # Setup logger
         self.log = logger.setup_logger(__name__)
@@ -80,7 +80,7 @@ class MysqlDatabaseConnection:
             except Exception as e:
                 print(f"Error in print_records: {e}")
 
-    def get_pending_requests(self, limit: int = 10) -> List[dict]:
+    def get_pending_requests(self, limit: int = 10) -> Tuple[dict[str,Any]] | None:
         self.connect()
         with self.connection.cursor() as cursor:
             try:
@@ -98,7 +98,7 @@ class MysqlDatabaseConnection:
             except Exception as e:
                 print(f"Error in get_record: {e}")
 
-    def list_records(self) -> List[dict]:
+    def list_records(self) -> Tuple[dict[str,Any]] | None:
         self.connect()
         with self.connection.cursor() as cursor:
             print("list_records...")
@@ -143,7 +143,7 @@ class MysqlDatabaseConnection:
             self.connection.rollback()
             return False
 
-    def update_status(self, request_id: int, status: str, details: str = None):
+    def update_status(self, request_id: int, status: str, details: str ):
         self.connect()
         try:
             with self.connection.cursor() as cursor:
