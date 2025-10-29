@@ -38,7 +38,7 @@ This is a real-time messaging application similar to Slack, built with Python. U
 
 1. **Navigate to the project directory**:
    ```bash
-   cd /Users/sanjivsingh/Projects/VS_workspace/distributed_transactions/slack_application
+   cd .../distributed_transactions/slack_application
    ```
 
 2. **Create and activate a virtual environment**:
@@ -49,9 +49,9 @@ This is a real-time messaging application similar to Slack, built with Python. U
 
 3.  **Install dependencies**:
 
-```
-pip install -r requirements.txt
-```
+    ```
+    pip install -r requirements.txt
+    ```
 
 4.  **Ensure MySQL and Redis are running**:
 
@@ -63,9 +63,9 @@ pip install -r requirements.txt
 
 -   **Run the application**:
 
-```
-.venv/bin/python -m uvicorn slack_application.slack:app --reload --port 8000
-```
+    ```
+    .venv/bin/python -m uvicorn slack_application.slack:app --reload --port 8000
+    ```
 
 The app will start on http://localhost:8000.
 --reload enables auto-restart on code changes.
@@ -85,16 +85,16 @@ Open http://localhost:8000 in your browser.
 
 ##  API Endpoints
 
--   POST /register: Register a user.
+-   POST **/register**: Register a user.
     Body: username=<string>
     Response: {"user_id": int, "username": string}
--  POST /create_group: Create a group with another user.
+-  POST **/create_group**: Create a group with another user.
     Body: name=<string>, created_by=<int>, other_user_id=<int>
     Response: {"group_id": int, "name": string} or existing group.
--  POST /send_message: Send a message to a group.
+-  POST **/send_message**: Send a message to a group.
     Body: sender_id=<int>, group_id=<int>, content=<string>
     Response: {"message_id": int}
--  WebSocket /ws/{user_id}: Connect for real-time messages.
+-  WebSocket **/ws/{user_id}**: Connect for real-time messages.
     Send: "heartbeat" every 5 seconds.
     Receive: Message data as JSON.
 
@@ -107,17 +107,18 @@ Open http://localhost:8000 in your browser.
 
 ## Troubleshooting
 
--   Connection Errors: Ensure MySQL and Redis are running with correct credentials.
-WebSocket Issues: Check browser console for connection errors; ensure port 8000 is open.
--   Group Creation Fails: Verify other_user_id exists and group doesn't already exist.
+-   **Connection Errors**: Ensure MySQL and Redis are running with correct credentials.
+-   **WebSocket Issues**: Check browser console for connection errors; ensure port 8000 is open.
+-   **Group Creation Fails**: Verify other_user_id exists and group doesn't already exist.
 No Messages Received: Ensure user is connected via WebSocket and subscribed to group channels.
--   Import Errors: Activate virtual environment and install dependencies.
+-   **Import Errors**: Activate virtual environment and install dependencies.
 Logs: Check console for errors; logging via commons.logger.
 Development
 
 ## Code Structure:
--   slack.py: Main FastAPI app with REST and WebSocket endpoints.
--   templates/index.html: Frontend interface.
--   requirements.txt: Dependencies.
+-   **slack.py**: Main FastAPI app with REST and WebSocket endpoints.
+-   **templates/index.html**: Frontend interface.
+-   **requirements.txt**: Dependencies.
 
-Extending: Add authentication, message history, or file uploads.
+## Extending: 
+-   Add authentication, message history, or file uploads.
