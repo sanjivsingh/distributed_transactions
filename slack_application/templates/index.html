@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slack App</title>
+</head>
+<body>
+    <h1>Slack-like Application</h1>
+    <div id="register">
+        <input type="text" id="username" placeholder="Username">
+        <button onclick="register()">Register</button>
+    </div>
+    <div id="app" style="display:none;">
+        <h2>Welcome, <span id="user"></span></h2>
+        <div>
+            <input type="text" id="groupName" placeholder="Group Name">
+            <input type="number" id="otherUserId" placeholder="Other User ID">
+            <button onclick="createGroup()">Create Group</button>
+        </div>
+        <div>
+            <input type="number" id="groupId" placeholder="Group ID">
+            <input type="text" id="message" placeholder="Message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        let userId = null;
+        let ws = null;
+
+        function register() {
+            const username = document.getElementById('username').value;
+            fetch('/register', {
+                method: 'POST',
+                body: new URLSearchParams({ username })
+            }).then(res => res.json()).then(data => {
+                userId = data.user_id;
+                document.getElementById('register').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                document.getElementById('user').textContent = username;
+                connectWS();
+            });
+        }
+
+        function connectWS() {
+            ws = new WebSocket(`ws://${window.location.host}/ws/${userId}`);
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                displayMessage(data);
+            };
+            setInterval(() => ws.send("heartbeat"), 5000);
+        }
+
+        function createGroup() {
+            const groupName = document.getElementById('groupName').value;
+            const otherUserId = document.getElementById('otherUserId').value;
+            fetch('/create_group', {
+                method: 'POST',
+                body: new URLSearchParams({ groupName, created_by: userId, other_user_id: otherUserId })
+            }).then(res => res.json()).then(data => alert(`Group: ${data.groupName}, ID: ${data.group_id}`));
+        }
+
+        function sendMessage() {
+            const groupId = document.getElementById('groupId').value;
+            const content = document.getElementById('message').value;
+            fetch('/send_message', {
+                method: 'POST',
+                body: new URLSearchParams({ sender_id: userId, group_id: groupId, content })
+            });
+        }
+
+        function displayMessage(data) {
+            const div = document.getElementById('messages');
+            if (data.type == "message"){
+                div.innerHTML += `<p> ${data.timestamp}: ${data.sender_id} >> sent >> ${data.content}</p>`;
+            } else if (data.type == "heartbeat_ack"){
+                
+            }
+        }
+
+    </script>
+</body>
+</html>
