@@ -119,8 +119,15 @@ async def create_group(groupName: str = Form(...), created_by: int = Form(...), 
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute("INSERT INTO slack_groups (groupName, created_by, type) VALUES (%s, %s , %s )", (groupName, created_by, type))
-            group_id = cursor.lastrowid
+            cursor.execute("SELECT id FROM slack_groups WHERE groupName  = %s ", (groupName))
+            result = cursor.fetchone()
+            
+            if not result :
+                cursor.execute("INSERT INTO slack_groups (groupName, created_by, type) VALUES (%s, %s , %s )", (groupName, created_by, type))
+                group_id = cursor.lastrowid
+            else:
+                group_id  = result[0]
+
             for uid in user_ids_list:
                 cursor.execute("INSERT INTO group_members (group_id, user_id) VALUES (%s, %s)", (group_id, uid))
         conn.commit()

@@ -122,3 +122,4 @@ Development
 
 ## Extending: 
 -   Add authentication, message history, or file uploads.
+-   make it thread safe
