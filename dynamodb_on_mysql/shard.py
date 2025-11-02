@@ -10,12 +10,12 @@ from typing import List, Dict, Any, Tuple
 
 class DynamoDBShard:
 
-    def __init__(self, shard_index , host, user, password, port, database):
+    def __init__(self, shard_index, host, user, password, port, database):
         self.shard_index = shard_index
-        self.host = "localhost"
-        self.user = "root"
-        self.password = "rootadmin"
-        self.port = 3306
+        self.host = host
+        self.user = user
+        self.password = password
+        self.port = port
         self.database = database
         self.connection: pymysql.Connection[DictCursor] = None
 
@@ -63,7 +63,7 @@ class DynamoDBShard:
             """Helper method to print and execute SQL."""
             cursor.execute(sql)
         except Exception as e:
-            raise Exception(f" error in sql : {sql}" ,e)
+            raise Exception(f" error in sql : {sql}", e)
 
     def create_database_if_not_exists(self, cursor):
         sql = f""" CREATE DATABASE IF NOT EXISTS {self.database} """
@@ -78,7 +78,9 @@ class DynamoDBShard:
         self.execute_sql(cursor, sql)
 
     def create_main_table(self, cursor, table, hash_key, sort_key, columns):
-        self.log.info(f" shard_index : {self.shard_index} -> create_main_table : {table}")
+        self.log.info(
+            f" shard_index : {self.shard_index} -> create_main_table : {table}"
+        )
         sql = f"""
                 CREATE TABLE IF NOT EXISTS {table} (
                     `{hash_key}` VARCHAR(255) NOT NULL ,
@@ -89,42 +91,50 @@ class DynamoDBShard:
                 """
         self.execute_sql(cursor, sql)
 
-    def create_index_table(self, table, index_column, cursor = None):
-        self.log.info(f" shard_index : {self.shard_index} -> create_index_table : {table}")
+    def create_index_table(self, table, index_column, cursor=None):
+        self.log.info(
+            f" shard_index : {self.shard_index} -> create_index_table : {table}"
+        )
         sql = f"""
                 CREATE TABLE IF NOT EXISTS {table}_{index_column} (
                     `index_key` VARCHAR(255) NOT NULL PRIMARY KEY,
                     `pks` VARCHAR(255) NOT NULL
                     ) ENGINE=InnoDB;    
             """
-        if not cursor:  
+        if not cursor:
             self.connect()
             cursor = self.connection.cursor()
         self.execute_sql(cursor, sql)
 
-    def create_global_index_table(self, table, index_column, cursor = None):
-        self.log.info(f" shard_index : {self.shard_index} -> create_global_index_table : {table}")
+    def create_global_index_table(self, table, index_column, cursor=None):
+        self.log.info(
+            f" shard_index : {self.shard_index} -> create_global_index_table : {table}"
+        )
         sql = f"""
                 CREATE TABLE IF NOT EXISTS {table}_{index_column}_seconday_index (
                     `index_key` VARCHAR(255) NOT NULL PRIMARY KEY,
                     `pks` VARCHAR(255) NOT NULL
                     ) ENGINE=InnoDB;    
             """
-        if not cursor:  
+        if not cursor:
             self.connect()
             cursor = self.connection.cursor()
         self.execute_sql(cursor, sql)
 
     def select_all(self, cursor, table):
-        self.log.warning(f"shard_index : {self.shard_index} ->  full Shard scan : table : {table}")
+        self.log.warning(
+            f"shard_index : {self.shard_index} ->  full Shard scan : table : {table}"
+        )
         sql = f"""
             SELECT * FROM {table} 
         """
         self.execute_sql(cursor, sql)
         return cursor.fetchall()
 
-    def select_by_pk(self, cursor, table,  filter):
-        self.log.info(f" shard_index : {self.shard_index} -> pointed Shard look up based on primary key : {filter}")
+    def select_by_pk(self, cursor, table, filter):
+        self.log.info(
+            f" shard_index : {self.shard_index} -> pointed Shard look up based on primary key : {filter}"
+        )
         pks = self.table_pks[table]
         sql = f"""
             SELECT * FROM {table} 
@@ -134,7 +144,9 @@ class DynamoDBShard:
         return cursor.fetchall()
 
     def select_from_index(self, cursor, table, index_column, filter):
-        self.log.info(f" shard_index : {self.shard_index} -> shard index for column {index_column} table : {table}")
+        self.log.info(
+            f" shard_index : {self.shard_index} -> shard index for column {index_column} table : {table}"
+        )
         sql = f"""
         SELECT pks FROM {table}_{index_column} 
         WHERE { " AND ".join([ f" index_key = '{filter[index_column]}' "])}
@@ -148,7 +160,9 @@ class DynamoDBShard:
             return None
 
     def select_from_global_index(self, table, index_column, filter):
-        self.log.info(f" shard_index : {self.shard_index} -> shard global index for column {index_column}")
+        self.log.info(
+            f" shard_index : {self.shard_index} -> shard global index for column {index_column}"
+        )
         self.connect()
         with self.connection.cursor() as cursor:
             sql = f"""
@@ -183,7 +197,9 @@ class DynamoDBShard:
             return cursor.fetchall()
 
     def select_with_filter(self, cursor, table, filter):
-        self.log.warning("shard_index : {self.shard_index} -> full Shard scan with filter")
+        self.log.warning(
+            "shard_index : {self.shard_index} -> full Shard scan with filter"
+        )
         sql = f"""
             SELECT * FROM {table} 
             WHERE { " AND ".join([ f" {key} = {filter[key]}" for key in filter])}
@@ -192,7 +208,9 @@ class DynamoDBShard:
         return cursor.fetchall()
 
     def insert_into_main(self, cursor, table, record):
-        self.log.info(f" shard_index : {self.shard_index} -> insert_into_main  : {table}, {record}")
+        self.log.info(
+            f" shard_index : {self.shard_index} -> insert_into_main  : {table}, {record}"
+        )
         sql = f"""
                     INSERT INTO {table} (
                         {", ".join(record.keys())}
@@ -203,8 +221,18 @@ class DynamoDBShard:
                     """
         self.execute_sql(cursor, sql)
 
-    def insert_into_index(self, cursor, table, index_column, index_column_value, hash_key_value, sort_key_value):
-        self.log.info(f" shard_index : {self.shard_index} -> insert_into_index  : {index_column}, {index_column_value}")
+    def insert_into_index(
+        self,
+        cursor,
+        table,
+        index_column,
+        index_column_value,
+        hash_key_value,
+        sort_key_value,
+    ):
+        self.log.info(
+            f" shard_index : {self.shard_index} -> insert_into_index  : {index_column}, {index_column_value}"
+        )
         value = f"'{hash_key_value}|{sort_key_value}'"
         sql = f"""  
                 INSERT INTO {table}_{index_column} (index_key, pks)
@@ -215,8 +243,12 @@ class DynamoDBShard:
                 """
         self.execute_sql(cursor, sql)
 
-    def insert_into_global_index(self, table, index_column, index_column_value, hash_key_value, sort_key_value):
-        self.log.info(f" shard_index : {self.shard_index} -> insert_into_global_index  : {index_column}, {index_column_value}")
+    def insert_into_global_index(
+        self, table, index_column, index_column_value, hash_key_value, sort_key_value
+    ):
+        self.log.info(
+            f" shard_index : {self.shard_index} -> insert_into_global_index  : {index_column}, {index_column_value}"
+        )
         self.connect()
         with self.connection.cursor() as cursor:
             value = f"'{hash_key_value}|{sort_key_value}'"
@@ -246,7 +278,7 @@ class DynamoDBShard:
         self.connect()
         with self.connection.cursor() as cursor:
             self.drop_table_if_exists(cursor, table + "_" + index_column)
-            self.create_index_table( table, index_column,cursor)
+            self.create_index_table(table, index_column, cursor)
             if table not in self.local_indexes:
                 self.local_indexes[table] = []
             self.local_indexes[table].append(index_column)
@@ -278,14 +310,20 @@ class DynamoDBShard:
                         if filter_column in index_columns
                     ]
                 ):
-                    self.log.info(f" shard_index : {self.shard_index} -> local index found for filter column : {index_columns}")
+                    self.log.info(
+                        f" shard_index : {self.shard_index} -> local index found for filter column : {index_columns}"
+                    )
                     final_pks = []
                     for index_column in filter_columns:
                         index_pks = self.select_from_index(
                             cursor, table, index_column, filter
                         )
                         if index_pks is not None:
-                            final_pks = set(final_pks).intersection(set(index_pks)) if final_pks else index_pks
+                            final_pks = (
+                                set(final_pks).intersection(set(index_pks))
+                                if final_pks
+                                else index_pks
+                            )
                         else:
                             return []
 
@@ -301,19 +339,26 @@ class DynamoDBShard:
             if table in self.local_indexes:
                 for index_column in self.local_indexes[table]:
                     self.insert_into_index(
-                        cursor, table, index_column, record[index_column], record[hash_sort_key[0]],record[hash_sort_key[1]]
+                        cursor,
+                        table,
+                        index_column,
+                        record[index_column],
+                        record[hash_sort_key[0]],
+                        record[hash_sort_key[1]],
                     )
 
 
 # Example usage
 if __name__ == "__main__":
+    from mysql_setup import config as mysql_config, constants as mysql_constants
+
     # Configure your MySQL connection details
     store = DynamoDBShard(
-        shard_index = 20,
-        host="localhost",
-        user="root",
-        password="rootadmin",
-        port=3306,
+        shard_index=20,
+        host=mysql_config.configurations[mysql_constants.HOST],
+        user=mysql_config.configurations[mysql_constants.USER],
+        password=mysql_config.configurations[mysql_constants.PASSWORD],
+        port=mysql_config.configurations[mysql_constants.PORT],
         database="dynamodb",
     )
 

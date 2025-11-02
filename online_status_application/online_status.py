@@ -12,7 +12,12 @@ log = logger.setup_logger(__name__)
 app = FastAPI()
 
 # Redis connection
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+from redis_setup import config as redis_config, constants as redis_constants
+redis_client = redis.Redis(
+    host=redis_config.configurations[redis_constants.REDIS_SERVER],
+    port=redis_config.configurations[redis_constants.REDIS_PORT],
+    db=0,
+)
 
 # Create directories if they don't exist
 os.makedirs("online_status_application/templates", exist_ok=True)

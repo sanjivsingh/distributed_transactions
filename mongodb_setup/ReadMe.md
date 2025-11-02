@@ -14,6 +14,8 @@ brew install mongodb-community@6.0
 
 brew services start mongodb/brew/mongodb-community
 
+brew services stop mongodb/brew/mongodb-community
+
 # Check that the MongoDB service is running:
 
 brew services list

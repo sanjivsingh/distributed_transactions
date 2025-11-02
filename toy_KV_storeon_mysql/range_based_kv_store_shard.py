@@ -2,6 +2,8 @@
 from toy_KV_storeon_mysql.kv_store import  ToyKVStore
 from commons import logger
 from typing import List
+
+from mysql_setup import config as mysql_config, constants as mysql_constants
 class RangeBasedShardManager:
 
     def __init__(self, mapping : List[tuple]) -> None:
@@ -18,7 +20,14 @@ class RangeBasedShardManager:
         self.shards = []
         for i in range(5):  
             try:
-                shard = ToyKVStore(host = 'localhost', user = 'root', password = 'rootadmin', port = 3306, database= "kv_store", table = f"shard{i}")
+                shard = ToyKVStore(
+                    host=mysql_config.configurations[mysql_constants.HOST],
+                    user=mysql_config.configurations[mysql_constants.USER],
+                    password=mysql_config.configurations[mysql_constants.PASSWORD],
+                    port=mysql_config.configurations[mysql_constants.PORT],
+                    database= "kv_store", 
+                    table = f"shard{i}"
+                )
                 shard.init_db()
                 self.shards.append(shard)
             except Exception as e:

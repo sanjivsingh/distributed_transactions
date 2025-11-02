@@ -4,16 +4,18 @@ from typing import List, Optional, Tuple, Any
 from file_convertor_webapp.models import ConversionRequest
 from commons import logger
 
+from mysql_setup import config as mysql_config, constants as mysql_constants
+
 class MysqlDatabaseConnection:
 
 
     def __init__(self, reset: bool = False):
-        self.host = 'localhost'
-        self.user = 'root'
-        self.password = 'rootadmin'
+        self.host = mysql_config.configurations[mysql_constants.HOST]
+        self.user = mysql_config.configurations[mysql_constants.USER]
+        self.password = mysql_config.configurations[mysql_constants.PASSWORD]
         self.database = 'conversion_db'
         self.table = 'conversion_request'
-        self.port = 3306
+        self.port = mysql_config.configurations[mysql_constants.PORT]
         self.connection : pymysql.Connection[DictCursor]
 
         # Setup logger

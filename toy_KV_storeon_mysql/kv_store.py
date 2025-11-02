@@ -6,6 +6,8 @@ from commons import logger
 from pymysql.cursors import DictCursor
 import threading
 
+from mysql_setup import config as mysql_config, constants as mysql_constants
+
 class ToyKVStore:
 
     def __init__(self, host, user, password , port, database , table):
@@ -147,7 +149,10 @@ class ToyKVStore:
 # Example usage
 if __name__ == '__main__':
     # Configure your MySQL connection details
-    store = ToyKVStore(host = 'localhost', user = 'root', password = 'rootadmin', port = 3306, database= "kv_store", table = "data")
+    store = ToyKVStore(host=mysql_config.configurations[mysql_constants.HOST],
+            user=mysql_config.configurations[mysql_constants.USER],
+            password=mysql_config.configurations[mysql_constants.PASSWORD],
+            port=mysql_config.configurations[mysql_constants.PORT], database= "kv_store", table = "data")
     store.init_db()
 
     # Example operations

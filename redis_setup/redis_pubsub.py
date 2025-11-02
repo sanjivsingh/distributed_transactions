@@ -3,19 +3,27 @@ import threading
 import time
 
 # Sample Redis PubSub program
-# Assumes Redis is running on localhost:6379
+# Assumes Redis is running locally on default port
 from commons import logger
-log  = logger.setup_logger(__name__)
+
+log = logger.setup_logger(__name__)
 
 ORDER_CHANNEL = "order_channel"
 
-def connect():
-    try :
-        return redis.Redis(host='localhost', port=6379, db=0)
-    except RuntimeError as e:
-        raise RuntimeError("redis connection failed",e)
 
-class OrderEvents :
+def connect():
+    try:
+        from redis_setup import config as redis_config, constants as redis_constants
+        return redis.Redis(
+            host=redis_config.configurations[redis_constants.REDIS_SERVER],
+            port=redis_config.configurations[redis_constants.REDIS_PORT],
+            db=0,
+        )
+    except RuntimeError as e:
+        raise RuntimeError("redis connection failed", e)
+
+
+class OrderEvents:
 
     def __init__(self) -> None:
         self.redis = connect()
@@ -30,11 +38,11 @@ class OrderEvents :
     def publisher(self):
         for i in range(100):
             message = f"Order {i+1}"
-            try :
+            try:
                 self.redis.publish(ORDER_CHANNEL, message)
                 log.info(f"Published: {message}")
             except RuntimeError as e:
-                log.error("redis publish msg failed",e)
+                log.error("redis publish msg failed", e)
             time.sleep(1)
 
 
@@ -47,20 +55,21 @@ class OrderEmailNotification:
         self.close()
 
     def close(self):
-        try :
+        try:
             if self.redis:
                 self.redis.close()
         except RuntimeError as e:
-            log.error("redis connection close failed",e)
+            log.error("redis connection close failed", e)
 
     def subscriber(self):
         p = self.redis.pubsub()
         p.subscribe(ORDER_CHANNEL)
         log.info(f"Subscribed to {ORDER_CHANNEL}")
         for message in p.listen():
-            if message['type'] == 'message':
-                log.info(f"Email Notification for msg sent : {message['data'].decode('utf-8')}")
-
+            if message["type"] == "message":
+                log.info(
+                    f"Email Notification for msg sent : {message['data'].decode('utf-8')}"
+                )
 
 
 class OrderTextMsgNotification:
@@ -80,23 +89,26 @@ class OrderTextMsgNotification:
         p.subscribe(ORDER_CHANNEL)
         log.info(f"Subscribed to {ORDER_CHANNEL}")
         for message in p.listen():
-            if message['type'] == 'message':
-                log.info(f"TextMsg Notification for msg sent : {message['data'].decode('utf-8')}")
+            if message["type"] == "message":
+                log.info(
+                    f"TextMsg Notification for msg sent : {message['data'].decode('utf-8')}"
+                )
+
 
 if __name__ == "__main__":
-    # Run subscriber for email 
+    # Run subscriber for email
     email = OrderEmailNotification()
     sub_thread1 = threading.Thread(target=email.subscriber)
     sub_thread1.start()
- 
-    # Run subscriber for textMsg 
+
+    # Run subscriber for textMsg
     textMsg = OrderTextMsgNotification()
     sub_thread2 = threading.Thread(target=textMsg.subscriber)
     sub_thread2.start()
-   
+
     # Wait a bit for subscriber to start
     time.sleep(1)
-    
+
     # Publish messages
     orders = OrderEvents()
     orders.publisher()
@@ -104,5 +116,5 @@ if __name__ == "__main__":
 
     # Wait for subscriber to process
     time.sleep(10)
-    
+
     log.info("Done")

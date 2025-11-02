@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Hashtag Service</title>
+</head>
+<body>
+    <h1>Instagram Hashtag Service</h1>
+
+    <h2>Register User</h2>
+    <form action="/register" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <button type="submit">Register</button>
+    </form>
+
+    <h2>Create Post</h2>
+    <form action="/create_post" method="post">
+        <label for="user_id">User ID:</label>
+        <input type="number" id="user_id" name="user_id" required>
+        <label for="caption">Caption:</label>
+        <textarea id="caption" name="caption" required></textarea>
+        <label for="image_count">Image Count:</label>
+        <input type="number" id="image_count" name="image_count" value="0">
+        <button type="submit">Create Post</button>
+    </form>
+
+    <h2>View Hashtag Summary</h2>
+    <form action="/hashtag_summary" method="post">
+        <label for="hashtag">Hashtag:</label>
+        <input type="text" id="hashtag" name="hashtag" required>
+        <button type="submit">Get Summary</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        // Simple script to display results (for demo, can be improved)
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+            });
+        });
+    </script>
+</body>
+</html>

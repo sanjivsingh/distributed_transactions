@@ -8,16 +8,17 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from mysql_setup import config as mysql_config, constants as mysql_constants
 class AirlineDatabase(ABC):
     def __init__(self):
         # MySQL connection pool configuration using DBUtils
         self.pool = PooledDB(
             creator=pymysql,
-            host='localhost',
-            user='root',
-            password='rootadmin',
+            host=mysql_config.configurations[mysql_constants.HOST],
+            user=mysql_config.configurations[mysql_constants.USER],
+            password=mysql_config.configurations[mysql_constants.PASSWORD],
+            port=mysql_config.configurations[mysql_constants.PORT],
             database='airline_db',
-            port=3306,
             mincached=30,  # Minimum cached connections
             maxcached=30,  # Maximum cached connections
             maxconnections=30,  # Maximum connections

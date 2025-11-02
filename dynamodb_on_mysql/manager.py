@@ -3,6 +3,8 @@ from dynamodb_on_mysql.shard import DynamoDBShard
 from commons import logger
 from typing import Set
 
+from mysql_setup import config as mysql_config, constants as mysql_constants
+
 class HashBasedShardManager:
 
     def __init__(self) -> None:
@@ -11,7 +13,12 @@ class HashBasedShardManager:
 
         for i in range(10):  
             try:
-                shard = DynamoDBShard(shard_index = i, host = 'localhost', user = 'root', password = 'rootadmin', port = 3306, database = f"dynamodb_{i}")
+                shard = DynamoDBShard(shard_index = i, 
+                    host = mysql_config.configurations[mysql_constants.HOST], 
+                    user = mysql_config.configurations[mysql_constants.USER], 
+                    password = mysql_config.configurations[mysql_constants.PASSWORD], 
+                    port = mysql_config.configurations[mysql_constants.PORT], 
+                    database = f"dynamodb_{i}")
                 self.shards.append(shard)
             except Exception as e:
                 self.log.error(f"error connecting shard {i} : {e}")
