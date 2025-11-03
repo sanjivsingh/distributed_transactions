@@ -19,7 +19,7 @@ A distributed system for managing Instagram-like posts with hashtag analytics. U
 - **Kafka**: Message queue for post processing
 - **Worker**: Consumer that processes posts and updates MongoDB
 
-![Architecture Diagram](Block_Diagram.png)
+![Architecture Diagram](HashTag_Service_Block_Diagram.png)
 
 ```
 @startuml
