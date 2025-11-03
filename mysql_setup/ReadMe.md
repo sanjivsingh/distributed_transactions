@@ -1,3 +1,19 @@
+
+# start mysql
+
+sudo /usr/local/mysql/bin/mysqld --user=_mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --plugin-dir=/usr/local/mysql/lib/plugin --log-error=/usr/local/mysql/data/mysqld.local.err --pid-file=/usr/local/mysql/data/mysqld.local.pid
+
+
+/usr/local/mysql/etc/my.cnf
+
+[mysqld]
+mysql_native_password=ON
+
+
+cd /usr/local/mysql/bin/
+sudo mysqld --user=mysql
+
+
 # installation directory
 
 /usr/local/mysql/bin
@@ -6,10 +22,20 @@
 echo "export PATH=$PATH:/usr/local/mysql/bin/" >> ~/.bash_profile
 source ~/.bash_profile
 
-# connect to mysql
+# CLI connect to mysql
+mysql -u root -prootadmin
 
-mysql -u root -p rootadmin
+# troubleshoot
 
+## RuntimeError: 'cryptography' package is required for sha256_password or caching_sha2_password auth methods
+
+even after **pip install cryptography** , it is giving error 
+Run these commands in your MySQL shell (or via a client like MySQL Workbench):
+
+```
+ALTER USER 'root'@'localhost' IDENTIFIED WITH sha256_password BY 'rootadmin';
+FLUSH PRIVILEGES;
+```
 
 # setup table 
 

@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 
+
 class RegisterRequest(BaseModel):
     username: str
+
 
 class CreatePostRequest(BaseModel):
     user_id: int

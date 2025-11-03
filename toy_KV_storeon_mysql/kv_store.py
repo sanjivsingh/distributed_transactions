@@ -11,10 +11,10 @@ from mysql_setup import config as mysql_config, constants as mysql_constants
 class ToyKVStore:
 
     def __init__(self, host, user, password , port, database , table):
-        self.host = 'localhost'
-        self.user = 'root'
-        self.password = 'rootadmin'
-        self.port = 3306
+        self.host = host
+        self.user = user
+        self.password = password
+        self.port = port
         self.database = database
         self.table = table
         self.connection = None

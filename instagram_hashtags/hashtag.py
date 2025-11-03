@@ -6,28 +6,32 @@ from pydantic import BaseModel
 import pymysql
 from pymysql.cursors import DictCursor
 import pymongo
-from confluent_kafka import Producer, Consumer
+from confluent_kafka import Producer
 import json
-import re
-from datetime import datetime
-import threading
 import os
 from commons.uniqueid import SnowflakeIDGenerator
+import cryptography
 
 app = FastAPI()
 
+from commons import logger
+log = logger.setup_logger(__name__)
 # Create directories
-os.makedirs("templates", exist_ok=True)
-os.makedirs("static", exist_ok=True)
+os.makedirs("instagram_hashtags/templates", exist_ok=True)
+os.makedirs("instagram_hashtags/static", exist_ok=True)
 
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="instagram_hashtags/templates")
+app.mount("/static", StaticFiles(directory="instagram_hashtags/static"), name="static")
 
 # Snowflake ID Generator
 id_generator = SnowflakeIDGenerator(worker_id=1)
 
 # MongoDB connection
-mongo_client = pymongo.MongoClient("localhost", 27017)
+from mongodb_setup import config as mongo_config, constants as mongo_constants
+mongo_client = pymongo.MongoClient(
+    mongo_config.configurations[mongo_constants.SERVER],
+    mongo_config.configurations[mongo_constants.PORT],
+)
 mongo_db = mongo_client["instagram_db"]
 hashtag_collection = mongo_db["hashtags"]
 
@@ -35,6 +39,21 @@ from mysql_setup import config as mysql_config, constants as mysql_constants
 
 
 # MySQL connection
+def create_mysql_db():
+    connection = pymysql.connect(
+        host=mysql_config.configurations[mysql_constants.HOST],
+        user=mysql_config.configurations[mysql_constants.USER],
+        password=mysql_config.configurations[mysql_constants.PASSWORD],
+        port=mysql_config.configurations[mysql_constants.PORT],
+        cursorclass=DictCursor,
+    )
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            CREATE DATABASE IF NOT EXISTS instagram_db
+        """
+        )
+
 def get_mysql_connection():
     return pymysql.connect(
         host=mysql_config.configurations[mysql_constants.HOST],
@@ -45,9 +64,13 @@ def get_mysql_connection():
         cursorclass=DictCursor,
     )
 
-from kafka_setup import config as kafka_config, constants as kafka_constants
+
+
 # Kafka producer
-producer_conf = {"bootstrap.servers": kafka_config.configurations[kafka_constants.KAFKA_BROKER]}
+from kafka_setup import config as kafka_config, constants as kafka_constants
+producer_conf = {
+    "bootstrap.servers": kafka_config.configurations[kafka_constants.KAFKA_BROKER]
+}
 producer = Producer(producer_conf)
 
 
@@ -91,7 +114,7 @@ def init_mongo():
     # Ensure collection exists
     pass
 
-
+create_mysql_db()
 init_mysql()
 init_mongo()
 
@@ -145,8 +168,9 @@ def create_post(
 
         # Send to Kafka
         message = {"post_id": post_id, "caption": caption, "image_ids": image_ids}
-        producer.produce("posts", json.dumps(message).encode("utf-8"))
+        producer.produce("instagram_posts", json.dumps(message).encode("utf-8"))
         producer.flush()
+        log.info(f"Produced message to Kafka: {message}")
 
         return {"post_id": post_id, "message": "Post created successfully"}
     except Exception as e:
