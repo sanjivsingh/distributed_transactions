@@ -9,6 +9,7 @@ import asyncio
 from datetime import datetime
 from commons import logger
 import os
+import pymongo
 
 log = logger.setup_logger(__name__)
 
@@ -16,13 +17,16 @@ app = FastAPI()
 
 # Redis for pubsub
 from redis_setup import config as redis_config, constants as redis_constants
+
 redis_client = redis.Redis(
-    host=redis_config.configurations[redis_constants.REDIS_HOST],
+    host=redis_config.configurations[redis_constants.REDIS_SERVER],
     port=redis_config.configurations[redis_constants.REDIS_PORT],
-    db=0
+    db=0,
 )
 
 from mysql_setup import config as mysql_config, constants as mysql_constants
+
+
 # MySQL connection
 def get_db_connection():
     return pymysql.connect(
@@ -34,6 +38,16 @@ def get_db_connection():
         charset="utf8mb4",
     )
 
+
+# MongoDB connection
+from mongodb_setup import config as mongodb_config, constants as mongodb_constants
+
+mongo_client = pymongo.MongoClient(
+    mongodb_config.configurations[mongodb_constants.SERVER],
+    mongodb_config.configurations[mongodb_constants.PORT],
+)
+mongo_db = mongo_client["slack_db"]
+offline_collection = mongo_db["offline_messages"]
 
 # Create directories
 os.makedirs("slack_application/templates", exist_ok=True)
@@ -110,13 +124,85 @@ def init_db():
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (group_id) REFERENCES slack_groups(id)
             )
-        """
+            """
         )
+
+        # Check and create index on slack_groups (groupname)
+        cursor.execute(
+            """
+            SELECT COUNT(*) FROM information_schema.STATISTICS 
+            WHERE TABLE_SCHEMA = 'slack_db' AND TABLE_NAME = 'slack_groups' AND INDEX_NAME = 'idx_groupname'
+            """
+        )
+        if cursor.fetchone()[0] == 0:
+            cursor.execute(
+                """
+                CREATE INDEX idx_groupname ON slack_groups (groupname)
+                """
+            )
+
+        # Check and create index on group_members (user_id)
+        cursor.execute(
+            """
+            SELECT COUNT(*) FROM information_schema.STATISTICS 
+            WHERE TABLE_SCHEMA = 'slack_db' AND TABLE_NAME = 'group_members' AND INDEX_NAME = 'idx_group_members_user_id'
+            """
+        )
+        if cursor.fetchone()[0] == 0:
+            cursor.execute(
+                """
+                CREATE INDEX idx_group_members_user_id ON group_members (user_id)
+                """
+            )
     conn.commit()
     conn.close()
 
 
 init_db()
+
+
+def get_offline_members(cursor, group_id: int) -> list[int]:
+    cursor.execute(
+        """
+        SELECT user_id FROM group_members WHERE group_id = %s
+    """,
+        (group_id,),
+    )
+    members = [row[0] for row in cursor.fetchall()]
+    offline_members = []
+    for user_id in members:
+        if not redis_client.get(str(user_id)):
+            offline_members.append(user_id)
+    log.info(f"Offline members for group {group_id}: {offline_members}")
+    return offline_members
+
+
+async def broadcast_online_users():
+    """Broadcast the current online users to all connected clients."""
+    try:
+        keys = redis_client.keys("*")
+        online_users = [key.decode("utf-8") for key in keys if redis_client.get(key)]
+        message = json.dumps({"type": "online_users", "users": online_users})
+        for user_id in connected_clients.keys():
+            # if user_id has multiple connections, send to all
+            user_id_connections = connected_clients[user_id]
+            disconnected_connections = []
+            for client in user_id_connections:
+                try:
+                    await client.send_text(message)
+                except Exception as e:
+                    # Client may have disconnected
+                    log.warning(f"error in sending msg : {e}")
+                    # remove connection
+                    disconnected_connections.append(client)
+            for client in disconnected_connections:
+                connected_clients[user_id].remove(client)
+                if len(connected_clients[user_id]) == 0:
+                    del connected_clients[user_id]
+                    log.info(f"Delete webSocket connection : {user_id} - {client} ")
+
+    except Exception as e:
+        log.error("Error broadcasting",e)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -215,7 +301,7 @@ async def send_message(
         raise HTTPException(
             status_code=400, detail="Cannot specify both receiver_id and group_id"
         )
-
+    # can use connection-pool
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
@@ -252,27 +338,38 @@ async def send_message(
 
             log.info(f"Sending msg to group : {group_id} content : {content}")
 
-            # Group message
-            # The `cursor` in the code is a cursor object that allows Python code to execute SQL
-            # commands and retrieve results from the database. In this context, the `cursor` is
-            # used within a database connection to execute SQL queries and interact with the
-            # database tables. It is created using the `conn.cursor()` method, where `conn` is the
-            # database connection object obtained from `get_db_connection()` function.
-            # The `cursor` in the code is being used to interact with the database in the context
-            # of the MySQL connection. Here are some key points about what `cursor` is doing in
-            # different parts of the code:
             cursor.execute(
                 "SELECT COUNT(*) FROM group_members WHERE group_id = %s AND user_id = %s",
                 (group_id, sender_id),
             )
             if cursor.fetchone()[0] == 0:
                 raise HTTPException(status_code=403, detail="Not a member of the group")
+            # persistening all messages to mysql, can be removed if not needed
             cursor.execute(
                 "INSERT INTO messages (group_id, content) VALUES ( %s, %s)",
                 (group_id, content),
             )
             message_id = cursor.lastrowid
             log.info(f"created : message_id : {message_id} : content : {content}")
+
+            offline_members = get_offline_members(cursor, group_id)
+            for member_id in offline_members:
+                # Save message to MongoDB for offline user
+                offline_collection.insert_one(
+                    {
+                        "user_id": member_id,
+                        "message_data": {
+                            "type": "message",
+                            "message_id": message_id,
+                            "group_id": group_id,
+                            "sender_id": sender_id,
+                            "content": content,
+                            "timestamp": str(datetime.now()),
+                        },
+                    }
+                )
+                log.info(f"Saved offline message for user {member_id}")
+
         conn.commit()
     finally:
         conn.close()
@@ -303,6 +400,19 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
         connected_clients[user_id].append(websocket)
 
     log.info(f"User {user_id} connected")
+
+    # Send offline messages
+    offline_messages = list(offline_collection.find({"user_id": user_id}))
+    for msg_doc in offline_messages:
+        try:
+            msg_data = json.dumps(msg_doc["message_data"])
+            await websocket.send_text(msg_data)
+            log.info(f"Sent offline message to user {user_id}: {msg_doc['message_data']}")
+        except Exception as e:
+            log.error(f"Error sending offline message to user {user_id}: {e}")
+    # Delete offline messages after sending
+    offline_collection.delete_many({"user_id": user_id})
+    log.info(f"Deleted offline messages for user {user_id}")
 
     # Subscribe to group channels the user is in
     pubsub = redis_client.pubsub()
@@ -338,6 +448,11 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
 
     refresh_subscriptions()  # Initial subscription
 
+    # Set initial online status
+    ttl_time_in_sec = 10
+    redis_client.setex(str(user_id), ttl_time_in_sec, "online")
+    await broadcast_online_users()
+
     try:
         while True:
             # Listen for pubsub messages asynchronously
@@ -354,6 +469,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
             try:
                 data = await asyncio.wait_for(websocket.receive_text(), timeout=2.0)
                 if data == "heartbeat":
+                    redis_client.setex(str(user_id), ttl_time_in_sec, "online")
                     await websocket.send_text(json.dumps({"type": "heartbeat_ack"}))
             except asyncio.TimeoutError:
                 # No heartbeat received, continue loop
@@ -369,6 +485,18 @@ async def websocket_endpoint(websocket: WebSocket, user_id: int):
             if not connected_clients[user_id]:
                 del connected_clients[user_id]
         pubsub.close()
+
+
+async def cleanup_expired_users():
+    log.info("cleanup_expired_users.....")
+    while True:
+        await asyncio.sleep(5)  # Check every 5 seconds
+        await broadcast_online_users()
+
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(cleanup_expired_users())
 
 
 if __name__ == "__main__":

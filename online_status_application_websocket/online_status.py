@@ -92,7 +92,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             data = await websocket.receive_text()
             if data == "heartbeat":
                 # Refresh TTL
-                redis_client.setex(user_id, 10, "online")
+                redis_client.setex(user_id, ttl_time_in_sec, "online")
                 log.info(f"Heartbeat from {user_id}")
                 # Optionally send confirmation
                 await websocket.send_text(json.dumps({"type": "heartbeat_ack"}))

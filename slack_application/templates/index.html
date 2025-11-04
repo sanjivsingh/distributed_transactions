@@ -7,6 +7,10 @@
 </head>
 <body>
     <h1>Slack-like Application</h1>
+    <h1>Online Users</h1>
+    <div id="user-list">
+        <p>Connecting...</p>
+    </div>
     <div id="register">
         <input type="text" id="username" placeholder="Username">
         <button onclick="register()">Register</button>
@@ -90,10 +94,22 @@
 
         function displayMessage(data) {
             const div = document.getElementById('messages');
-            if (data.type == "message"){
+            if (data.type === "online_users") {
+                let users = data.users;
+                let list = "<ul>";
+                users.forEach(function(user) {
+                    if (userId == user){
+                        list += "<li><strong>** " + user + " **</strong></li>";
+                    }else {
+                        list += "<li>" + user + "</li>";
+                    }
+                });
+                list += "</ul>";
+                document.getElementById("user-list").innerHTML = list;
+            } else if (data.type === "message") {
                 div.innerHTML += `<p> ${data.timestamp}: ${data.sender_id} >> sent >> ${data.content}</p>`;
-            } else if (data.type == "heartbeat_ack"){
-                
+            } else if (data.type === "heartbeat_ack") {
+
             }
         }
 

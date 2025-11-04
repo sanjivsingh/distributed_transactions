@@ -25,7 +25,7 @@ This is a real-time messaging application similar to Slack, built with Python. U
 
 ### Architecture Diagram
 
-![Block Diagram](Block_Diagram.png)
+![Block Diagram](Slack_Block_Diagram.png)
 
 ## Prerequisites
 
@@ -73,7 +73,6 @@ The app will start on http://localhost:8000.
 -   **Access the web interface**:
 
 Open http://localhost:8000 in your browser.
-
 
 ## Usage
 

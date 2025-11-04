@@ -3,3 +3,4 @@ uvicorn[standard]
 redis
 pymysql
 jinja2
+pymongo

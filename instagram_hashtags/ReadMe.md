@@ -155,7 +155,7 @@ The worker processes posts asynchronously to update hashtag stats.
 - Follow the existing code structure.
 
 
-# Hashtag Worker (Performance Optimization)
+# Hashtag Worker (Performance Optimization - MInimal Stop the World)
 
 The Hashtag Worker is a Kafka consumer that processes Instagram post messages asynchronously. It extracts hashtags from post captions, batches updates, and persists hashtag statistics to MongoDB using locking and map swapping for efficient, thread-safe operations.
 
