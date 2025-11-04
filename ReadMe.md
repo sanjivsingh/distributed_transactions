@@ -109,6 +109,17 @@ A simulation of DynamoDB's API and features built on top of MySQL. Provides a No
 - **Link to Implementation**: [./dynamodb_on_mysql/](./dynamodb_on_mysql/)
 - **README**: [./dynamodb_on_mysql/ReadMe.md](./dynamodb_on_mysql/ReadMe.md)
 
+### 15. MySQL Benchmark
+A benchmarking tool for MySQL sharding and ID generation. Implements sharded databases with auto-increment IDs across multiple shards, demonstrating distributed insertion and querying for performance testing.
+
+- **Technologies**: Python, PyMySQL, MySQL
+- **Key Features**: 
+    - Flickr Ticketing Service Id Generation [mysql_benchmark/Flickr_Ticketing_Service_id_generation.py](mysql_benchmark/Flickr_Ticketing_Service_id_generation.py) 
+    - Primary key 4 byte Vs 16 byte and Index Size [./mysql_benchmark/id_4byte_vs_16_byte.py](./mysql_benchmark/id_4byte_vs_16_byte.py) 
+
+Sharding, auto-increment ID generation, insertion benchmarking, max ID tracking
+- **Link to Implementation**: [./mysql_benchmark/](./mysql_benchmark/)
+
 ## Prerequisites
 
 - Python 3.8+
