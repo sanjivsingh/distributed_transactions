@@ -114,8 +114,8 @@ A benchmarking tool for MySQL sharding and ID generation. Implements sharded dat
 
 - **Technologies**: Python, PyMySQL, MySQL
 - **Key Features**: 
-    - Flickr Ticketing Service Id Generation [mysql_benchmark/Flickr_Ticketing_Service_id_generation.py](mysql_benchmark/Flickr_Ticketing_Service_id_generation.py) 
-    - Primary key 4 byte Vs 16 byte and Index Size [./mysql_benchmark/id_4byte_vs_16_byte.py](./mysql_benchmark/id_4byte_vs_16_byte.py) 
+    - Flickr Ticketing Service Id Generation [link](mysql_benchmark/Flickr_Ticketing_Service_id_generation.py) 
+    - Primary key 4 byte Vs 16 byte and Index Size [link](./mysql_benchmark/id_4byte_vs_16_byte.py) 
 
 Sharding, auto-increment ID generation, insertion benchmarking, max ID tracking
 - **Link to Implementation**: [./mysql_benchmark/](./mysql_benchmark/)
