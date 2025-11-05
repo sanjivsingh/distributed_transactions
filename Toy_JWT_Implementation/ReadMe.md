@@ -21,7 +21,7 @@ This project implements a basic authentication server using custom JWT (JSON Web
 
 ### Architecture Diagram
 
-![Architecture Diagram](JWT_Architechture_Diagram.png.png)
+![Architecture Diagram](JWT_Architechture_Diagram.png)
 
 ## Prerequisites
 
