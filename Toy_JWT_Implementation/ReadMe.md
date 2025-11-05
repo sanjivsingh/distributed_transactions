@@ -21,28 +21,7 @@ This project implements a basic authentication server using custom JWT (JSON Web
 
 ### Architecture Diagram
 
-![Architecture Diagram](architecture_diagram.png)
-
-*(Render the PlantUML below at [plantuml.com](https://plantuml.com/) and save as `architecture_diagram.png`)*
-
-```plantuml
-@startuml Architecture Diagram
-
-[User Browser] --> [FastAPI Server] : HTTP Requests
-[FastAPI Server] --> [In-Memory Users] : Store/Retrieve Users
-[FastAPI Server] --> [JWT Logic] : Create/Verify Tokens
-[JWT Logic] --> [Secrets List] : Use for Signing/Verification
-[Background Task] --> [JWT Logic] : Periodic Rotation
-
-note right of User Browser : HTML interface for UI
-note right of FastAPI Server : Handles auth and API endpoints
-note right of In-Memory Users : Temporary storage (dict)
-note right of JWT Logic : Custom encoding/decoding
-note right of Secrets List : For rotation support
-note right of Background Task : Internal secret rotation
-
-@enduml
-```
+![Architecture Diagram](JWT_Architechture_Diagram.png.png)
 
 ## Prerequisites
 

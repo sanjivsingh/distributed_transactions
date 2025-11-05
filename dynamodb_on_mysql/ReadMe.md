@@ -28,91 +28,9 @@ This project implements a simplified DynamoDB-like interface and features on top
 
 
 
-```plantuml
-@startuml Architecture Diagram
-
-title DynamoDB on MySQL Architecture
-
-[Client] --> [HashBasedShardManager] : CRUD Operations
-[HashBasedShardManager] --> [DynamoDBShard] : Route to Shard
-[DynamoDBShard] --> [MySQL Database] : Data Storage
-[DynamoDBShard] --> [Index Tables] : Secondary Indexes (LSI/GSI)
-[DynamoDBShard] --> [Main Tables] : Primary Data
-
-note right of HashBasedShardManager : Routes requests, manages metadata
-note right of DynamoDBShard : Handles sharding, locking, and queries
-note right of MySQL Database : Relational backend for persistence
-note right of Index Tables : For efficient non-PK queries (LSI/GSI)
-note right of Main Tables : Core data with hash/sort keys
-
-@enduml
-```
-
 ### Flow Diagram
 
 ![Flow Diagram](DynamoDB_on_MySQL_flow_diagram.png)
-
-```plantuml
-@startuml Sequence Diagram
-
-title DynamoDB on MySQL Operation Flow
-
-actor Client
-participant HashBasedShardManager
-participant DynamoDBShard
-participant MySQL
-
-Client -> HashBasedShardManager: create_table(table_config)
-HashBasedShardManager -> DynamoDBShard: create_table on all shards
-DynamoDBShard -> MySQL: CREATE TABLE with hash_key, sort_key
-MySQL --> DynamoDBShard: Table created
-DynamoDBShard --> HashBasedShardManager: Success
-HashBasedShardManager --> Client: Table created
-
-Client -> HashBasedShardManager: create_local_secondary_index(index_config)
-HashBasedShardManager -> DynamoDBShard: create_local_secondary_index on all shards
-DynamoDBShard -> MySQL: CREATE INDEX on index_column (LSI)
-MySQL --> DynamoDBShard: Index created
-DynamoDBShard --> HashBasedShardManager: Success
-HashBasedShardManager --> Client: Index created
-
-Client -> HashBasedShardManager: create_global_secondary_index(gsi_config)
-HashBasedShardManager -> DynamoDBShard: create_global_index_table on all shards
-DynamoDBShard -> MySQL: CREATE TABLE for GSI with new hash_key, sort_key
-DynamoDBShard -> MySQL: Populate GSI table with data
-MySQL --> DynamoDBShard: GSI created
-DynamoDBShard --> HashBasedShardManager: Success
-HashBasedShardManager --> Client: GSI created
-
-Client -> HashBasedShardManager: insert(table, record)
-HashBasedShardManager -> HashBasedShardManager: Determine shard by hash(key)
-HashBasedShardManager -> DynamoDBShard: insert_record
-DynamoDBShard -> DynamoDBShard: Acquire lock
-DynamoDBShard -> MySQL: INSERT INTO table
-DynamoDBShard -> MySQL: INSERT INTO LSI/GSI tables
-MySQL --> DynamoDBShard: Records inserted
-DynamoDBShard -> DynamoDBShard: Release lock
-DynamoDBShard --> HashBasedShardManager: Success
-HashBasedShardManager --> Client: Inserted
-
-Client -> HashBasedShardManager: get(table, filter)
-HashBasedShardManager -> HashBasedShardManager: Determine query type and shards
-alt Primary Key Query
-    HashBasedShardManager -> DynamoDBShard: SELECT by hash_key and sort_key
-else LSI Query
-    HashBasedShardManager -> DynamoDBShard: SELECT from LSI table, then JOIN main table
-else GSI Query
-    HashBasedShardManager -> DynamoDBShard: SELECT from GSI table across shards
-else Full Scan
-    HashBasedShardManager -> DynamoDBShard: SELECT * from table on all shards
-end
-DynamoDBShard -> MySQL: Execute query
-MySQL --> DynamoDBShard: Return records
-DynamoDBShard --> HashBasedShardManager: Records
-HashBasedShardManager --> Client: Records
-
-@enduml
-```
 
 ## Prerequisites
 
