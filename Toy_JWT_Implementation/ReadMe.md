@@ -32,7 +32,7 @@ This project implements a basic authentication server using custom JWT (JSON Web
 
 1. **Navigate to the project directory**:
    ```bash
-   cd .../distributed_transactions/
+   cd ${HOME_DIR}/distributed_transactions/
    ```
 
 2. **Create and activate a virtual environment**:

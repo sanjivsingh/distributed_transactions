@@ -28,7 +28,7 @@ This is a real-time web application that tracks and displays online users. Users
 
 1. **Clone or navigate to the project directory**:
    ```bash
-   cd /Users/sanjivsingh/Projects/VS_workspace/distributed_transactions/online_status_application
+   cd ${HOME_DIR}/distributed_transactions/online_status_application
    ```
 
 2. **Create a virtual environment** (if not already created):

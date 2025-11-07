@@ -34,7 +34,7 @@ This is a real-time web application that tracks and displays online users using 
 
 1. **Navigate to the project directory**:
    ```bash
-   cd /Users/sanjivsingh/Projects/VS_workspace/distributed_transactions/online_status_application_websocket
+   cd ${HOME_DIR}/distributed_transactions/online_status_application_websocket
     ```
 2. **Create and activate a virtual environment**:
    ```

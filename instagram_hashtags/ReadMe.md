@@ -84,7 +84,7 @@ note right of MongoDB : NoSQL data: hashtag counts, top posts
 
 Set the Python path:
 ```bash
-export PYTHONPATH=/Users/sanjivsingh/Projects/VS_workspace/distributed_transactions:$PYTHONPATH
+export PYTHONPATH=...../distributed_transactions:$PYTHONPATH
 ```
 
 ### Run the App
