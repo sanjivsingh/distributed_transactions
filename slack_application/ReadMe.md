@@ -38,7 +38,7 @@ This is a real-time messaging application similar to Slack, built with Python. U
 
 1. **Navigate to the project directory**:
    ```bash
-   cd .../distributed_transactions/slack_application
+   cd ${HOME_DIR}/distributed_transactions/slack_application
    ```
 
 2. **Create and activate a virtual environment**:

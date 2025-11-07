@@ -30,7 +30,7 @@ This application simulates an airline check-in system using MySQL for data stora
 
 1. **Navigate to the project directory**:
    ```bash
-   cd ......./distributed_transactions/airline_checkin_system
+   cd ${HOME_DIR}/distributed_transactions/airline_checkin_system
    ```
 
 2. **Create a virtual environment**:

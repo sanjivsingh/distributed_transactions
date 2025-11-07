@@ -252,7 +252,7 @@ W -> M: Close MongoDB client
 ## Running the Worker
 
 1. Ensure Kafka, MongoDB, and dependencies are running.
-2. Set PYTHONPATH: `export PYTHONPATH=/Users/sanjivsingh/Projects/VS_workspace/distributed_transactions:$PYTHONPATH`
+2. Set PYTHONPATH: `export PYTHONPATH=${HOME}/distributed_transactions:$PYTHONPATH`
 3. Run: `python instagram_hashtags/worker.py`
 
 ## Dependencies
