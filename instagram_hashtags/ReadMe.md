@@ -41,7 +41,7 @@ A distributed system for managing Instagram-like posts with hashtag analytics. U
 
 3. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -r instagram_hashtags/requirements.txt
    ```
 
 4. Set up databases:
@@ -58,7 +58,7 @@ A distributed system for managing Instagram-like posts with hashtag analytics. U
 
 Set the Python path:
 ```bash
-export PYTHONPATH=...../distributed_transactions:$PYTHONPATH
+export PYTHONPATH=${HOME_PATH}/distributed_transactions:$PYTHONPATH
 ```
 
 ### Run the App
