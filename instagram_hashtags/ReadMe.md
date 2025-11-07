@@ -21,32 +21,6 @@ A distributed system for managing Instagram-like posts with hashtag analytics. U
 
 ![Architecture Diagram](HashTag_Service_Block_Diagram.png)
 
-```
-@startuml
-title Instagram Hashtag Service Block Diagram
-
-[User Browser] as User
-[FastAPI Server] as Server
-[MySQL Database] as MySQL
-[Kafka Broker] as Kafka
-[Hashtag Worker] as Worker
-[MongoDB Database] as MongoDB
-
-User --> Server : HTTP (register, create post, get hashtag summary)
-Server --> MySQL : Store users, posts, images
-Server --> Kafka : Produce post messages
-Kafka --> Worker : Consume post messages
-Worker --> MongoDB : Update hashtag statistics
-Server --> MongoDB : Fetch hashtag summaries
-
-note right of User : Frontend: HTML/JS for UI
-note right of Server : Backend: REST APIs, Kafka producer, MongoDB queries
-note right of MySQL : Relational data: users, posts, images
-note right of Kafka : Message queue: asynchronous post processing
-note right of Worker : Consumer: extracts hashtags, batches updates
-note right of MongoDB : NoSQL data: hashtag counts, top posts
-@enduml
-```
 ## Prerequisites
 
 - Python 3.10+
@@ -194,52 +168,6 @@ The Hashtag Worker is a Kafka consumer that processes Instagram post messages as
 5. **Error Handling**: Logs errors; on shutdown, processes any remaining posts.
 
 ![Worker Flow](Hashtag_worker_Diagram.png)
-
-```
-@startuml Worker Diagram
-
-title Hashtag Worker Process
-
-participant Consumer as C
-participant Worker as W
-participant Lock as L
-participant Executor as E
-participant MongoDB as M
-
-== Message Processing ==
-loop while true
-    C -> W: Poll message from Kafka
-    alt message received
-        W -> W: Extract hashtags, update pending_map, increment post_count
-        W -> W: Add message to pending_msgs
-        alt post_count >= threshold
-            W -> L: Acquire lock (non-blocking)
-            alt lock acquired
-                W -> W: Swap pending_map <-> inprogress_map, pending_msgs <-> inprogress_msgs
-                W -> E: Submit async task to update MongoDB
-                E -> M: Update hashtag counts in MongoDB
-                E -> C: Commit offsets for inprogress_msgs
-                E -> W: Task complete
-                W -> L: Release lock
-            else lock not acquired
-                W -> W: Skip update, continue
-            end
-        end
-    else no message
-        W -> W: Continue polling
-    end
-end
-
-== Shutdown ==
-W -> W: On KeyboardInterrupt, process remaining posts synchronously
-W -> E: Submit final async task
-E -> M: Update remaining data
-E -> C: Commit remaining offsets
-W -> C: Close consumer
-W -> M: Close MongoDB client
-
-@enduml
-```
 
 
 ## Configuration
