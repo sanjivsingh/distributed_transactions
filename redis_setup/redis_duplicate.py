@@ -19,8 +19,7 @@ class RedisDuplicate(ABC):
         return sismember
 
     def set_key(self, key : str) -> bool:
-        self.redis.sadd(self.set_name, key)
-        self.redis.expire(self.set_name, config.configurations[constants.DUPLICATE_TTL])
+        self.redis.setex(self.set_name, config.configurations[constants.DUPLICATE_TTL],key)
         return True 
 
     def __del__(self):

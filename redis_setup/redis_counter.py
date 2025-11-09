@@ -30,6 +30,8 @@ def parallel_increment(number_of_threads: int):
 
         actual_count = connection.get('order_count')
         if actual_count:
+            # Validate the final count
+            print(f"Final count with {number_of_threads} threads: {actual_count.decode('utf-8')}")
             assert int(actual_count.decode('utf-8')) == 100000
 
         end_time = time.time()
