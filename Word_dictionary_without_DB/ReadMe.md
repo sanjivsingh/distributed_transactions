@@ -1,4 +1,4 @@
-Word dictionary without using any DB
+#### Word dictionary without using any DB
 -   Words and meanings are updated weekly
 -   No traditional DB
 -   Easily portable
@@ -55,7 +55,22 @@ This project includes two implementations for the word dictionary: a CSV-based v
 | **Dependencies**       | Standard Python (csv module)                        | Standard Python only                                     |
 | **Update Frequency**   | Easy for batch updates                              | Optimized for weekly updates with index rebuild          |
 
+
+### Dictionary Lookup timing comparison
+
+| Item                  | Stats|
+|-------------------------|-----------------------------------------------------|
+| **File Size**           | 17 GB            | 
+| **Number of words**     | 10000000         |
+| **Word length**         | 7 char          |
+| **Meaning length**      | 1000 char        |
+
+
+![Lookup timing comparison](Lookup_time_compare.png)
+
 - **Recommendation**: Use CSV for simplicity and readability in development. Switch to indexed file for production with large datasets to leverage faster lookups and compactness.
+
+
 
 ## Prerequisites
 
