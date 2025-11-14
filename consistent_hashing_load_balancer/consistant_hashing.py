@@ -8,8 +8,7 @@ class Utils:
     @staticmethod
     def hash_key(key):
         """Generate hash for a key using MD5."""
-        return int(hashlib.md5(key.encode("utf-8")).hexdigest(), 16) % 121 
-
+        return int(hashlib.md5(key.encode("utf-8")).hexdigest(), 16) #% 100 
 
 class Server:
     def __init__(self, identifier):
@@ -31,8 +30,8 @@ class Server:
         return self.data[vnode_hash][key]
 
     def add(self, vnode_hash, key, value):
-        print("added key:", key, " to vnode_hash:", str(Utils.hash_key(key)))
-        self.data[vnode_hash][key] = value+":"+ str(Utils.hash_key(key))
+        #print("added key:", key, " to vnode_hash:", str(Utils.hash_key(key)))
+        self.data[vnode_hash][key] = value
 
     def delete(self, vnode_hash, key):
         if key in self.data[vnode_hash]:
@@ -52,67 +51,72 @@ class ConsistentHashing:
             return
 
         self.server_hashes[server] = []
-        change_ownership = []
         # number of virtual nodes per server.
         # each virtual node will be added to the ring
-        ring_exten = []
+        ring_extens = []
         server_node = Server(server)
         for i in range(self.num_replicas):
             vName_name = f"{server}:{i}"
             hash_val = Utils.hash_key(vName_name)
+            j=1
+            while hash_val in [item[0] for item in self.ring]:
+                vName_name = f"{server}:{i}_{j}"
+                hash_val = Utils.hash_key(vName_name)
+                j+=1
             vName_name = f"{vName_name}:{hash_val}"
             self.server_hashes[server].append(hash_val)
             self.servers[server] = server_node
             server_node.add_vnode(hash_val)
+            ring_extens.append((hash_val, server, vName_name))
 
-            if len(self.ring) > 0:
-                vnode, index = self.get_server_by_hash(hash_val)
-                left_data_vnode = self.ring[index]
-            else:
-                left_data_vnode = None
-
-            change_ownership.append((left_data_vnode, hash_val, server_node,vName_name))
-            ring_exten.append((hash_val, server, vName_name))
-
-        for ring_extend_item in ring_exten:
-            print(" in ring : ", ring_extend_item)
+        for ring_extend_item in ring_extens:
+            #print(" added in ring : ", ring_extend_item)
             bisect.insort(self.ring, ring_extend_item)
-        print(f"Added server: {server}")
+        #print(f"Added server: {server}")
+        #print("\n".join([str(item) for item in self.ring]))
+
+        if len(self.ring) == len(ring_extens):
+            #print("First server added, no keys to move.")
+            return
 
         # Move   keys that now belong to the new server
-        if change_ownership:
-            for change_ownership_item in change_ownership:
-                data_vnode, hash_val, server_node, vName_name = change_ownership_item
-                if data_vnode is None:
-                    continue
+        new_vnode_hashs = [item[0] for item in ring_extens]
+        if ring_extens:
+            for ring_extend_item in ring_extens:
+                hash_val, server, vName_name = ring_extend_item
 
+                current_vnode  , current_index = self.get_server_by_hash(hash_val)
+                vnode  , data_server_index = self.get_server_by_hash(hash_val-1)
+                while self.ring[data_server_index][0] in new_vnode_hashs:
+                    if data_server_index == 0:
+                        data_server_index = len(self.ring) - 1
+                    else:
+                        data_server_index = (data_server_index -1) 
+    
+                data_vnode = self.ring[data_server_index]
                 data_server = data_vnode[1]
                 data_server_start_hash = data_vnode[0]
-                data_server_vnode = data_vnode[2]
                 data_server_node = self.servers[data_server]
 
-
-                right_index = (index + 1) % len(self.ring)
+                right_index = (current_index + 1) % len(self.ring)
                 right_vnode = self.ring[right_index]
                 right_vnode_hash = right_vnode[0]
 
-                keyes_moved = []
+                keyes_moved = set()
                 for key in data_server_node.data[data_server_start_hash].keys():
                     key_hash = Utils.hash_key(key)
-                    if  (hash_val <= key_hash < right_vnode_hash):
-                        keyes_moved.append(key)
-                    if (data_server_start_hash  > right_vnode_hash and (hash_val <= key_hash and key_hash < right_vnode_hash)) :
-                        keyes_moved.append(key)
+                    if hash_val < right_vnode_hash:
+                        if  (hash_val <= key_hash < right_vnode_hash):
+                            keyes_moved.add(key)
+                    else:
+                        if (hash_val <= key_hash or key_hash < right_vnode_hash) :
+                            keyes_moved.add(key)
 
                 if keyes_moved:
                     for key in keyes_moved:
                         value = data_server_node.get(data_server_start_hash,key)
                         data_server_node.delete(data_server_start_hash,key)
                         server_node.add(hash_val, key, value)
-                        print( f"  Moved key '{key}' from {data_server_node.identifier} vname : {data_server_vnode} to {server_node.identifier}: vname : {vName_name}")
-
-        else:
-            print("No keys need to move.")
 
     def remove_server(self, server):
         """Remove a server from the hash ring and identify keys that need to move."""
@@ -122,7 +126,7 @@ class ConsistentHashing:
         for hash_val in self.server_hashes[server]:
             current_vnode , index  = self.get_server_by_hash(hash_val)
             light_index = (index -1) % len(self.ring)
-            while self.ring[light_index] in self.server_hashes[server]:
+            while self.ring[light_index][0] in self.server_hashes[server]:
                 if light_index == 0:
                     light_index = len(self.ring) -1
                 else:
@@ -141,7 +145,7 @@ class ConsistentHashing:
                 value = removed_server_node.get(current_vnode[0], key)
                 newowner_server_node.add(next_vnode[0], key, value)
                 removed_server_node.delete(current_vnode[0], key)
-                print( f"  Moved key '{key}' from {current_vnode} to {next_vnode}")
+                #print( f"  Moved key '{key}' from {current_vnode} to {next_vnode}")
 
         # Move keys to the next server in the ring
         for hash_val in self.server_hashes[server]:
@@ -151,7 +155,7 @@ class ConsistentHashing:
                     del self.ring[i]
                     break
 
-        print(f"Removed server: {server}")
+        #print(f"Removed server: {server}")
         del self.server_hashes[server]
         del self.servers[server]
 
@@ -161,7 +165,6 @@ class ConsistentHashing:
         if not self.ring:
             return None
         hash_val = Utils.hash_key(key)
-        print(f"Key '{key}' has hash '{hash_val}'")
         return self.get_server_by_hash(hash_val)
 
 
@@ -179,25 +182,19 @@ class ConsistentHashing:
                 if self.ring[index][0] <= hash_val:
                     idx = index
                     return self.ring[idx], idx
-            elif self.ring[index][0] <= hash_val < self.ring[index +1][0]  :
+            elif self.ring[index][0] <= hash_val < self.ring[index +1][0]:
                 idx = index
                 return self.ring[idx], idx
-
         return self.ring[0], 0
 
     def add(self, key, value):
         """Add a key to track for migration."""
-        print(key, " with hash ", str(Utils.hash_key(key)))
         vNode, index = self.get_server(key)
-        next_index = (index + 1) % len(self.ring)
-        next_node =  self.ring[next_index]
-        print(f"Key '{key}' -> added -> Server '{vNode}'.  and Next Server '{next_node}'")
         self.servers[vNode[1]].add(vNode[0], key, value)
 
     def get(self, key):
         """Get a key's value from the appropriate server."""
         vNode, index = self.get_server(key)
-        print(f"Key '{key}' -> retrieved from Server '{vNode[1]}' -> vNode '{vNode[2] }'")
         return self.servers[vNode[1]].get(vNode[0], key)
 
 
