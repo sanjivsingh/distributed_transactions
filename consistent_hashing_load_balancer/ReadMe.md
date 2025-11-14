@@ -3,5 +3,10 @@
 -   Solve skewness problem in consistent hashing with Virtual Nodes
 -   Minimum data movement if nodes are added/deleted 
 
+# TODO
+-  Replication Factor -3
+-  Read Vs Write Route
+-  Move HOT vnode to another Server 
+-  Failure scenarios
 
 
