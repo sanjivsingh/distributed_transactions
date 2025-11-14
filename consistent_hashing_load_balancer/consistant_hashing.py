@@ -86,49 +86,45 @@ class ConsistentHashing:
             for ring_extend_item in ring_extens:
                 hash_val, server_name, vName_name = ring_extend_item
 
-                current_vnode  , current_index = self.get_server_by_hash(hash_val)
-                vnode  , data_server_index = self.get_server_by_hash(hash_val-1)
-                while self.ring[data_server_index][0] in new_vnode_hashs:
-                    if data_server_index == 0:
-                        data_server_index = len(self.ring) - 1
+                new_vnode  , current_index = self.get_server_by_hash(hash_val)
+                prev_vnode  , prev_server_index = self.get_server_by_hash(hash_val-1)
+                while self.ring[prev_server_index][0] in new_vnode_hashs:
+                    if prev_server_index == 0:
+                        prev_server_index = len(self.ring) - 1
                     else:
-                        data_server_index = (data_server_index -1) 
+                        prev_server_index = (prev_server_index -1) 
     
-                data_vnode = self.ring[data_server_index]
+                data_vnode = self.ring[prev_server_index]
                 data_server = data_vnode[1]
                 data_server_start_hash = data_vnode[0]
                 data_server_node = self.servers[data_server]
 
-                right_index = (current_index + 1) % len(self.ring)
-                right_vnode = self.ring[right_index]
-                right_vnode_hash = right_vnode[0]
-
+                next_vnode_hash = self.ring[(current_index + 1) % len(self.ring)][0]
+                # Identify keys to move
                 keyes_moved = set()
                 for key in data_server_node.data[data_server_start_hash].keys():
                     key_hash = Utils.hash_key(key)
-                    if hash_val < right_vnode_hash:
-                        if  (hash_val <= key_hash < right_vnode_hash):
+                    if hash_val < next_vnode_hash:
+                        if  (hash_val <= key_hash < next_vnode_hash):
                             keyes_moved.add(key)
                     else:
-                        if (hash_val <= key_hash or key_hash < right_vnode_hash) :
+                        if (hash_val <= key_hash or key_hash < next_vnode_hash) :
                             keyes_moved.add(key)
 
-                #self.__move_all_keys(data_server_index, current_index, keyes_moved)
-                
                 if keyes_moved:
                     for key in keyes_moved:
                         value = data_server_node.get(data_server_start_hash,key)
                         data_server_node.delete(data_server_start_hash,key)
                         server_node.add(hash_val, key, value)
-            
+                
     def remove_server(self, server_name):
         """Remove a server from the hash ring and identify keys that need to move."""
         if server_name not in self.server_hashes:
             return
 
-        for hash_val in self.server_hashes[server_name]:
+        for v_hash_val in self.server_hashes[server_name]:
             # virtual node being removed
-            current_vnode , old_index  = self.get_server_by_hash(hash_val)
+            old_vnode , old_index  = self.get_server_by_hash(v_hash_val)
             
             # Find the left next server in the ring that is not being removed
             new_index = (old_index -1) % len(self.ring)
@@ -140,10 +136,10 @@ class ConsistentHashing:
             # Move keys to the next server in the ring
             self.__move_all_keys(old_index, new_index)
 
-        for hash_val in self.server_hashes[server_name]:
+        for v_hash_val in self.server_hashes[server_name]:
             # Find vNode and remove from ring
             for i, (hash_val, s_name, v_name) in enumerate(self.ring):
-                if hash_val == hash_val and server_name == s_name:
+                if v_hash_val == hash_val and server_name == s_name:
                     del self.ring[i]
                     break
         #print(f"Removed server: {server}")
