@@ -5,8 +5,8 @@
 -   Multi-threaded: ref: Why most TCP servers are multi threaded and how to build one from scratch
 -   Single-Threaded Multiple Connection Support w/ EPOLL
 
--  Redis - zmalloc implementation
--  Redis Eviction
+-  Redis - zmalloc/zfree  implementation - check memory usage
+-  Redis Eviction - 
 
 
 

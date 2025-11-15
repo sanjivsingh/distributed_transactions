@@ -151,3 +151,14 @@ Run `python word_dictionary.py` to create a sample dictionary and perform lookup
 - Add support for concurrent access.
 - Implement partial index loading for large files.
 - Add compression for even more compactness.
+
+
+# Start Web-Service
+    ```
+    .venv/bin/python -m uvicorn Word_dictionary_without_DB.word_dictionary_service:app --reload --port 8000
+    ```
+
+# Start Batch dictionaary update Worker
+    ```
+    .venv/bin/python -m uvicorn Word_dictionary_without_DB.update_dictionary_worker --port 8000
+    ```

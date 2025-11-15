@@ -6,7 +6,7 @@ class Utils:
     @staticmethod
     def hash_key(key):
         """Generate hash for a key using MD5."""
-        return int(hashlib.md5(key.encode("utf-8")).hexdigest(), 16) #% 100 
+        return int(hashlib.md5(key.encode("utf-8")).hexdigest(), 16)  % (2**64)   
 
 class Server:
     def __init__(self, identifier):
@@ -28,7 +28,6 @@ class Server:
         return self.data[vnode_hash][key]
 
     def add(self, vnode_hash, key, value):
-        #print("added key:", key, " to vnode_hash:", str(Utils.hash_key(key)))
         self.data[vnode_hash][key] = value
 
     def delete(self, vnode_hash, key):

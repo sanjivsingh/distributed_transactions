@@ -35,7 +35,7 @@ hashtag_collection = mongo_db["hashtags"]
 from kafka_setup import config as kafka_config, constants as kafka_constants
 
 
-def update_hashtag_postcounts(consumer):
+def update_db_hashtag_postcounts(consumer):
     global inprogress_map, inprogress_msgs, dbtask_lock
     log.info(f"Updating hashtag post counts in MongoDB: {dict(inprogress_map)}")
     with dbtask_lock:
@@ -126,7 +126,7 @@ class HashtagWorker:
 
         # Update MongoDB asynchronously
         task = concurrent.futures.ThreadPoolExecutor().submit(
-            update_hashtag_postcounts, self.consumer
+            update_db_hashtag_postcounts, self.consumer
         )
         log.info("Started background task to update hashtag post counts")
         post_count = 0

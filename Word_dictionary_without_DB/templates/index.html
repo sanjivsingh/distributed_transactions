@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Word Dictionary</title>
+</head>
+<body>
+    <h1>Word Dictionary Lookup</h1>
+    <form id="lookupForm">
+        <input type="text" id="word" placeholder="Enter a word" required>
+        <button type="submit">Get Meaning</button>
+    </form>
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('lookupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const word = document.getElementById('word').value;
+            const response = await fetch(`/meaning/${word}`);
+            const data = await response.json();
+            if (response.ok) {
+                document.getElementById('result').innerHTML = `<p><strong>${data.word}:</strong> ${data.meaning}</p>`;
+            } else {
+                document.getElementById('result').innerHTML = `<p style="color:red;">${data.detail}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

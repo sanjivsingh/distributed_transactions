@@ -14,14 +14,13 @@ def generate_random_meaning():
     return ' '.join(random.choices(words, k=random.randint(5, 1000)))
 
 
-def checkNumbers(writer, reader, file_path):
+def write_records(writer):
     start_time = time.time()
     # Initialize the writer (for file operations)
-    dic_writer = writer(file_path)
-
-
+    manifest_file = "Word_dictionary_without_DB/data/manifest.txt"
+    dic_writer = writer(manifest_file)
     # Initialize the lookup (in-memory map, but we'll use writer for persistence
-    num_records = 10000000  # 1M records
+    num_records = 1000  # 1M records
     batch_size = 100    # Process in batches of 10K
     cache_for_lookup = []
     for i in range(0, num_records, batch_size):
@@ -39,10 +38,16 @@ def checkNumbers(writer, reader, file_path):
 
     end_time = time.time()
     print(f"Inserted {num_records} records in {end_time - start_time} seconds")
+    return manifest_file , cache_for_lookup
 
-    # Test lookups
+def read_records(reader, manifest_file, cache_for_lookup):
+    with open(manifest_file, "r") as file:
+        content = file.read()
+
+    file_path = content.strip()
+    print("loading data from manifest_file:",     manifest_file)
     total_start_time = time.time()
-    dict_reader   = reader(file_path)
+    dict_reader   = reader(manifest_file)
     for word, meaning , index in cache_for_lookup:
         start_time = time.time()
         retrieved_meaning = dict_reader.get_meaning(word)
@@ -59,13 +64,18 @@ def checkNumbers(writer, reader, file_path):
     os.remove(file_path)
     print(f"File '{file_path}' deleted successfully.")
 
+
+def checkNumbers(writer, reader):
+    manifest_file, cache_for_lookup = write_records(writer)
+    read_records(reader, manifest_file, cache_for_lookup)
+
 # Main program to insert 1M records
 def main():
 
     print("Testing CSV-based Word Dictionary")
-    checkNumbers(CSVWordDictionaryWriter, CSVWordDictionaryLookup, "Word_dictionary_without_DB/csv_dictionary.txt")
+    checkNumbers(CSVWordDictionaryWriter, CSVWordDictionaryLookup)
     print("Testing Indexed Word Dictionary")
-    checkNumbers(IndexedWordDictionaryWriter, IndexedWordDictionaryLookup, "Word_dictionary_without_DB/indexed_dictionary.txt")
+    checkNumbers(IndexedWordDictionaryWriter, IndexedWordDictionaryLookup)
 
 if __name__ == "__main__":
     main()
