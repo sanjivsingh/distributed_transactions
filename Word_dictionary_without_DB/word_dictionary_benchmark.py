@@ -20,7 +20,7 @@ def write_records(writer):
     manifest_file = "Word_dictionary_without_DB/data/manifest.txt"
     dic_writer = writer(manifest_file)
     # Initialize the lookup (in-memory map, but we'll use writer for persistence
-    num_records = 1000  # 1M records
+    num_records = 10000000  # 1M records
     batch_size = 100    # Process in batches of 10K
     cache_for_lookup = []
     for i in range(0, num_records, batch_size):
