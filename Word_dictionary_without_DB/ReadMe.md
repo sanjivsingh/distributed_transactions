@@ -68,6 +68,11 @@ This project includes two implementations for the word dictionary: a CSV-based v
 
 ![Lookup timing comparison](Lookup_time_compare.png)
 
+### Block Diagram 
+
+![word_dictionary_block_diagram](word_dictionary_block_diagram.png)
+
+
 - **Recommendation**: Use CSV for simplicity and readability in development. Switch to indexed file for production with large datasets to leverage faster lookups and compactness.
 
 
