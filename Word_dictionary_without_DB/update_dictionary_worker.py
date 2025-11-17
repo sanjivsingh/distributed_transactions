@@ -15,6 +15,8 @@ def generate_random_meaning():
 
 def trigger_jenkins_job():
     import requests
+    # Replace with your Jenkins job URL.
+    # Currently triggering App Server to refresh dictionary
     jenkins_url = "http://localhost:8000/refresh/dictionary"
     try:
         response = requests.get(jenkins_url)
@@ -30,8 +32,8 @@ def update_dictionary_worker(manifest_file: str, num_new_words: int = 100):
     while True:
         """Load existing dictionary, add new words, and save."""
         # Add existing words if any (placeholder; in practice, load from file)
-        # For demo, skip and just add new
-        
+        # For demo, I am generating new random words.
+        # In real scenario, you would load existing words from a source and add new ones.
         # Add new random words
         added_count = 0
         existing_words = {}

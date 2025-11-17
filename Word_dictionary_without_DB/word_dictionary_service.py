@@ -8,7 +8,11 @@ from Word_dictionary_without_DB.indexed_dictionary import IndexedWordDictionaryL
 app = FastAPI(title="Word Dictionary Web Service")
 
 # Initialize the dictionary (assuming file exists; create one if needed)
-MANIFEST_FILE = "Word_dictionary_without_DB/data/manifest.txt"
+def get_manifest_file():
+    manifest_file = "Word_dictionary_without_DB/data/manifest.txt"
+    return manifest_file
+
+MANIFEST_FILE = get_manifest_file()
 dict_lookup = IndexedWordDictionaryLookup(MANIFEST_FILE)
 
 # Templates
@@ -19,10 +23,13 @@ os.makedirs("Word_dictionary_without_DB/templates", exist_ok=True)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+from threading import Lock
+lock = Lock()
 @app.get("/refresh/dictionary")
 async def post():
     try:
-        dict_lookup.load_index()  # Reload the index from file
+        with lock:
+            dict_lookup.load_index()  # Reload the index from file
         return {"status": "Dictionary refreshed successfully"}  
     except RuntimeError:
         raise HTTPException(status_code=404, detail="Word not found")
@@ -30,7 +37,9 @@ async def post():
 @app.get("/meaning/{word}")
 async def get_meaning(word: str):
     try:
-        meaning = dict_lookup.get_meaning(word.lower())  # Assume case-insensitive
+        # block if loading index is in progress
+        with lock:
+            meaning = dict_lookup.get_meaning(word.lower())  # Assume case-insensitive
         return {"word": word, "meaning": meaning}
     except RuntimeError as e:
         print(f"Word not found: {word} Error: {e}")
