@@ -1,6 +1,6 @@
 import redis
 from abc import ABC
-from redis_setup import constants, config
+from setup.redis_setup import constants, config
 
 
 class RedisDuplicate(ABC):

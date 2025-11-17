@@ -14,7 +14,7 @@ log = logger.setup_logger(__name__)
 app = FastAPI()
 
 # Redis connection
-from redis_setup import config as redis_config, constants as redis_constants
+from setup.redis_setup import config as redis_config, constants as redis_constants
 
 redis_client = redis.Redis(
     host=redis_config.configurations[redis_constants.REDIS_SERVER],

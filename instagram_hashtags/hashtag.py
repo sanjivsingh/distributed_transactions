@@ -27,7 +27,7 @@ app.mount("/static", StaticFiles(directory="instagram_hashtags/static"), name="s
 id_generator = SnowflakeIDGenerator(worker_id=1)
 
 # MongoDB connection
-from mongodb_setup import config as mongo_config, constants as mongo_constants
+from setup.mongodb_setup import config as mongo_config, constants as mongo_constants
 mongo_client = pymongo.MongoClient(
     mongo_config.configurations[mongo_constants.SERVER],
     mongo_config.configurations[mongo_constants.PORT],
@@ -35,7 +35,7 @@ mongo_client = pymongo.MongoClient(
 mongo_db = mongo_client["instagram_db"]
 hashtag_collection = mongo_db["hashtags"]
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 
 # MySQL connection
@@ -67,7 +67,7 @@ def get_mysql_connection():
 
 
 # Kafka producer
-from kafka_setup import config as kafka_config, constants as kafka_constants
+from setup.kafka_setup import config as kafka_config, constants as kafka_constants
 producer_conf = {
     "bootstrap.servers": kafka_config.configurations[kafka_constants.KAFKA_BROKER]
 }

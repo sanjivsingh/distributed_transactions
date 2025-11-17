@@ -3,7 +3,7 @@ import time
 import random
 import uuid
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 
 # MySQL connection

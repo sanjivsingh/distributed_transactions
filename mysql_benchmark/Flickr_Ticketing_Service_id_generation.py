@@ -6,8 +6,7 @@ from commons import logger
 from pymysql.cursors import DictCursor
 import threading
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
-
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 class TicketingBookingShard:
 

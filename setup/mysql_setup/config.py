@@ -1,4 +1,4 @@
-from mysql_setup import constants
+from setup.mysql_setup import constants
 
 configurations = {
     constants.HOST: "localhost",

@@ -3,7 +3,7 @@ from toy_KV_storeon_mysql.kv_store import  ToyKVStore
 from commons import logger
 from typing import List
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 class RangeBasedShardManager:
 
     def __init__(self, mapping : List[tuple]) -> None:

@@ -16,7 +16,7 @@ log = logger.setup_logger(__name__)
 app = FastAPI()
 
 # Redis for pubsub
-from redis_setup import config as redis_config, constants as redis_constants
+from setup.redis_setup import config as redis_config, constants as redis_constants
 
 redis_client = redis.Redis(
     host=redis_config.configurations[redis_constants.REDIS_SERVER],
@@ -24,7 +24,7 @@ redis_client = redis.Redis(
     db=0,
 )
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 
 # MySQL connection
@@ -40,7 +40,7 @@ def get_db_connection():
 
 
 # MongoDB connection
-from mongodb_setup import config as mongodb_config, constants as mongodb_constants
+from setup.mongodb_setup import config as mongodb_config, constants as mongodb_constants
 
 mongo_client = pymongo.MongoClient(
     mongodb_config.configurations[mongodb_constants.SERVER],

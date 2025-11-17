@@ -350,7 +350,7 @@ class DynamoDBShard:
 
 # Example usage
 if __name__ == "__main__":
-    from mysql_setup import config as mysql_config, constants as mysql_constants
+    from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
     # Configure your MySQL connection details
     store = DynamoDBShard(

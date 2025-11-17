@@ -2,7 +2,7 @@ import redis
 import time
 def connect():
     try:
-        from redis_setup import config as redis_config, constants as redis_constants
+        from setup.redis_setup import config as redis_config, constants as redis_constants
         return redis.Redis(
             host=redis_config.configurations[redis_constants.REDIS_SERVER],
             port=redis_config.configurations[redis_constants.REDIS_PORT],

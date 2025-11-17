@@ -1,7 +1,7 @@
 import redis
 import time
 import threading
-from redis_setup import config as redis_config, constants as redis_constants
+from setup.redis_setup import config as redis_config, constants as redis_constants
 
 # Redis connection
 def get_redis_connection():

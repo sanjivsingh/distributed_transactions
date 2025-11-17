@@ -1,4 +1,4 @@
-from kafka_setup import constants
+from setup.kafka_setup import constants
 
 configurations = {
     constants.CONVERSION_TOPIC: "conversion_requests",

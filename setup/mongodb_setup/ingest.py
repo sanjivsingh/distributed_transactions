@@ -7,7 +7,7 @@ log = logger.setup_logger(__name__)
 
 def connect_mongo():
     try:
-        from mongodb_setup import config as mongo_config, constants as mongo_constants
+        from setup.mongodb_setup import config as mongo_config, constants as mongo_constants
 
         client = MongoClient(
             mongo_config.configurations[mongo_constants.SERVER],

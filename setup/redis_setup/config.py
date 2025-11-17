@@ -1,4 +1,4 @@
-from redis_setup import constants
+from setup.redis_setup import constants
 
 configurations = {
     constants.REDIS_SERVER: "localhost",

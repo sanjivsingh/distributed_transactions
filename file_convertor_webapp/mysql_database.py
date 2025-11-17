@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple, Any
 from file_convertor_webapp.models import ConversionRequest
 from commons import logger
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 class MysqlDatabaseConnection:
 

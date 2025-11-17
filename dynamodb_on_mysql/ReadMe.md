@@ -51,7 +51,7 @@ This project implements a simplified DynamoDB-like interface and features on top
 
 ```python
 from shard import DynamoDBShard
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 shard = DynamoDBShard(
     shard_index=1,

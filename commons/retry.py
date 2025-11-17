@@ -1,7 +1,7 @@
 import time
 import random
 import math
-from ..kafka_setup import logger
+from commons import logger
 
 # Setup logger
 logger = logger.setup_logger(__name__)

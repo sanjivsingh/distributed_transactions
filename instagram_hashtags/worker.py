@@ -22,7 +22,7 @@ pending_msgs = []
 inprogress_msgs = []
 
 # MongoDB connection
-from mongodb_setup import config as mongo_config, constants as mongo_constants
+from setup.mongodb_setup import config as mongo_config, constants as mongo_constants
 
 mongo_client = pymongo.MongoClient(
     mongo_config.configurations[mongo_constants.SERVER],

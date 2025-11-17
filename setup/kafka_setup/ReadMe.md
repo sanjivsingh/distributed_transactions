@@ -7,11 +7,11 @@ brew install kafka
 /usr/local/opt/kafka/bin/kafka-server-start /usr/local/etc/kafka/server.properties
 
 
- .venv/bin/python -m kafka_setup.conversion_producer
+ .venv/bin/python -m setup.kafka_setup.conversion_producer
 
- .venv/bin/python -m kafka_setup.conversion_consumer
+ .venv/bin/python -m setup.kafka_setup.conversion_consumer
 
- .venv/bin/python -m kafka_setup.setup
+ .venv/bin/python -m setup.kafka_setup.setup
 
 
 # list consumer groups

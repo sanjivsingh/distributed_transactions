@@ -8,7 +8,7 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 class AirlineDatabase(ABC):
     def __init__(self):
         # MySQL connection pool configuration using DBUtils

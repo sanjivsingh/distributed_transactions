@@ -1,7 +1,7 @@
 import pymysql
 import time
 from faker import Faker
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 fake = Faker()
 

@@ -3,7 +3,7 @@ from dynamodb_on_mysql.shard import DynamoDBShard
 from commons import logger
 from typing import Set
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 class HashBasedShardManager:
 

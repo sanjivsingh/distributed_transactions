@@ -8,7 +8,7 @@ class TotekBucket:
         self.refill_interval = refill_interval
         self.last_refill = time.time()
   
-        from redis_setup import config as redis_config, constants as redis_constants
+        from setup.redis_setup import config as redis_config, constants as redis_constants
         self.connection =  redis.Redis(
             host=redis_config.configurations[redis_constants.REDIS_SERVER],
             port=redis_config.configurations[redis_constants.REDIS_PORT],
@@ -41,7 +41,7 @@ class FixedWindowRateLimiter:
     def __init__(self, limit=10, window_seconds=60):
         self.limit = limit
         self.window_seconds = window_seconds
-        from redis_setup import config as redis_config, constants as redis_constants
+        from setup.redis_setup import config as redis_config, constants as redis_constants
         self.redis =  redis.Redis(
             host=redis_config.configurations[redis_constants.REDIS_SERVER],
             port=redis_config.configurations[redis_constants.REDIS_PORT],
