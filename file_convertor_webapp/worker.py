@@ -1,6 +1,6 @@
 import time
 
-from kafka_setup import conversion_producer, config, constants
+from setup.kafka_setup import conversion_producer, config, constants
 from commons import logger
 
 

@@ -4,7 +4,7 @@ import pymysql
 
 app = FastAPI()
 
-from mysql_setup import config as mysql_config, constants as mysql_constants
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 # MySQL connection
 def get_db_connection():
