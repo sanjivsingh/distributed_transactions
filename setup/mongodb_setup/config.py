@@ -1,4 +1,4 @@
-from mongodb_setup import constants
+from setup.mongodb_setup import constants
 
 configurations = {
     constants.SERVER: "localhost",

@@ -1,0 +1,3 @@
+pymongo==4.7.3
+confluent-kafka==2.11.1
+pandas==2.2.0
