@@ -31,9 +31,7 @@ mongo_client = pymongo.MongoClient(
 mongo_db = mongo_client["instagram_db"]
 hashtag_collection = mongo_db["hashtags"]
 
-
-from kafka_setup import config as kafka_config, constants as kafka_constants
-
+from setup.kafka_setup import config as kafka_config, constants as kafka_constants
 
 def update_db_hashtag_postcounts(consumer):
     global inprogress_map, inprogress_msgs, dbtask_lock
