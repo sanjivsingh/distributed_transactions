@@ -118,8 +118,6 @@ A benchmarking tool for MySQL sharding and ID generation. Implements sharded dat
 Sharding, auto-increment ID generation, insertion benchmarking, max ID tracking
 - **Link to Implementation**: [./mysql_benchmark/](./mysql_benchmark/)
 
-
-
 ### 12. User Recent Search Application
 A web application for user registration and product search with recent search suggestions. Supports fuzzy and full-text search on Elasticsearch, recent searches stored in Redis with set-like behavior, and event logging to Kafka for analytics.
 
@@ -159,6 +157,17 @@ A project for real-time stream data ingestion and processing in distributed syst
 - **Link to Implementation**: [./stream_ingestion/ReadMe.md](./stream_ingestion/ReadMe.md) 
 
 ![login_evert_stream_processing](stream_ingestion/login_evert_stream_processing.png)
+
+###    16. Word Dictionary Without DB
+A project for implementing a word dictionary without using a database, utilizing in-memory data structures or file-based storage for fast word lookups and definitions.
+
+- **Technologies**: Python
+- **Key Features**: In-memory word storage, fast lookups, file-based persistence, no database dependency
+- **Link to Implementation**: [./word_dictionary_without_db/ReadMe.md](./word_dictionary_without_db/ReadMe.md) 
+
+![Lookup timing comparison](word_dictionary_without_db/Lookup_time_compare.png)
+![word_dictionary_block_diagram](word_dictionary_without_db/word_dictionary_block_diagram.png)
+
 
 ## Prerequisites
 - Python 3.8+
