@@ -65,9 +65,14 @@ Tenant: tenant1
 
 # Stats:
 
-## 
+ -  There are `10 shards` on Elasticsearch cluster.
+ -  `Tenant1` , `Tenant2` and `Tenant3` are hot-tenants distributed on. multiple shards.
+ -  Other Tenants are small , simple fits into one shard.
+
+## Shard ownning Tenants indexes 
 ![Shard_owning_tenants](Shard_owning_tenants.png)
 
+## Tenants Index distribution on shards
 ![Tenant_distribution_on_shards](Tenant_distribution_on_shards.png)
 
 
