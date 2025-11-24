@@ -163,10 +163,11 @@ A project for implementing a word dictionary without using a database, utilizing
 
 - **Technologies**: Python
 - **Key Features**: In-memory word storage, fast lookups, file-based persistence, no database dependency
-- **Link to Implementation**: [./word_dictionary_without_db/ReadMe.md](./word_dictionary_without_db/ReadMe.md) 
+- **Link to Implementation**: [./Word_dictionary_without_DB/ReadMe.md](./Word_dictionary_without_DB/ReadMe.md) 
 
-![Lookup timing comparison](word_dictionary_without_db/Lookup_time_compare.png)
-![word_dictionary_block_diagram](word_dictionary_without_db/word_dictionary_block_diagram.png)
+![Lookup timing comparison](Word_dictionary_without_DB/Lookup_time_compare.png)
+
+![word_dictionary_block_diagram](Word_dictionary_without_DB/word_dictionary_block_diagram.png)
 
 
 ## Prerequisites
