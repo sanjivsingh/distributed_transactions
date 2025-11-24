@@ -27,6 +27,9 @@ A service for managing Instagram-like posts with real-time hashtag analytics. Us
 - **Link to Implementation**: [./instagram_hashtags/](./instagram_hashtags/)
 - **README**: [./instagram_hashtags/ReadMe.md](./instagram_hashtags/ReadMe.md)
 
+![Architecture Diagram](instagram_hashtags/HashTag_Service_Block_Diagram.png)
+
+
 ### 3. Slack-like Application
 A real-time messaging app similar to Slack, supporting user registration, one-to-one group creation, and messaging. Messages are delivered via WebSockets and Redis pubsub, with offline messages stored in MongoDB and delivered on reconnect.
 
@@ -35,12 +38,16 @@ A real-time messaging app similar to Slack, supporting user registration, one-to
 - **Link to Implementation**: [./slack_application/](./slack_application/)
 - **README**: [./slack_application/ReadMe.md](./slack_application/ReadMe.md)
 
+![Block Diagram](slack_application/Slack_Block_Diagram.png)
+
+
 ### 4. Airline Check-in System
 A distributed system for managing airline check-ins, bookings, and seat assignments. Supports passenger registration, flight booking, and check-in processes with distributed transactions to ensure consistency across services.
 
 - **Technologies**: FastAPI, MySQL, Kafka, Redis (assumed based on project patterns)
 - **Key Features**: Booking management, check-in processing, distributed transaction handling
 - **Link to Implementation**: [./airline_checkin_system/](./airline_checkin_system/)
+
 
 ### 5. Online Status Application
 A REST API-based application for managing user online status. Users can update their status, and others can query online users, with data persisted in Redis for fast access.
@@ -55,6 +62,10 @@ A WebSocket-based application for real-time online status updates. Users connect
 - **Technologies**: FastAPI, Redis, WebSockets
 - **Key Features**: Real-time status broadcasting, WebSocket connections, heartbeat handling
 - **Link to Implementation**: [./online_status_application_websocket/](./online_status_application_websocket/)
+
+![Architecture Diagram](online_status_application_websocket/architecture.png)
+
+![Block Diagram](online_status_application_websocket/Block_Diagram.png)
 
 ### 7. Toy KV Store on MySQL
 A simple key-value store implemented using MySQL for persistence. Demonstrates basic CRUD operations with a relational database backend, suitable for learning distributed storage concepts.
@@ -95,6 +106,29 @@ A benchmarking tool for MySQL sharding and ID generation. Implements sharded dat
 
 Sharding, auto-increment ID generation, insertion benchmarking, max ID tracking
 - **Link to Implementation**: [./mysql_benchmark/](./mysql_benchmark/)
+
+### 12. User Recent Search Application
+A web application for user registration and product search with recent search suggestions. Supports fuzzy and full-text search on Elasticsearch, recent searches stored in Redis with set-like behavior, and event logging to Kafka for analytics.
+
+- **Technologies**: FastAPI, MySQL, Redis, Elasticsearch, Kafka
+- **Key Features**: User registration, product search with dropdown recent searches, fuzzy search, event logging with user geography/IP
+- **Link to Implementation**: user_recent_search_app
+- **README**: ReadMe.md
+
+### 13. Hot Key Multi-Tenant Elasticsearch
+A program for multi-tenant document indexing in Elasticsearch with hot tenant handling to prevent shard hotspots. Generates 100,000 documents for 50 tenants, distributing 80% to hot tenants across multiple shards using custom routing.
+
+- **Technologies**: Python, Elasticsearch
+- **Key Features**: Multi-tenant indexing, hot tenant routing for load distribution, shard monitoring, document count per shard per tenant
+- **Link to Implementation**: Hot_Key_Multi_tanent_ElasticSeach
+- **README**: ReadMe.md
+
+###  14. Bitcast Project
+A project for bit-level operations and casting in distributed systems, demonstrating efficient data manipulation and type conversions across services.
+
+- **Technologies**: Python
+- **Key Features**: Bit manipulation, type casting, distributed data handling
+- **Link to Implementation**: ./bitcast_project/
 
 ## Prerequisites
 
