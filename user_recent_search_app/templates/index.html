@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Search</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form id="registerForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <button type="submit">Register</button>
+    </form>
+    
+    <h1>Search Products</h1>
+    <input type="text" id="searchBox" placeholder="Search products" onfocus="loadRecent()">
+    <div id="dropdown" style="display:none;"></div>
+    <button onclick="performSearch()">Search</button>
+    <div id="results"></div>
+    
+    <script>
+        // let username = localStorage.getItem('username') || 'guest'; //   Uncomment to persist username across sessions
+        let rusername = 'guest'
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            rusername = username;
+            const response = await fetch('/register', {
+                method: 'POST',
+                body: new URLSearchParams({ username })
+            });
+            const data = await response.json();
+            alert(data.message);
+            // localStorage.setItem('username', username);
+            
+        };
+        
+        async function loadRecent() {
+            const response = await fetch(`/recent_searches?username=${rusername}`);
+            const data = await response.json();
+            const dropdown = document.getElementById('dropdown');
+            dropdown.innerHTML = data.searches.map(s => `<div onclick="selectSearch('${s}')">${s}</div>`).join('');
+            dropdown.style.display = 'block';
+        }
+        
+        function selectSearch(query) {
+            document.getElementById('searchBox').value = query;
+            document.getElementById('dropdown').style.display = 'none';
+        }
+        
+        async function performSearch() {
+            const query = document.getElementById('searchBox').value;
+            const response = await fetch('/search', {
+                method: 'POST',
+                body: new URLSearchParams({query, username: rusername})
+            });
+            const data = await response.json();
+            document.getElementById('results').innerHTML = data.products.map(p => `<p>${p.name}</p>`).join('');
+        }
+    </script>
+</body>
+</html>

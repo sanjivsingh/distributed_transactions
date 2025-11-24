@@ -1,0 +1,8 @@
+fastapi 
+uvicorn 
+pymysql 
+redis 
+elasticsearch 
+confluent-kafka 
+boto3
+cryptography

@@ -22,6 +22,20 @@ class MysqlDatabaseConnection:
         self.log = logger.setup_logger(__name__)
 
     def connect(self):
+        try:
+            mysql_temp_conn = pymysql.connect(
+                    host=self.host,
+                    user=self.user,
+                    password=self.password,
+                    port=self.port,
+                    cursorclass=DictCursor
+                )
+            mysql_temp_conn.cursor().execute(f"CREATE DATABASE IF NOT EXISTS {self.database}")
+            mysql_temp_conn.commit()
+            mysql_temp_conn.close()
+        except Exception as e:
+            self.log.error(f"Error creating database: {e}")
+
         if self.connection is None:
             self.connection = pymysql.connect(
                 host=self.host,

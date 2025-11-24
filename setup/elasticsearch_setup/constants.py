@@ -1,0 +1,2 @@
+ES_HOST = "ES_HOST"
+ES_PORT = "ES_PORT"
