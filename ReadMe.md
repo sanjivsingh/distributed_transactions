@@ -170,6 +170,15 @@ A project for implementing a word dictionary without using a database, utilizing
 ![word_dictionary_block_diagram](Word_dictionary_without_DB/word_dictionary_block_diagram.png)
 
 
+###     17. Toy JWT Implementation
+A simple implementation of JSON Web Tokens (JWT) for authentication and authorization in distributed systems. Demonstrates token generation, validation, and usage for secure user sessions.
+
+- **Technologies**: Python, PyJWT
+- **Key Features**: Token generation, validation, user authentication, secure session management
+- **Link to Implementation**: [./Toy_JWT_Implementation/ReadMe.md](./Toy_JWT_Implementation/ReadMe.md) 
+
+![Architecture Diagram](Toy_JWT_Implementation/JWT_Architechture_Diagram.png)
+
 ## Prerequisites
 - Python 3.8+
 - MySQL, MongoDB, Redis, Kafka (as needed per project)
