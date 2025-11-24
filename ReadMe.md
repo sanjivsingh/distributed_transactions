@@ -147,18 +147,18 @@ A project for bit-level operations and casting in distributed systems, demonstra
 
 - **Technologies**: Python
 - **Key Features**: Bit manipulation, type casting, distributed data handling
-- **Link to Implementation: [./bitcast_project/ReadMe.md](./bitcast_project/ReadMe.md) 
+- **Link to Implementation**: [./bitcast_project/ReadMe.md](./bitcast_project/ReadMe.md) 
 
 ![Bitcast_Block_Diagram](Bitcask_Implementation/Bitcast_Block_Diagram.png)
 
 ###   15. Stream Ingestion
 A project for real-time stream data ingestion and processing in distributed systems. Handles high-volume data streams, processing and routing them to appropriate storage or analytics services.
 
-- **Technologies: Python, Kafka, Redis
-- **Key Features: Real-time data ingestion, stream processing, event routing, scalability
-- **Link to Implementation: [./stream_ingestion/ReadMe.md](./stream_ingestion/ReadMe.md) 
+- **Technologies**: Python, Kafka, Redis
+- **Key Features**: Real-time data ingestion, stream processing, event routing, scalability
+- **Link to Implementation**: [./stream_ingestion/ReadMe.md](./stream_ingestion/ReadMe.md) 
 
-![login_evert_stream_processing](login_evert_stream_processing.png)
+![login_evert_stream_processing](stream_ingestion/login_evert_stream_processing.png)
 
 ## Prerequisites
 - Python 3.8+
