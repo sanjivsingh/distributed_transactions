@@ -113,6 +113,7 @@ for i in range(1, 101):  # 100 products
     # Index in Elasticsearch
     es.index(
         index="products",
+        #routing=i,
         id=i,
         body={
             "name": name,
