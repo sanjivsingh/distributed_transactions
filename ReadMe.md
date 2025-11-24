@@ -135,7 +135,7 @@ A program for multi-tenant document indexing in Elasticsearch with hot tenant ha
 
 - **Technologies**: Python, Elasticsearch
 - **Key Features**: Multi-tenant indexing, hot tenant routing for load distribution, shard monitoring, document count per shard per tenant
-- **Link to Implementation**: Hot_Key_Multi_tanent_ElasticSeach
+- **Link to Implementation**: [./Hot_Key_Multi_tanent_ElasticSeach/ReadMe.md](./Hot_Key_Multi_tanent_ElasticSeach/ReadMe.md) 
 - **README**: ReadMe.md
     - Shard ownning Tenants indexes 
     ![Shard_owning_tenants](Hot_Key_Multi_tanent_ElasticSeach/Shard_owning_tenants.png)
@@ -147,13 +147,20 @@ A project for bit-level operations and casting in distributed systems, demonstra
 
 - **Technologies**: Python
 - **Key Features**: Bit manipulation, type casting, distributed data handling
-- **Link to Implementation**: ./bitcast_project/
+- **Link to Implementation: [./bitcast_project/ReadMe.md](./bitcast_project/ReadMe.md) 
 
 ![Bitcast_Block_Diagram](Bitcask_Implementation/Bitcast_Block_Diagram.png)
 
+###   15. Stream Ingestion
+A project for real-time stream data ingestion and processing in distributed systems. Handles high-volume data streams, processing and routing them to appropriate storage or analytics services.
+
+- **Technologies: Python, Kafka, Redis
+- **Key Features: Real-time data ingestion, stream processing, event routing, scalability
+- **Link to Implementation: [./stream_ingestion/ReadMe.md](./stream_ingestion/ReadMe.md) 
+
+![login_evert_stream_processing](login_evert_stream_processing.png)
 
 ## Prerequisites
-
 - Python 3.8+
 - MySQL, MongoDB, Redis, Kafka (as needed per project)
 - Virtual environment
