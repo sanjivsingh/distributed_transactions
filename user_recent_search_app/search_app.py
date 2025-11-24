@@ -74,8 +74,16 @@ async def search(query: str = Form(...), username: str = Form(...)):
     # Update global popular
     redis_client.zincrby("global:popular_searches", 1, query)
     
-    # Search Elasticsearch
-    response = es.search(index="products", body={"query": {"match": {"name": query}}})
+    # Search Elasticsearch - Updated for full text and fuzzy search
+    response = es.search(index="products", body={
+        "query": {
+            "multi_match": {
+                "query": query,
+                "fields": ["name", "description", "category", "sub_category"],
+                "fuzziness": "AUTO"  # Enables fuzzy matching for typos
+            }
+        }
+    })
     products = [hit["_source"] for hit in response["hits"]["hits"]]
     
     # Send to Kafka using confluent_kafka

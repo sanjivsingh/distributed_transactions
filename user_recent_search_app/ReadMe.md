@@ -11,19 +11,10 @@ This is a web-based application for user registration and product search with re
 - **Analysis and Archival**: Workers process events into analysis Elasticsearch, with periodic cleanup to local files.
 - **Realistic Products**: 100 dummy products with attributes like price, category, etc.
 
-## Architecture
-### Block Diagram
-```
-[User] --> [FastAPI Server] : Register/Search via HTTP
-[FastAPI Server] --> [MySQL] : Store users/products
-[FastAPI Server] --> [Redis] : Get/set recent searches
-[FastAPI Server] --> [Elasticsearch (Products)] : Search products
-[FastAPI Server] --> [Kafka] : Send search events
-[Kafka] --> [Insert Worker] : Consume and index to Analysis ES
-[Cleanup Worker] --> [Elasticsearch (Analysis)] : Archive old records to local files
-```
+### Architecture Diagram
 
-*(Note: Render with PlantUML for visual diagram)*
+![Block Diagram](recent_search_block_diagram.png)
+
 
 ## Design Decisions
 - **FastAPI for Backend**: Lightweight, async support for high-performance web API.
@@ -35,9 +26,6 @@ This is a web-based application for user registration and product search with re
 - **Local Archival**: Simple file-based storage for old records instead of cloud for ease of setup.
 - **No Authentication**: Simplified for demo; add JWT/OAuth for production.
 
-### Architecture Diagram
-
-![Block Diagram](recent_search_block_diagram.png)
 
 ## Prerequisites
 - Python 3.8+
