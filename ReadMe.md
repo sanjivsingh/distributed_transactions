@@ -74,6 +74,8 @@ A simple key-value store implemented using MySQL for persistence. Demonstrates b
 - **Key Features**: Key-value operations, data persistence, basic querying
 - **Link to Implementation**: [./toy_KV_storeon_mysql/](./toy_KV_storeon_mysql/)
 
+
+
 ### 8. Two-Phase Commit Zomato Delivery
 An implementation of the two-phase commit protocol for a Zomato-like food delivery system. Ensures atomicity across multiple services (e.g., order placement, payment, restaurant confirmation) using distributed transactions.
 
@@ -96,16 +98,27 @@ A simulation of DynamoDB's API and features built on top of MySQL. Provides a No
 - **Link to Implementation**: [./dynamodb_on_mysql/](./dynamodb_on_mysql/)
 - **README**: [./dynamodb_on_mysql/ReadMe.md](./dynamodb_on_mysql/ReadMe.md)
 
+![Architecture Diagram](dynamodb_on_mysql/DynamoOn_MySQL_Block_diagram.png)
+
+![Flow Diagram](dynamodb_on_mysql/DynamoDB_on_MySQL_flow_diagram.png)
+
+
 ### 11. MySQL Benchmark
 A benchmarking tool for MySQL sharding and ID generation. Implements sharded databases with auto-increment IDs across multiple shards, demonstrating distributed insertion and querying for performance testing.
 
 - **Technologies**: Python, PyMySQL, MySQL
 - **Key Features**: 
     - Flickr Ticketing Service Id Generation [link](mysql_benchmark/Flickr_Ticketing_Service_id_generation.py) 
+
     - Primary key 4 byte Vs 16 byte and Index Size [link](./mysql_benchmark/id_4byte_vs_16_byte.py) 
+    - MySQL Pagination Benchmark 
+    ![line chart](mysql_benchmark/pagination_benchmarck_compare.png)
+
 
 Sharding, auto-increment ID generation, insertion benchmarking, max ID tracking
 - **Link to Implementation**: [./mysql_benchmark/](./mysql_benchmark/)
+
+
 
 ### 12. User Recent Search Application
 A web application for user registration and product search with recent search suggestions. Supports fuzzy and full-text search on Elasticsearch, recent searches stored in Redis with set-like behavior, and event logging to Kafka for analytics.
@@ -115,6 +128,8 @@ A web application for user registration and product search with recent search su
 - **Link to Implementation**: user_recent_search_app
 - **README**: ReadMe.md
 
+![Block Diagram](user_recent_search_app/recent_search_block_diagram.png)
+
 ### 13. Hot Key Multi-Tenant Elasticsearch
 A program for multi-tenant document indexing in Elasticsearch with hot tenant handling to prevent shard hotspots. Generates 100,000 documents for 50 tenants, distributing 80% to hot tenants across multiple shards using custom routing.
 
@@ -122,6 +137,10 @@ A program for multi-tenant document indexing in Elasticsearch with hot tenant ha
 - **Key Features**: Multi-tenant indexing, hot tenant routing for load distribution, shard monitoring, document count per shard per tenant
 - **Link to Implementation**: Hot_Key_Multi_tanent_ElasticSeach
 - **README**: ReadMe.md
+    - Shard ownning Tenants indexes 
+    ![Shard_owning_tenants](Hot_Key_Multi_tanent_ElasticSeach/Shard_owning_tenants.png)
+    - Tenants Index distribution on shards
+    ![Tenant_distribution_on_shards](Hot_Key_Multi_tanent_ElasticSeach/Tenant_distribution_on_shards.png)
 
 ###  14. Bitcast Project
 A project for bit-level operations and casting in distributed systems, demonstrating efficient data manipulation and type conversions across services.
@@ -129,6 +148,9 @@ A project for bit-level operations and casting in distributed systems, demonstra
 - **Technologies**: Python
 - **Key Features**: Bit manipulation, type casting, distributed data handling
 - **Link to Implementation**: ./bitcast_project/
+
+![Bitcast_Block_Diagram](Bitcask_Implementation/Bitcast_Block_Diagram.png)
+
 
 ## Prerequisites
 
