@@ -49,6 +49,7 @@ This project implements a Bitcask-inspired key-value store on a local machine. B
 
 ![Bitcast_Block_Diagram](Bitcast_Block_Diagram.png)
 
+
 ## Prerequisites
 
 - Python 3.8+
