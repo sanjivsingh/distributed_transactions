@@ -1,5 +1,5 @@
 
-from toy_KV_storeon_mysql.kv_store import  ToyKVStore
+from toy_keyvalue_store_on_mysql.kv_store import  ToyKVStore
 from commons import logger
 from typing import List
 

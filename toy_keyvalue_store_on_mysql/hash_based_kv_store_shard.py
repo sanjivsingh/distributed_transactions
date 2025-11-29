@@ -1,4 +1,4 @@
-from toy_KV_storeon_mysql.kv_store import ToyKVStore
+from toy_keyvalue_store_on_mysql.kv_store import ToyKVStore
 from commons import logger
 
 from mysql_setup import config as mysql_config, constants as mysql_constants
