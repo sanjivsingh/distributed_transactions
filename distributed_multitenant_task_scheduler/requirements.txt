@@ -1,0 +1,5 @@
+kazoo
+pymysql
+fastapi
+uvicorn
+confluent-kafka

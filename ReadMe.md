@@ -72,7 +72,7 @@ A simple key-value store implemented using MySQL for persistence. Demonstrates b
 
 - **Technologies**: Python, MySQL
 - **Key Features**: Key-value operations, data persistence, basic querying
-- **Link to Implementation**: [./toy_KV_storeon_mysql/](./toy_KV_storeon_mysql/)
+- **Link to Implementation**: [./toy_keyvalue_store_on_mysql/](./toy_keyvalue_store_on_mysql/)
 
 
 
@@ -133,21 +133,21 @@ A program for multi-tenant document indexing in Elasticsearch with hot tenant ha
 
 - **Technologies**: Python, Elasticsearch
 - **Key Features**: Multi-tenant indexing, hot tenant routing for load distribution, shard monitoring, document count per shard per tenant
-- **Link to Implementation**: [./Hot_Key_Multi_tanent_ElasticSeach/ReadMe.md](./Hot_Key_Multi_tanent_ElasticSeach/ReadMe.md) 
+- **Link to Implementation**: [./hotkey_multi_tanent_elasticseach/ReadMe.md](./hotkey_multi_tanent_elasticseach/ReadMe.md) 
 - **README**: ReadMe.md
     - Shard ownning Tenants indexes 
-    ![Shard_owning_tenants](Hot_Key_Multi_tanent_ElasticSeach/Shard_owning_tenants.png)
+    ![Shard_owning_tenants](hotkey_multi_tanent_elasticseach/Shard_owning_tenants.png)
     - Tenants Index distribution on shards
-    ![Tenant_distribution_on_shards](Hot_Key_Multi_tanent_ElasticSeach/Tenant_distribution_on_shards.png)
+    ![Tenant_distribution_on_shards](hotkey_multi_tanent_elasticseach/Tenant_distribution_on_shards.png)
 
 ###  14. Bitcast Project
 A project for bit-level operations and casting in distributed systems, demonstrating efficient data manipulation and type conversions across services.
 
 - **Technologies**: Python
 - **Key Features**: Bit manipulation, type casting, distributed data handling
-- **Link to Implementation**: [./bitcast_project/ReadMe.md](./bitcast_project/ReadMe.md) 
+- **Link to Implementation**: [./bitcask_Implementation/ReadMe.md](./bitcask_Implementation/ReadMe.md) 
 
-![Bitcast_Block_Diagram](Bitcask_Implementation/Bitcast_Block_Diagram.png)
+![Bitcast_Block_Diagram](bitcask_Implementation/Bitcast_Block_Diagram.png)
 
 ###   15. Stream Ingestion
 A project for real-time stream data ingestion and processing in distributed systems. Handles high-volume data streams, processing and routing them to appropriate storage or analytics services.
@@ -163,11 +163,11 @@ A project for implementing a word dictionary without using a database, utilizing
 
 - **Technologies**: Python
 - **Key Features**: In-memory word storage, fast lookups, file-based persistence, no database dependency
-- **Link to Implementation**: [./Word_dictionary_without_DB/ReadMe.md](./Word_dictionary_without_DB/ReadMe.md) 
+- **Link to Implementation**: [./word_dictionary_without_database/ReadMe.md](./word_dictionary_without_database/ReadMe.md) 
 
-![Lookup timing comparison](Word_dictionary_without_DB/Lookup_time_compare.png)
+![Lookup timing comparison](word_dictionary_without_database/Lookup_time_compare.png)
 
-![word_dictionary_block_diagram](Word_dictionary_without_DB/word_dictionary_block_diagram.png)
+![word_dictionary_without_database](word_dictionary_without_database/word_dictionary_block_diagram.png)
 
 
 ###     17. Toy JWT Implementation
@@ -175,9 +175,9 @@ A simple implementation of JSON Web Tokens (JWT) for authentication and authoriz
 
 - **Technologies**: Python, PyJWT
 - **Key Features**: Token generation, validation, user authentication, secure session management
-- **Link to Implementation**: [./Toy_JWT_Implementation/ReadMe.md](./Toy_JWT_Implementation/ReadMe.md) 
+- **Link to Implementation**: [./toy_jwt_Implementation/ReadMe.md](./toy_jwt_Implementation/ReadMe.md) 
 
-![Architecture Diagram](Toy_JWT_Implementation/JWT_Architechture_Diagram.png)
+![Architecture Diagram](toy_jwt_Implementation/JWT_Architechture_Diagram.png)
 
 ## Prerequisites
 - Python 3.8+

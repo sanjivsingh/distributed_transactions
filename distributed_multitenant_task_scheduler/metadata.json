@@ -1,0 +1,52 @@
+{
+    "shards" : { 
+        "shard1" : {
+            "host":"localhost",
+            "port":3306,
+            "user":"scheduler_user",
+            "password":"scheduler_pass",
+            "database":"task_scheduler_db1"
+        }, 
+        "shard2" : {
+            "host":"localhost",
+            "port":3306,
+            "user":"scheduler_user",
+            "password":"scheduler_pass",
+            "database":"task_scheduler_db2"
+        }, 
+        "shard3" : {
+            "host":"localhost",
+            "port":3306,
+            "user":"scheduler_user",
+            "password":"scheduler_pass",
+            "database":"task_scheduler_db3"
+        }, 
+        "shard4" : {
+            "host":"localhost",
+            "port":3306,
+            "user":"scheduler_user",
+            "password":"scheduler_pass",
+            "database":"task_scheduler_db4"
+        }   
+    },
+    "tenant_config" : {
+        "tenantA" : {"shard": "shard1", "desired_pullers": 2},  
+        "tenantB" : {"shard": "shard2", "desired_pullers": 1},
+        "tenantC" : {"shard": "shard3", "desired_pullers": 1},
+        "tenantD" : {"shard": "shard4", "desired_pullers": 1},
+        "tenantE" : {"shard": "shard2", "desired_pullers": 1}
+    },
+    "task_pullar" : {
+       "task_pullar1" : "tenantA",
+       "task_pullar2" : "tenantA",
+       "task_pullar3" : "tenantB",
+       "task_pullar4" : "tenantC",
+       "task_pullar5" : "tenantD",
+       "task_pullar6" : "tenantE"
+    },
+    "task_executor" : {
+       "high" : 2,
+       "medium" : 2,
+       "low" : 2
+    }
+}
