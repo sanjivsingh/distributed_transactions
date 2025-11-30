@@ -1,5 +1,4 @@
-ZOOKEEPER_CONN = "localhost:2181"
-KAFKA_BROKER = "localhost:9092"
+# Configuration constants for the Distributed Multitenant Task Scheduler
 SHARD_BASE_PATH = "/scheduler/shards"
 TENANT_PULLER_PATH = "/scheduler/pullers"
 EXECUTOR_PATH = "/scheduler/executors"

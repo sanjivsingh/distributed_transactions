@@ -8,7 +8,8 @@ from pymysql.cursors import DictCursor
 import kazoo.client
 from confluent_kafka import Producer as KafkaProducer
 import config
-from scheduler_orchestrator import ShardManager
+from shard_manager import ShardManager
+from setup.mysql_setup import config as mysql_config, constants as mysql_constants
 
 class TaskPuller:
     def __init__(self, tenant_id: str):
@@ -28,11 +29,12 @@ class TaskPuller:
         while True:
             shard_uri = self.shard_manager .get_shard_uri(self.tenant_id)
             host, port, user, password, db = shard_uri.split(":")
+
             conn = pymysql.connect(
-                host=host,
-                port=int(port),
-                user=user,
-                password=password,
+                host=mysql_config.configurations[mysql_constants.HOST],
+                port=int(mysql_config.configurations[mysql_constants.PORT]),
+                user=mysql_config.configurations[mysql_constants.USER],
+                password=mysql_config.configurations[mysql_constants.PASSWORD],
                 database=db,
                 cursorclass=DictCursor,
             )

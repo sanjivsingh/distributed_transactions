@@ -175,9 +175,9 @@ A simple implementation of JSON Web Tokens (JWT) for authentication and authoriz
 
 - **Technologies**: Python, PyJWT
 - **Key Features**: Token generation, validation, user authentication, secure session management
-- **Link to Implementation**: [./toy_jwt_Implementation/ReadMe.md](./toy_jwt_Implementation/ReadMe.md) 
+- **Link to Implementation**: [./toy_jwt_implementation/ReadMe.md](./toy_jwt_implementation/ReadMe.md) 
 
-![Architecture Diagram](toy_jwt_Implementation/JWT_Architechture_Diagram.png)
+![Architecture Diagram](toy_jwt_implementation/JWT_Architechture_Diagram.png)
 
 ## Prerequisites
 - Python 3.8+

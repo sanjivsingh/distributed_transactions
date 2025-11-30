@@ -1,56 +1,9 @@
 import time
-from typing import Dict
-import pymysql
-from pymysql.cursors import DictCursor
 import kazoo.client
-from confluent_kafka import Producer as KafkaProducer, Consumer as KafkaConsumer
 import config
 import json
 from task_puller import TaskPuller
-
-class ShardManager:
-    def __init__(self):
-        self.zk = kazoo.client.KazooClient(hosts=config.ZOOKEEPER_CONN)
-        self.zk.start()
-
-    def  prepare_shards(self):
-        try:
-            with open("metadata.json", "r") as file:
-                data = json.load(file)
-            shards = data["shards"]
-            for shard_name, shard_data in shards.items():
-                conn = pymysql.connect(
-                    host=shard_data["host"],
-                    port=int(shard_data["port"]),
-                    user=shard_data["user"],
-                    password=shard_data["password"]
-                )
-                try:
-                    with conn.cursor() as cur:
-                        cur.execute(
-                            f"""
-                            CREATE DATABASE IF NOT EXISTS {shard_data["database"]}
-                            """
-                        )
-                        print(f"Database {shard_data['database']} ensured on shard {shard_name}")
-                finally:
-                    conn.close()
-
-        
-        except FileNotFoundError:
-            print("Error: The file 'your_file.json' was not found.")
-        except json.JSONDecodeError:
-            print("Error: Failed to decode JSON from the file.")
-
-    def get_shard_uri(self, tenant_id: str) -> str:
-        path = f"{config.SHARD_BASE_PATH}/{tenant_id}"
-        if not self.zk.exists(path):
-            raise KeyError(f"No shard mapping for {tenant_id}")
-        data, _ = self.zk.get(path)
-        return data.decode()
-
-    def close(self):
-        self.zk.stop()
+from shard_manager import ShardManager
 
 class SchedulerOrchestrator:
 
@@ -95,3 +48,16 @@ class SchedulerOrchestrator:
                     puller.run()
             time.sleep(5)
 
+    def close(self):
+        if self.shard_manager:
+            self.shard_manager.close()
+        if self.zk:
+            self.zk.stop()
+
+if __name__ == "__main__":
+    try:
+        orchestrator = SchedulerOrchestrator()
+        orchestrator.run()
+    except KeyboardInterrupt:
+        print("Shutting down scheduler orchestrator...")
+        orchestrator.close()
