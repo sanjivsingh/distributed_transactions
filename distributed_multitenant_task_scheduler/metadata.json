@@ -13,22 +13,14 @@
             "database":"task_scheduler_db4"
         }   
     },
-    "tenant_config" : {
+    "tenant_configurations" : {
         "tenantA" : {"shard": "shard1", "desired_pullers": 2},  
         "tenantB" : {"shard": "shard2", "desired_pullers": 1},
         "tenantC" : {"shard": "shard3", "desired_pullers": 1},
         "tenantD" : {"shard": "shard4", "desired_pullers": 1},
         "tenantE" : {"shard": "shard2", "desired_pullers": 1}
     },
-    "task_pullar" : {
-       "task_pullar1" : "tenantA",
-       "task_pullar2" : "tenantA",
-       "task_pullar3" : "tenantB",
-       "task_pullar4" : "tenantC",
-       "task_pullar5" : "tenantD",
-       "task_pullar6" : "tenantE"
-    },
-    "task_executor" : {
+    "task_executors" : {
        "high" : 2,
        "medium" : 2,
        "low" : 2

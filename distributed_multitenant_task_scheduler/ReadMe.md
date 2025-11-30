@@ -16,11 +16,11 @@
 ## **Start app server**:
    use uvicorn:
    ```
-   .venv/bin/python -m uvicorn distributed_multitenant_task_scheduler.ConverterWebApp:app --reload --port 8000
+   .venv/bin/python -m uvicorn distributed_multitenant_task_scheduler.app:app --reload --port 8000
    ```
-
 
 ## **Run the scheduler_orchestrator** (for asynchronous conversions):
    ```bash
-   .venv/bin/python -m distributed_multitenant_task_scheduler.scheduler_orchestrator
+   .venv/bin/python -m distributed_multitenant_task_scheduler.orchestrator
    ```
+
