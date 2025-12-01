@@ -13,7 +13,8 @@ class ScheduledTaskMaterializer:
         self.shard_manager = ShardManager()
 
     def _get_conn(self, shard_uri: str):
-        host, port, user, password, db = shard_uri.split(",")
+        print(shard_uri)
+        host, port, user, password, db = shard_uri.split(":")
         return pymysql.connect(
             host=host,
             port=int(port),
@@ -42,7 +43,7 @@ class ScheduledTaskMaterializer:
             for row in scheduled:
                 itr = croniter(row["cron_schedule"], now)
                 next_time = itr.get_next(datetime)
-                if next_time <= window_end:
+                while next_time <= window_end:
                     executable_rows.append(
                         (
                             row["task_id"],
@@ -52,6 +53,8 @@ class ScheduledTaskMaterializer:
                             next_time.strftime("%Y-%m-%d %H:%M:%S"),
                         )
                     )
+                    next_time = itr.get_next(datetime)
+
             if executable_rows:
                 with conn.cursor() as cur:
                     cur.executemany(

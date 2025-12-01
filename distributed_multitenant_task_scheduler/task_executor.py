@@ -14,7 +14,8 @@ from distributed_multitenant_task_scheduler.shard_manager import ShardManager
 
 
 
-from datetime import datetime
+from datetime import datetime, timezone
+
 class TaskExecutor:
     def __init__(self, priority: str):
         super().__init__()
@@ -32,7 +33,7 @@ class TaskExecutor:
 
         self.zk = kazoo.client.KazooClient(hosts=zk_config.configurations[zk_constants.ZOOKEEPER_CONN])
         self.zk.start()
-        self.active_path = f"{config.EXECUTOR_PATH}/{priority}/active/{datetime.now()}"
+        self.active_path = f"{config.EXECUTOR_PATH}/{priority}/active/{datetime.now(timezone.utc)}"
         self.zk.create(self.active_path, b"some data", ephemeral=True)
         
 
@@ -76,7 +77,7 @@ class TaskExecutor:
     def update_status(self, conn, task_id, status: str):
         with conn.cursor() as cur:
             cur.execute(
-                f"UPDATE executable_tasks SET status='{status}' ,  updated_at=NOW() WHERE task_id=%s",
+                f"UPDATE executable_tasks SET status='{status}' ,  updated_at=UTC_TIMESTAMP() WHERE task_id=%s",
                 (task_id,),
             )
             conn.commit()

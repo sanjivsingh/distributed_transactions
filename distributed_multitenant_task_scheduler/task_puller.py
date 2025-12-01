@@ -14,7 +14,7 @@ from distributed_multitenant_task_scheduler import config
 from setup.zookeeper_setup import config as zk_config, constants as zk_constants
 from setup.kafka_setup import config as kafka_config, constants as kafka_constants
 
-from datetime import datetime
+from datetime import datetime , timezone
 
 class TaskPuller:
     def __init__(self, tenant_id: str):
@@ -22,7 +22,7 @@ class TaskPuller:
         self.tenant_id = tenant_id
         self.zk = kazoo.client.KazooClient(hosts=zk_config.configurations[zk_constants.ZOOKEEPER_CONN])
         self.zk.start()
-        self.active_path = f"{config.TENANT_BASE_PATH}/{tenant_id}/active/{datetime.now()}"
+        self.active_path = f"{config.TENANT_BASE_PATH}/{tenant_id}/active/{datetime.now(timezone.utc)}"
         self.zk.create(self.active_path, b"some data", ephemeral=True)
 
         self.producer = KafkaProducer({"bootstrap.servers": kafka_config.configurations[kafka_constants.KAFKA_BROKER]})
@@ -51,7 +51,7 @@ class TaskPuller:
                     cur.execute(
                         """
                         SELECT task_id, payload, priority FROM executable_tasks
-                        WHERE tenant_id=%s AND status='pending' AND schedule_time<=NOW()
+                        WHERE tenant_id=%s AND status='pending' AND schedule_time<= UTC_TIMESTAMP()
                         ORDER BY schedule_time ASC
                         LIMIT 2
                         FOR UPDATE SKIP LOCKED
@@ -75,7 +75,7 @@ class TaskPuller:
                                 self.producer.produce(topic, value=payload)
                                 self.producer.poll(0)
                                 cur.execute(
-                                    "UPDATE executable_tasks SET status='queued', updated_at=NOW() WHERE task_id=%s",
+                                    "UPDATE executable_tasks SET status='queued', updated_at=UTC_TIMESTAMP() WHERE task_id=%s",
                                     (row["task_id"],),
                                 )
                             except Exception as exc:

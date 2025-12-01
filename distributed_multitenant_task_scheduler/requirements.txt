@@ -3,3 +3,4 @@ pymysql
 fastapi
 uvicorn
 confluent-kafka
+croniter

@@ -84,8 +84,8 @@ def insert_scheduled_task(task: ScheduledTask):
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO scheduled_tasks (task_id, tenant_id, payload, priority, cron_schedule, status)
-                VALUES (%s, %s, %s, %s, %s, 'pending')
+                INSERT INTO scheduled_tasks (task_id, tenant_id, payload, priority, cron_schedule)
+                VALUES (%s, %s, %s, %s, %s)
                 """,
                 (
                     id_generator.generate_id(),
