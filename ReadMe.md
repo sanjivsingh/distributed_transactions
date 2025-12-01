@@ -179,6 +179,15 @@ A simple implementation of JSON Web Tokens (JWT) for authentication and authoriz
 
 ![Architecture Diagram](toy_jwt_implementation/JWT_Architechture_Diagram.png)
 
+### 18. Distributed Multitenant Task Scheduler
+A tenant-aware task scheduling platform that shards task data across MySQL, uses ZooKeeper for tenant→shard and worker orchestration, materializes cron schedules, and routes prioritized work via Kafka to dynamically provisioned executors.
+
+- **Technologies**: FastAPI, PyMySQL, ZooKeeper, Kafka (confluent-kafka), croniter
+- **Key Features**: Tenant isolation via shard mapping, ZooKeeper-driven puller/executor orchestration, cron materialiser ➜ executable tasks, priority queues (high/medium/low), dynamic worker provisioning
+- **Link to Implementation**: [./distributed_multitenant_task_scheduler/ReadMe.md](./distributed_multitenant_task_scheduler/ReadMe.md)
+
+![Scheduler Block Diagram](distributed_multitenant_task_scheduler/diagram.png)
+
 ## Prerequisites
 - Python 3.8+
 - MySQL, MongoDB, Redis, Kafka (as needed per project)
