@@ -3,6 +3,7 @@
 - Built to efficiently manage and execute tasks across distributed systems while ensuring tenant isolation and resource optimization.
 - Supports prioritization, retries, and monitoring of scheduled tasks.
 - Supports tenants of various workloads and SLA tiers.
+- UTC timestamps are used throughout for consistency across distributed components.
 
 ## Architecture Overview
 ```
@@ -25,7 +26,7 @@
                   |                                   |
                   v                                   |
        +----------------------+          +----------------------+               +-------------+
-       | Cron Materialiser    |      ----| Scheduler Orchestrator| <------------| montioring  |
+       | Cron Materialiser    |      ----| Scheduler Orchestrator| <------------| monitioring |
        | (per minute)         |      |   | (dynamic provisioning)|              |-------------+
        +----------+-----------+      |    +-----------+----------+
                   |                  |                 |
