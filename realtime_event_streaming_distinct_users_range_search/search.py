@@ -186,15 +186,14 @@ class SearchService:
         search_key = f"distinct_users_range:{start_ts}_{end_ts}"
         if self.search_redis_client.exists(search_key):
             print("Cache hit for search_key :", search_key)
-            #return self.search_redis_client.pfcount(search_key)  # warm up
+            return self.search_redis_client.pfcount(search_key)  # warm up
 
         split_keys = self.generate_windows(start_ts, end_ts)
         print(start_ts, end_ts, "Generated split_keys :", split_keys)       
         for split_key in split_keys:
-
             if self.search_redis_client.exists(split_key):
                 print("Cache hit for split_key:", split_key)
-                # continue
+                continue
 
             query = {"_id": split_key}
             document = self.collection.find_one(query)
@@ -227,7 +226,7 @@ class SearchService:
 
 if __name__ == "__main__":
     search_service = SearchService()
-    start_timestamp = "2025/12/08 19:46"
-    end_timestamp = "2025/12/08 20:06"
+    start_timestamp = "2025/12/08 00:00"
+    end_timestamp = "2025/12/09 00:00"
     distinct_users_count = search_service.search_distinct_users(start_timestamp, end_timestamp)
     print(f"Distinct users count from {start_timestamp} to {end_timestamp}: {distinct_users_count}")
