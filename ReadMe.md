@@ -186,7 +186,22 @@ A tenant-aware task scheduling platform that shards task data across MySQL, uses
 - **Key Features**: Tenant isolation via shard mapping, ZooKeeper-driven puller/executor orchestration, cron materialiser ➜ executable tasks, priority queues (high/medium/low), dynamic worker provisioning
 - **Link to Implementation**: [./distributed_multitenant_task_scheduler/ReadMe.md](./distributed_multitenant_task_scheduler/ReadMe.md)
 
-![Scheduler Block Diagram](distributed_multitenant_task_scheduler/diagram.png)
+![Scheduler Block Diagram](distributed_multitenant_task_scheduler/task_scheduler_architechture.png)
+
+### 19. Real-time Event Streaming Distinct Users Range Search
+A system for efficiently counting distinct users in real-time event streams within specified time ranges. Uses Kafka for event ingestion, HyperLogLog for space-efficient distinct counting, and hierarchical time window aggregation (minute → hour → day → month → year) for optimal query performance.
+
+- **Technologies**: FastAPI, Kafka, Redis, MongoDB (DynamoDB), HyperLogLog, CDC via Redis Streams
+- **Key Features**: 
+  - **HyperLogLog**: Probabilistic distinct counting with ~1.5KB memory per aggregation (~0.81% error)
+  - **Lambda Architecture**: Fast path (real-time minute HLL) + Slow path (pre-aggregated rollups)
+  - **Hierarchical Aggregation**: Scheduler merges minute→hour→day→month→year for range query optimization
+  - **CDC Pipeline**: Redis streams capture HLL changes, sync binary data to MongoDB for persistence
+  - **Smart Range Queries**: Search service intelligently selects optimal time windows and merges HLLs
+- **Link to Implementation**: [./realtime_event_streaming_distinct_users_range_search/](./realtime_event_streaming_distinct_users_range_search/)
+- **README**: [./realtime_event_streaming_distinct_users_range_search/ReadMe.md](./realtime_event_streaming_distinct_users_range_search/ReadMe.md)
+
+![Distinct_Users_Architechture](realtime_event_streaming_distinct_users_range_search/Distinct_Users_Architechture.png)
 
 ## Prerequisites
 - Python 3.8+
