@@ -8,8 +8,8 @@
 -   Basic KV operations
 -   Merge and compaction
 -   Benchmark sequential IO vs random IO
-
-
+-   **IMPORTANT**:  `It would not inherently support efficient range queries`. Its design prioritizes fast key-value lookups and high write throughput, achieved through an in-memory hash map that maps keys to their physical locations in append-only data files.
+-   **IMPORTANT** : `Implement assumes that the entire index can fit into memory for fast lookups.`  If the index exceeds available memory, performance may degrade significantly, as it would require disk-based indexing or sharding strategies to manage larger datasets effectively.
 
 # Bitcask Implementation
 
