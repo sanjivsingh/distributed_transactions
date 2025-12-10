@@ -7,6 +7,30 @@
     - The application is designed to scale horizontally, ensuring high availability and fault tolerance.
     - Application uses redis probabilistic data structures HyperLogLog to efficiently count distinct users in the specified range.
 
+# Redis HyperLogLog: Size and Memory Management
+
+    - HyperLogLog is a probabilistic data structure used for estimating the cardinality of a multiset, i.e., counting distinct elements.
+
+
+    1.  **The Standard Fixed Size (Dense Representation)**
+
+        The standard Redis implementation of the HLL algorithm uses 16,384 registers, or `2^14` registers (where `p=14`). Each register requires 6 bits of memory.
+        The total memory size for a fully initialized HLL structure is calculated as follows:
+        **Total Memory ~= 12 KB**
+        This size remains constant regardless of the number of distinct elements added to the HLL, making it very memory efficient for large datasets.
+
+    2.  **Sparse Representation for Small Cardinalities **
+
+        Estimated Cardinality Range: 0 to ~4,096 distinct elements
+        Memory Usage: Varies from a few bytes up to approximately 3 KB
+        Description: For small cardinalities, Redis uses a sparse representation to save memory. This representation is more memory-efficient when the number of distinct elements is low, as it only stores the necessary information to estimate the cardinality without allocating the full set of registers.
+
+    3.  **Dense Representation for Larger Cardinalities **
+
+        Estimated Cardinality Range: Above ~4,096 distinct elements
+        Memory Usage: Fixed at approximately 12 KB
+        Description: Once the estimated cardinality exceeds around 4,096 distinct elements, Redis switches to the dense representation. This representation uses the full set of registers, providing a more accurate estimate of cardinality at the cost of increased memory usage.
+
 
 ## Architecture Overview
 
