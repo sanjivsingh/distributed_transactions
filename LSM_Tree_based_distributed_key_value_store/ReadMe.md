@@ -40,4 +40,17 @@
   ###  WAL for durability.
   ### Compaction strategies to merge SSTables.
 
-## Technologies Used
+## Implementation:
+
+-  Focus on core LSM Tree functionalities: 
+    - Memtable, 
+    - SSTables,
+    - Compaction, 
+    - basic operations (Put, Get, Delete, Range Queries).
+-  **Sharding and replication is not considered in this implementation. Focus is on single node LSM Tree functionality.**
+-  **WAL is not implemented in this version.**
+-  Use Python for implementation.
+-  Modular design for easy testing and future enhancements.
+-  Basic client-server architecture using sockets for interaction.
+
+## Testing and Benchmarking
