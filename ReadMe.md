@@ -203,6 +203,18 @@ A system for efficiently counting distinct users in real-time event streams with
 
 ![Distinct_Users_Architechture](realtime_event_streaming_distinct_users_range_search/Distinct_Users_Architechture.png)
 
+
+### 20. Dropbox File Sync Application
+A simplified Dropbox-like file synchronization application supporting chunk-based uploads, deduplication, user isolation, versioning, and reversion. Clients monitor local directories for changes and sync with the server, using a last-write-wins conflict resolution.
+
+- **Technologies**: FastAPI, MongoDB, Boto3 (S3),  Watchdog, Requests
+- **Key Features**: Chunk-based deduplication, user-level versioning, file reversion, real-time sync via directory monitoring, storage abstraction (local/S3), encryption for security
+- **Link to Implementation**: [./dropbox_filesync_app/](./dropbox_filesync_app/)
+- **README**: [./dropbox_filesync_app/ReadMe.md](./dropbox_filesync_app/ReadMe.md)
+
+![dropbox_architecture_diagram](dropbox_filesync_app/dropbox_architecture_diagram.png)
+
+
 ## Prerequisites
 - Python 3.8+
 - MySQL, MongoDB, Redis, Kafka (as needed per project)
