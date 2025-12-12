@@ -1,0 +1,7 @@
+boto3
+cryptography
+fastapi
+uvicorn
+requests
+pymongo
+watchdog
