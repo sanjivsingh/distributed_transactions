@@ -123,6 +123,35 @@ So, while the final effect is that a large file's data is sent in multiple piece
     .venv/bin/python -m dropbox_filesync_app.client user1 user1_dir
     ```
 
+## Edge Cases: Delta Sync Limitations
+Current Implementation, `dropbox_filesync_app` uses fixed-size chunking (default 5KB) with SHA256 hashing for deduplication.
+
+**For Small Changes**: If you change 1 line in a big file, most chunks (except the one containing the change) will have identical hashes and be deduplicated. Only the modified chunk(s) are new and uploaded. This is efficient for bandwidth and storage.
+
+**Edge Cases**:
+
+If the change shifts chunk boundaries (e.g., inserting text that pushes content across 5KB boundaries), it could invalidate multiple chunks, leading to more uploads than necessary.
+Fixed-size chunking doesn't adapt to content shifts, so it's not as optimal as true delta syncing (e.g., **rsync's rolling checksums**).
+
+### How to Address This Problem (Improve Efficiency)
+To make it more like Dropbox's block-level delta sync (which uses variable-size blocks and rolling hashes), consider these enhancements:
+
+- **Implement Rolling Checksums (Rsync-Style)**:
+
+Use a `rolling hash` (e.g., Adler-32) to identify unchanged blocks, even if boundaries shift.
+Compute weak and strong hashes for chunks.
+
+On sync, compare client-side hashes with server-side to send only deltas.
+**Pros**: Minimizes uploads for insertions/deletions.
+**Cons**: More complex; requires client-side hash computation and server-side comparison.
+
+
+
+- **Variable-Size Chunking**:
+
+Instead of fixed 5KB, use content-defined chunking (e.g., based on rolling hash boundaries) to make chunks more stable against shifts.
+Libraries like  `rsync` or Python's `difflib` can help.
+
 ## Future Enhancements
 -   Add file deletion support.
 -   Add file move/rename support.
