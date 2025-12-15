@@ -145,8 +145,6 @@ On sync, compare client-side hashes with server-side to send only deltas.
 **Pros**: Minimizes uploads for insertions/deletions.
 **Cons**: More complex; requires client-side hash computation and server-side comparison.
 
-
-
 - **Variable-Size Chunking**:
 
 Instead of fixed 5KB, use content-defined chunking (e.g., based on rolling hash boundaries) to make chunks more stable against shifts.
