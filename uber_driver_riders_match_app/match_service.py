@@ -75,6 +75,24 @@ with open(script_path, "r") as lua_file:
 
 print(FIND_MATCHING_DRIVERS_SCRIPT)
 
+script_hashes = {}  # Dict[str, str] - redis_client_id -> script_sha
+
+def get_or_load_script_hash(redis_client: Redis) -> str:
+    """Get cached script hash or load it if not available"""
+    client_id = f"{redis_client.connection_pool.connection_kwargs['host']}:{redis_client.connection_pool.connection_kwargs['port']}"
+    
+    if client_id not in script_hashes:
+        try:
+            # Load the script and store the hash
+            script_hash = redis_client.script_load(FIND_MATCHING_DRIVERS_SCRIPT)
+            script_hashes[client_id] = script_hash
+            log.info(f"Loaded Lua script for Redis {client_id}, hash: {script_hash}")
+        except Exception as e:
+            log.error(f"Failed to load Lua script for Redis {client_id}: {e}")
+            raise
+    
+    return script_hashes[client_id]
+
 def find_nearby_drivers_with_criteria(lat, lng, car_type, payment_preference='both', radius=5, count=5):
     """Find nearby drivers that match ride criteria using city-based sharding and Lua script"""
     try:
@@ -89,8 +107,8 @@ def find_nearby_drivers_with_criteria(lat, lng, car_type, payment_preference='bo
         city_locations_key = f"{DRIVER_LOCATIONS_KEY}_{city}"
         city_metadata_key = f"{DRIVER_METADATA_KEY}_{city}"
         
-        # Register Lua script with city-specific Redis
-        find_matching_drivers_lua = city_redis.register_script(FIND_MATCHING_DRIVERS_SCRIPT)
+        # Get or load script hash for this Redis client
+        script_hash = get_or_load_script_hash(city_redis)
         
         # Convert all arguments to strings as required by Redis Lua
         args = [
@@ -102,15 +120,30 @@ def find_nearby_drivers_with_criteria(lat, lng, car_type, payment_preference='bo
             str(payment_preference)  # payment_preference as string
         ]
         
+        keys = [city_locations_key, city_metadata_key]
+        
         print("keys", city_locations_key, city_metadata_key)
         print("args", args)
         
-        # Execute Lua script atomically on city shard
-        result = find_matching_drivers_lua(
-            keys=[city_locations_key, city_metadata_key],
-            args=args
-        )
-        print("lua result:", result)
+        # Execute Lua script using EVALSHA with fallback
+        try:
+            # Execute using EVALSHA (faster - script already loaded)
+            result = city_redis.evalsha(script_hash, len(keys), *keys, *args)
+            print("lua result:", result)
+            
+        except redis.exceptions.NoScriptError:
+            # Fallback: Script not in Redis cache, reload and retry
+            log.warning(f"Script not found in Redis cache, reloading for client {city_redis}")
+            
+            # Remove cached hash and reload
+            client_id = f"{city_redis.connection_pool.connection_kwargs['host']}:{city_redis.connection_pool.connection_kwargs['port']}"
+            if client_id in script_hashes:
+                del script_hashes[client_id]
+            
+            # Reload and retry
+            new_script_hash = get_or_load_script_hash(city_redis)
+            result = city_redis.evalsha(new_script_hash, len(keys), *keys, *args)
+            print("lua result (after reload):", result)
         
         drivers = []
         # Process result: [driver_id, distance, lng, lat, metadata_json, ...]

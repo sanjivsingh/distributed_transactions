@@ -105,6 +105,36 @@ This is where the decoupled services communicate to push the offer to the driver
 - **driver_client.py** - Simulator Driver client app to send location updates and accept rides.
 
 
+### EVAL vs. EVALSHA: Performance Impact for Large Redis Lua Scripts
+Current size of `find_matching_drivers_script.lua` is `~90 lines` and `~2.8KB`.
+
+When dealing with a large Lua script (e.g., several kilobytes of code), the difference between repeatedly using `EVAL` and using the production-ready `EVALSHA` pattern is substantial.
+
+#### Key Differences
+- 1. **The Network Bandwidth Saving (The Biggest Difference)** 
+
+| Command | Data Transferred per Request|
+|---------|----------------------------|
+|  **EVAL**  | The entire, large script text (e.g., 5 KB).|
+| **EVALSHA** | The 40-character SHA1 hash (e.g., 40 bytes) and the keys/arguments.|
+
+- 2. **Server-Side Overhead Saving** 
+Impact: Medium to High. `Reduced CPU load on the Redis server`.
+
+| Command | Server-Side Processing on Every Request|
+|---------|----------------------------|
+|  **EVAL**  | The server must calculate the SHA1 hash of the entire script text.|
+| **EVALSHA** |  The server only needs to do a fast lookup of the 40-character hash in its internal script cache dictionary.|
+
+
+#### Recommended Strategy: The Atomic EVALSHA Pattern
+
+![EVALSHA Implementation](match_service.py#L111-L145)
+
+- Load the Script (Once): 
+- Store the Hash:
+- Execute the Script (Routinely):
+- Handle NOSCRIPT Error (Fallback): 
 
 ## Run Application
 
