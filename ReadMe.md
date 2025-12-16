@@ -215,6 +215,23 @@ A simplified Dropbox-like file synchronization application supporting chunk-base
 ![dropbox_architecture_diagram](dropbox_filesync_app/dropbox_architecture_diagram.png)
 
 
+### 21. Uber Driver-Rider Matching Application
+A microservices-based ride matching system similar to Uber, featuring real-time driver-rider matching using geospatial queries, city-based Redis sharding, WebSocket communication, and service discovery. Supports ride estimation, driver location updates, and real-time ride offers with distributed matching logic.
+
+- **Technologies**: FastAPI, MySQL, Redis (city-based sharding), WebSockets, Zookeeper (service discovery), Lua scripts
+- **Key Features**: 
+  - **Geospatial Matching**: Redis GEORADIUS with Lua scripts for atomic driver matching based on location, car type, and payment preferences
+  - **City-based Sharding**: Redis sharded by geographic regions (cities) for optimal locality and scalability
+  - **Service Discovery**: Zookeeper-based service registry with consistent hashing for Redis shard discovery
+  - **Real-time Communication**: WebSocket gateway for live driver updates and ride offers via Redis pubsub
+  - **Microservices Architecture**: Location service, match service, ride estimate service, and WebSocket gateway with service integration
+  - **Distributed State Management**: Race condition handling with Redis locks, ride status coordination across services
+- **Link to Implementation**: [./uber_driver_riders_match_app/](./uber_driver_riders_match_app/)
+- **README**: [./uber_driver_riders_match_app/ReadMe.md](./uber_driver_riders_match_app/ReadMe.md)
+
+![uber_driver_match_architecture](uber_driver_riders_match_app/uber_driver_match_architecture.png)
+
+
 ## Prerequisites
 - Python 3.8+
 - MySQL, MongoDB, Redis, Kafka (as needed per project)
