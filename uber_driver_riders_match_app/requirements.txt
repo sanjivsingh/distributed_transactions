@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+redis
+websockets
+requests
+pymysql
+pydantic
+kazoo
+
+

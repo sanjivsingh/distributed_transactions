@@ -30,9 +30,9 @@ class ParquetFileHandler(IFileHandler):
                 return table.to_pylist()
 
             except FileNotFoundError:
-                raise  RuntimeError(f"❌ Error: The file {filename} was not found.")
+                raise  RuntimeError(f" Error: The file {filename} was not found.")
             except Exception as e:
-                raise  RuntimeError(f"❌ Error: Failed to decode JSON from {filename}. Reason: {e}")
+                raise  RuntimeError(f" Error: Failed to decode JSON from {filename}. Reason: {e}")
 
         def create(self, records:list[dict], output_file_path:str) -> Response:
             """
@@ -44,7 +44,7 @@ class ParquetFileHandler(IFileHandler):
                 pq.write_table(table, output_file_path)
                 return Response(message=f"✔ Success: Parquet file created: {filename}")
             except Exception as e:
-                return Response(status=False, message=f"❌ Error: Failed to write Parquet file. Reason: {e}")
+                return Response(status=False, message=f" Error: Failed to write Parquet file. Reason: {e}")
 
         def validate(self, file_path:str) -> Response:
             filename = os.path.split(file_path)[-1]
@@ -52,7 +52,7 @@ class ParquetFileHandler(IFileHandler):
                 pq.read_table(file_path)
                 return Response(message = "✔ OK: Parquet file {filename} read successfully. Contents:")
             except Exception as e:
-                return Response(status = False, message = f"❌ FAILED: Could not read the created Parquet file. Reason: {e}")
+                return Response(status = False, message = f" FAILED: Could not read the created Parquet file. Reason: {e}")
 
 class JsonFileHandler(IFileHandler):
 
@@ -69,9 +69,9 @@ class JsonFileHandler(IFileHandler):
                 return data
 
             except FileNotFoundError:
-                raise  RuntimeError(f"❌ Error: The file {filename} was not found.")
+                raise  RuntimeError(f" Error: The file {filename} was not found.")
             except Exception as e:
-                raise  RuntimeError(f"❌ Error: Failed to load JSON from {filename}. Reason: {e}")
+                raise  RuntimeError(f" Error: Failed to load JSON from {filename}. Reason: {e}")
 
         def create(self, records:list[dict], output_file_path:str) -> Response:
             filename = os.path.basename(output_file_path)
@@ -83,7 +83,7 @@ class JsonFileHandler(IFileHandler):
 
                 return Response(message = f"\n✔ Success: JSON file created {filename}")
             except Exception as e:
-                return Response(status = False, message = f"❌ Error: Failed to convert Parquet to JSON. Reason: {e}")
+                return Response(status = False, message = f" Error: Failed to convert Parquet to JSON. Reason: {e}")
 
         def validate(self, file_path : str) -> Response:
             filename = os.path.basename(file_path)
@@ -93,9 +93,9 @@ class JsonFileHandler(IFileHandler):
                 return Response(message="✔ OK: JSON file read successfully.")
 
             except FileNotFoundError:
-                raise  RuntimeError(f"❌ Error: The file {filename} was not found.")
+                raise  RuntimeError(f" Error: The file {filename} was not found.")
             except Exception as e:
-                raise  RuntimeError(f"❌ Error: Failed to load JSON from {filename}. Reason: {e}")
+                raise  RuntimeError(f" Error: Failed to load JSON from {filename}. Reason: {e}")
 
 
 class XmlFileHandler(IFileHandler):
@@ -159,9 +159,9 @@ class XmlFileHandler(IFileHandler):
                 records.append(_parse_element(item))
             return records
         except FileNotFoundError:
-            raise  RuntimeError(f"❌ Error: The file {filename} was not found.")
+            raise  RuntimeError(f" Error: The file {filename} was not found.")
         except Exception as e:
-            raise  RuntimeError(f"❌ Error: Failed to load XML from {filename}. Reason: {e}")
+            raise  RuntimeError(f" Error: Failed to load XML from {filename}. Reason: {e}")
 
 
     def create(self, records: List[Dict], output_file_path: str) -> Response:
@@ -170,7 +170,7 @@ class XmlFileHandler(IFileHandler):
         """
         filename = os.path.basename(output_file_path)
         if not records:
-            return Response(status=False, message="❌ Error: No records to write.")
+            return Response(status=False, message=" Error: No records to write.")
         try:
             root = ET.Element("data")
             for record in records:
@@ -188,7 +188,7 @@ class XmlFileHandler(IFileHandler):
             
             return Response(message=f"✔ Success: XML file created: {filename}")
         except Exception as e:
-            return Response(status=False, message=f"❌ Error: Failed to write XML file. Reason: {e}")
+            return Response(status=False, message=f" Error: Failed to write XML file. Reason: {e}")
 
     def validate(self, file_path: str) -> Response:
         """
@@ -199,7 +199,7 @@ class XmlFileHandler(IFileHandler):
             ET.parse(file_path)
             return Response(message="✔ OK: XML file read successfully.")
         except Exception as e:
-            return Response(status=False, message=f"❌ FAILED: Could not read the created XML file. Reason: {e}")
+            return Response(status=False, message=f" FAILED: Could not read the created XML file. Reason: {e}")
 
 
 class CsvFileHandler(IFileHandler):
@@ -221,9 +221,9 @@ class CsvFileHandler(IFileHandler):
                 reader = csv.DictReader(f)
                 return [row for row in reader]
         except FileNotFoundError:
-            raise  RuntimeError(f"❌ Error: The file {filename} was not found.")
+            raise  RuntimeError(f" Error: The file {filename} was not found.")
         except Exception as e:
-            raise  RuntimeError(f"❌ Error: Failed to load CSV from {filename}. Reason: {e}")
+            raise  RuntimeError(f" Error: Failed to load CSV from {filename}. Reason: {e}")
 
     def create(self, records: List[Dict], output_file_path: str) -> Response:
         """
@@ -231,7 +231,7 @@ class CsvFileHandler(IFileHandler):
         """
         filename = os.path.basename(output_file_path)
         if not records:
-            return Response(status=False, message="❌ Error: No records to write.")
+            return Response(status=False, message=" Error: No records to write.")
         try:
             # Get the fieldnames from the keys of the first record
             fieldnames = records[0].keys()
@@ -241,7 +241,7 @@ class CsvFileHandler(IFileHandler):
                 writer.writerows(records)
             return Response(message=f"Success: CSV file created : {filename}")
         except Exception as e:
-            return Response(status=False, message=f"❌ Error: Failed to write CSV file. Reason: {e}")
+            return Response(status=False, message=f" Error: Failed to write CSV file. Reason: {e}")
 
     def validate(self, file_path: str) -> Response:
         """
@@ -253,7 +253,7 @@ class CsvFileHandler(IFileHandler):
                 next(reader)  # Read header to check if file is valid
             return Response(message="✔ OK: CSV file read successfully.")
         except Exception as e:
-            return Response(status=False, message=f"❌ FAILED: Could not read the created CSV file. Reason: {e}")
+            return Response(status=False, message=f" FAILED: Could not read the created CSV file. Reason: {e}")
 
 
 class YamlFileHandler(IFileHandler):
@@ -277,11 +277,11 @@ class YamlFileHandler(IFileHandler):
             elif isinstance(data, list):
                 return data
             else:
-                raise RuntimeError(f"❌ Error: Unexpected YAML structure in {filename}.")
+                raise RuntimeError(f" Error: Unexpected YAML structure in {filename}.")
         except FileNotFoundError:
-            raise RuntimeError(f"❌ Error: The file {filename} was not found.")
+            raise RuntimeError(f" Error: The file {filename} was not found.")
         except Exception as e:
-            raise RuntimeError(f"❌ Error: Failed to load YAML from {filename}. Reason: {e}")
+            raise RuntimeError(f" Error: Failed to load YAML from {filename}. Reason: {e}")
 
     def create(self, records: list[dict], output_file_path: str) -> Response:
         filename = os.path.basename(output_file_path)
@@ -290,7 +290,7 @@ class YamlFileHandler(IFileHandler):
                 yaml.safe_dump(records, f, default_flow_style=False, sort_keys=False)
             return Response(message=f"✔ Success: YAML file created: {filename}")
         except Exception as e:
-            return Response(status=False, message=f"❌ Error: Failed to write YAML file. Reason: {e}")
+            return Response(status=False, message=f" Error: Failed to write YAML file. Reason: {e}")
 
     def validate(self, file_path: str) -> Response:
         filename = os.path.basename(file_path)
@@ -299,4 +299,4 @@ class YamlFileHandler(IFileHandler):
                 yaml.safe_load(f)
             return Response(message="✔ OK: YAML file read successfully.")
         except Exception as e:
-            return Response(status=False, message=f"❌ FAILED: Could not read the created YAML file. Reason: {e}")
+            return Response(status=False, message=f" FAILED: Could not read the created YAML file. Reason: {e}")

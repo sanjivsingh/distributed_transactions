@@ -38,8 +38,8 @@
     - Ride request status (available, taken) stored in Redis for low-latency access during high contention.
     - Critical section handled with Redis transactions to ensure only one driver can accept a ride.
  - `Stateless Match Service`. 
-    - one instance can help to list of drivers and publish ride offers.
-    - Seperate instances can leverage to update and assign driver to ride.
+    - one instance list of nearby and matching drivers and publish ride offers.
+    - other instances can leverage to update and assign driver to ride.
 
 ## Communication Flow Diagram
 
@@ -72,7 +72,7 @@ This is where the decoupled services communicate to push the offer to the driver
 	- Only the first successful transaction assigns the RideID to the DriverID.
 - **Confirmation/Rejection**:
 	- `Winner`: MS updates the `Redis DB` and update DB from drive_id assignment to rider_id and response `202 ACCEPTED <RideID>` to WGS. 
-	- `Losers`: MS finds the other drivers who were offered the ride and reponse `409 CONFLICT` to WGS.
+	- `Losers`: MS finds the other drivers who were offered the ride and response `409 CONFLICT` to WGS.
 - **Final Delivery**: The WGS consumes these final messages and pushes the confirmation/rejection over the WebSocket connections.
 
 
@@ -90,6 +90,55 @@ This is where the decoupled services communicate to push the offer to the driver
 
 ## Run Application
 
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```  
+
+2. Start Redis server/zookeeper/mysql server:
+   ```bash
+   redis-server
+    ```
+
+3. Start Service Discovery (Zookeeper):
+```bash
+.venv/bin/python -m uvicorn uber_driver_riders_match_app.service_discovery:app --reload --port 8500
+```
+
+4. Register Redis shards:
+```bash
+.venv/bin/python -m uber_driver_riders_match_app.shard_register
+```
+
+4.  Start Location Update Service:
+```bash
+.venv/bin/python -m uvicorn uber_driver_riders_match_app.location_update_service:app --reload --port 8001
+```  
+
+5. Start Match Service:
+```bash
+.venv/bin/python -m uvicorn uber_driver_riders_match_app.match_service:app --reload --port 8002
+```  
+
+6. Ride Estimate Service:
+```bash
+.venv/bin/python -m uvicorn uber_driver_riders_match_app.ride_estimate_service:app --reload --port 8003
+```     
+
+7. Start WebSocket Gateway Service:
+```bash
+.venv/bin/python -m uvicorn uber_driver_riders_match_app.websocket_gateway_service:app --reload --port 8004
+```     
+
+7. Start driver client app:
+```bash
+.venv/bin/python -m uber_driver_riders_match_app.driver_client
+```
+
+7. Start rider client app:
+```bash
+.venv/bin/python -m uber_driver_riders_match_app.rider_client
+```
 
 ## Future Improvements
 

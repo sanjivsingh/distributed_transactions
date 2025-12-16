@@ -37,7 +37,7 @@ def ensure_topic_config(topic_name: str, num_partitions: int, num_replicas: int)
             for topic, future in futures.items():
                 future.result()  # Blocking call to wait for completion
                 print(
-                    f"   ✅ Successfully CREATED topic '{topic}' with {num_partitions} partitions."
+                    f"    Successfully CREATED topic '{topic}' with {num_partitions} partitions."
                 )
 
         else:
@@ -59,7 +59,7 @@ def ensure_topic_config(topic_name: str, num_partitions: int, num_replicas: int)
                 for topic, future in futures.items():
                     future.result()
                     print(
-                        f"   ✅ Successfully INCREASED partitions for topic '{topic}' to {num_partitions}."
+                        f"    Successfully INCREASED partitions for topic '{topic}' to {num_partitions}."
                     )
             elif current_partitions > num_partitions:
                 print(
@@ -72,7 +72,7 @@ def ensure_topic_config(topic_name: str, num_partitions: int, num_replicas: int)
 
     except Exception as e:
         # Catch exceptions (e.g., broker unreachable, topic already exists/in progress)
-        print(f"   ❌ Failed to configure topic '{topic_name}'. Reason: {e}")
+        print(f"    Failed to configure topic '{topic_name}'. Reason: {e}")
         print(
             "   -> Execution will proceed, but may fail if the topic config is wrong."
         )
