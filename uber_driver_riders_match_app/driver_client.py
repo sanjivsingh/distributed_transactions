@@ -264,7 +264,7 @@ class DriverClient:
             }
             
             await self.websocket.send(json.dumps(location_message))
-            print(f" Location update sent for {self.driver_id}: ({lat}, {lng})")
+            print(f" Location update sent for {self.driver_id}: (lat : {lat}, lng : {lng})")
             return True
             
         except Exception as e:
@@ -476,6 +476,9 @@ async def main():
         {"id": "driver_001", "lat": 39.0009, "lng": -77.5106, "car_type": "economy", "payment": "both"},
         {"id": "driver_002", "lat": 39.0405, "lng": -77.4512, "car_type": "premium", "payment": "card"},
         {"id": "driver_003", "lat": 38.9685, "lng": -77.3863, "car_type": "luxury", "payment": "both"},
+        {"id": "driver_004", "lat": 39.0010, "lng": -77.5110, "car_type": "premium", "payment": "both"},
+        {"id": "driver_005", "lat": 39.0411, "lng": -77.4515, "car_type": "economy", "payment": "both"},
+        {"id": "driver_006", "lat": 38.9690, "lng": -77.3870, "car_type": "luxury", "payment": "both"},
     ]
     
     if len(sys.argv) > 1 and sys.argv[1] == "--interactive":

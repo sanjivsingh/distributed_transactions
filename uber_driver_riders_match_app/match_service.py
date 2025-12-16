@@ -69,80 +69,11 @@ def get_redis_client_for_city(city: str)-> Optional[Redis]:
         return None
 
 # Updated Lua script for city-based sharding with proper argument handling
-FIND_MATCHING_DRIVERS_SCRIPT = """
-local driver_locations_key = KEYS[1]
-local driver_metadata_key = KEYS[2]
+script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "find_matching_drivers_script.lua")
+with open(script_path, "r") as lua_file:
+    FIND_MATCHING_DRIVERS_SCRIPT = lua_file.read()
 
-local longitude_str = ARGV[1]
-local latitude_str = ARGV[2]
-local radius_str = ARGV[3]
-local max_count_str = ARGV[4]
-local required_car_type = ARGV[5]
-local required_payment_pref = ARGV[6]
-
--- Validate and convert arguments
-if not longitude_str or longitude_str == "" then
-    return {}
-end
-
-local longitude = tonumber(longitude_str)
-local latitude = tonumber(latitude_str)
-local radius = tonumber(radius_str)
-local max_count = tonumber(max_count_str)
-
--- Validate converted numbers
-if not longitude or not latitude or not radius or not max_count then
-    return {}
-end
-
--- Find nearby drivers using GEORADIUS
-local nearby_drivers = redis.call('GEORADIUS', driver_locations_key, longitude, latitude, radius, 'mi', 'WITHDIST', 'WITHCOORD', 'ASC', 'COUNT', max_count * 2)
-
-local matching_drivers = {}
-local count = 0
-
--- GEORADIUS returns: [[driver_id, [distance], [lng, lat]], ...]
-for i = 1, #nearby_drivers do
-    if count >= max_count then
-        break
-    end
-    local driver_result = nearby_drivers[i]
-    local driver_id = driver_result[1]
-    local distance = driver_result[2]
-    local coords = driver_result[3]  -- [lng, lat]
-    
-    -- Get driver metadata
-    local metadata_json = redis.call('HGET', driver_metadata_key, driver_id)
-    
-    if metadata_json then
-        -- Parse metadata (simple key-value extraction)
-        local car_type_match = string.find(metadata_json, '"car_type":"' .. required_car_type .. '"')
-        local payment_match = false
-        
-        -- Check payment preference (both, cash, card)
-        if required_payment_pref == 'both' then
-            payment_match = true
-        else
-            payment_match = string.find(metadata_json, '"payment_preference":"' .. required_payment_pref .. '"') or 
-                string.find(metadata_json, '"payment_preference":"both"')
-        end
-        
-        -- Check if driver is available
-        local status_available = string.find(metadata_json, '"status":"available"')
-        
-        if car_type_match and payment_match and status_available then
-            table.insert(matching_drivers, driver_id)
-            table.insert(matching_drivers, distance)
-            table.insert(matching_drivers, coords[1]) -- longitude
-            table.insert(matching_drivers, coords[2]) -- latitude
-            table.insert(matching_drivers, metadata_json)
-            count = count + 1
-        end
-    end
-end
-
-return matching_drivers
-"""
+print(FIND_MATCHING_DRIVERS_SCRIPT)
 
 def find_nearby_drivers_with_criteria(lat, lng, car_type, payment_preference='both', radius=5, count=5):
     """Find nearby drivers that match ride criteria using city-based sharding and Lua script"""
@@ -416,7 +347,8 @@ async def accept_ride(match_request: MatchRequest):
             if lock.acquire(blocking=True, blocking_timeout=5):
                 # Check if ride is still available (use default Redis for global state)
                 ride_status = default_redis.hget(RIDE_REQUESTS_KEY, ride_id)
-                
+                redis_status_str = ride_status.decode('utf-8') if ride_status else None
+                print("redis_status_str", redis_status_str)
                 if not ride_status :
                     # Mark ride as taken
                     default_redis.hset(RIDE_REQUESTS_KEY, ride_id, f'taken_{driver_id}')
@@ -447,7 +379,7 @@ async def accept_ride(match_request: MatchRequest):
                         raise HTTPException(status_code=500, detail="Failed to update ride status")
                 
                 else:
-                    driver_id = ride_status.replace("taken_", "")
+                    driver_id = str(redis_status_str).replace("taken_", "")
                     # Ride already taken
                     return MatchResponse(
                         success=False,
@@ -467,6 +399,8 @@ async def accept_ride(match_request: MatchRequest):
     except HTTPException:
         raise
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         log.error(f"Error in accept_ride: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 

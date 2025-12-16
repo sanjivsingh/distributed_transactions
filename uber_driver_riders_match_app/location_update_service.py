@@ -162,7 +162,7 @@ async def update_location(location_data: LocationUpdate):
         if not metadata_success:
             raise HTTPException(status_code=500, detail="Failed to update metadata")
         
-        log.info(f"Location updated for driver {driver_id} at ({lat}, {lng}) in city {assigned_city} with {car_type} car")
+        log.info(f"Location updated for driver {driver_id} at (lat {lat}, lng {lng}) in city {assigned_city} with {car_type} car")
         
         # Prepare shard info for response
         shard_response = None
