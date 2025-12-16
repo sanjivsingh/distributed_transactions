@@ -88,6 +88,24 @@ This is where the decoupled services communicate to push the offer to the driver
 ## Implementation Details
 
 
+### Server:					
+- **match_service.py** -  Main Match Service handling ride requests and driver matching.
+-    **find_matching_drivers_script.lua** - Lua script for finding nearby drivers matching criteria.
+- **ride_estimate_service.py**		- Service to create ride request in database and provide ride cost estimates.
+- **service_integration.py**	-  Common service discovery and registration logic.	
+- **websocket_gateway_service.py** - WebSocket Gateway Service for driver connections and communication.
+			
+- **shard_register.py** - Script to register Redis shards with the Shard Manager.
+- **config.py**				   - Configuration settings for services.
+- **location_update_service.py**		 - Service to handle driver location updates and update Redis Geo Index.
+- **service_discovery.py**	   - Service Discovery implementation using Zookeeper.
+
+###  Client Apps:
+- **rider_client.py**	- Simulator Rider client app to request rides.
+- **driver_client.py** - Simulator Driver client app to send location updates and accept rides.
+
+
+
 ## Run Application
 
 1. Install dependencies:
@@ -96,9 +114,7 @@ This is where the decoupled services communicate to push the offer to the driver
    ```  
 
 2. Start Redis server/zookeeper/mysql server:
-   ```bash
-   redis-server
-    ```
+
 
 3. Start Service Discovery (Zookeeper):
 ```bash
@@ -110,34 +126,107 @@ This is where the decoupled services communicate to push the offer to the driver
 .venv/bin/python -m uber_driver_riders_match_app.shard_register
 ```
 
-4.  Start Location Update Service:
+5.  Start Location Update Service:
 ```bash
 .venv/bin/python -m uvicorn uber_driver_riders_match_app.location_update_service:app --reload --port 8001
 ```  
 
-5. Start Match Service:
+6. Start Match Service:
 ```bash
 .venv/bin/python -m uvicorn uber_driver_riders_match_app.match_service:app --reload --port 8002
 ```  
 
-6. Ride Estimate Service:
+7. Ride Estimate Service:
 ```bash
 .venv/bin/python -m uvicorn uber_driver_riders_match_app.ride_estimate_service:app --reload --port 8003
 ```     
 
-7. Start WebSocket Gateway Service:
+8. Start WebSocket Gateway Service:
 ```bash
 .venv/bin/python -m uvicorn uber_driver_riders_match_app.websocket_gateway_service:app --reload --port 8004
 ```     
 
-7. Start driver client app:
+9. Start driver client app:
 ```bash
 .venv/bin/python -m uber_driver_riders_match_app.driver_client
 ```
 
-7. Start rider client app:
+
+
+10. Start rider client app:
 ```bash
 .venv/bin/python -m uber_driver_riders_match_app.rider_client
+```
+
+
+Sample console output for rider client app:
+```
+ Simple ride request demo with service discovery
+2025-12-16 14:02:17 - service_integration - INFO - Service rider_client:rider_client_b3d80198 registered successfully
+ Refreshing service discovery cache...
+2025-12-16 14:02:17 - service_integration - INFO - Service discovery cache cleared
+ Refreshed service URLs:
+   Ride Estimate: http://localhost:8003
+   Match Service: http://localhost:8002
+============================================================
+ UBER RIDE REQUEST - rider_demo
+============================================================
+ Services discovered:
+   Ride Estimate: http://localhost:8003
+   Match Service: http://localhost:8002
+
+ Requesting ride estimate for rider_demo...
+   From: (39.0009, -77.5106) To: (39.0405, -77.4512)
+   Car type: economy
+ Using ride estimate service: http://localhost:8003
+ Ride estimate received:
+   Ride ID: 4a277ed6-bfd4-401b-aa71-a4191b744717
+   Estimated Cost: $13.14
+   Distance: 6.76 km
+   Duration: 13 minutes
+
+ Finding drivers for ride 4a277ed6-bfd4-401b-aa71-a4191b744717...
+ Using match service: http://localhost:8002
+ Driver matching completed:
+   Drivers found: 2
+   Exact matches: 2
+   Offers sent: 2
+   Nearby drivers:
+     1. driver_001 - 0.0 mi away
+        Car: economy, Payment: both ✓ Exact match
+     2. driver_005 - 4.2 mi away
+        Car: economy, Payment: both ✓ Exact match
+
+ Waiting for driver assignment (timeout: 90s)...
+
+ Ride 4a277ed6-bfd4-401b-aa71-a4191b744717 status:
+   Database status: matching
+   Redis status: None
+.
+ Ride 4a277ed6-bfd4-401b-aa71-a4191b744717 status:
+   Database status: matched
+   Redis status: taken_driver_001
+   Assigned driver: driver_001
+ Driver assigned: driver_001
+
+ Ride confirmed!
+   Ride ID: 4a277ed6-bfd4-401b-aa71-a4191b744717
+   Driver: driver_001
+   Estimated cost: $13.14
+
+ Ride booked successfully: 4a277ed6-bfd4-401b-aa71-a4191b744717
+```
+
+
+
+
+## Debug 
+
+### Test Lua script independently
+ - Use `redis-cli` to test the Lua script for finding matching drivers.
+ - Example command:
+```
+redis-cli --ldb --eval uber_driver_riders_match_app/find_matching_drivers_script.lua driver_locations_ashburn driver_metadata_ashburn ,  -77.50947390865727 39.00199986529904 100 5 economy both
 ```
 
 ## Future Improvements
