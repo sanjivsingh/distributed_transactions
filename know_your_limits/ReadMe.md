@@ -30,7 +30,8 @@ This theoretical limit is rarely, if ever, achieved in practice due to the sever
 ```
 1 (Destination Port) X ~approx 28,000  (Available Source Ports)  =  ~approx 28,000 connections 
 ```
-<font color="red">Note: This is the primary bottleneck when one server acts as a heavy client to the other.</font>
+
+<span style="color:red;">Note: This is the primary bottleneck when one server acts as a heavy client to the other.</span> 
 
 3. **File Descriptor (FD) Limits**: Both the client and server processes are limited by the OS setting (`ulimit -n`) for the maximum number of files/sockets a single process can open. This must be raised (e.g., to `>100,000`) to support high concurrency.
  - In Unix-like operating systems (Linux, macOS), every socket is treated as a file, and each file requires a File Descriptor (FD).
