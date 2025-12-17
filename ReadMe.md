@@ -8,7 +8,7 @@ The projects focus on building scalable, distributed applications with features 
 
 ## Sub-Projects and Utilities
 
-### 1. Common Module
+### Common Module
 - **Commons** : Shared utilities for logging, unique ID generation (Snowflake), and other common functions used across projects.
     - **Key Features**: Logger setup, Snowflake ID generator
     - **Link to Implementation**: [./commons/](./commons/)
@@ -19,7 +19,19 @@ The projects focus on building scalable, distributed applications with features 
     -    **MySQL Setup** Configuration module for MySQL connections, including host, user, password, and port settings.  [./mysql_setup/](./mysql_setup/)
     -    **Redis Setup** : Configuration module for Redis connections, including server and port settings.  [./redis_setup/](./redis_setup/)
 
-### 2. Instagram Hashtag Service
+### Know your System Limits
+A detailed exploration of TCP socket limit constraints in distributed systems, covering theoretical maximum connections, ephemeral port exhaustion, file descriptor limits, system memory constraints, and kernel configuration for TCP TIME_WAIT state.
+- **Link to Implementation**: [./know_your_system_limits/](./know_your_system_limits/)
+- **README**: [./know_your_system_limits/ReadMe.md](./know_your_system_limits/ReadMe.md)
+
+![TCP_Socket_Limit_Constraints](know_your_system_limits/images/TCP_Socket_Limit_Constraints.png)
+
+![Operating_System_Limits_on_Concurrency](know_your_system_limits/images/Operating_System_Limits_on_Concurrency.png)
+
+![Operating_System_Limits_on_Concurrency_details](know_your_system_limits/images/Operating_System_Limits_on_Concurrency_details.png)
+
+
+### Instagram Hashtag Service
 A service for managing Instagram-like posts with real-time hashtag analytics. Users can register, create posts with captions containing hashtags, and view hashtag summaries (number of posts, top posts). Uses Kafka for asynchronous processing, MongoDB for hashtag stats, and MySQL for relational data.
 
 - **Technologies**: FastAPI, MySQL, MongoDB, Kafka, Jinja2
@@ -30,7 +42,7 @@ A service for managing Instagram-like posts with real-time hashtag analytics. Us
 ![Architecture Diagram](instagram_hashtags/HashTag_Service_Block_Diagram.png)
 
 
-### 3. Slack-like Application
+### Slack-like Application
 A real-time messaging app similar to Slack, supporting user registration, one-to-one group creation, and messaging. Messages are delivered via WebSockets and Redis pubsub, with offline messages stored in MongoDB and delivered on reconnect.
 
 - **Technologies**: FastAPI, MySQL, Redis, MongoDB, WebSockets
@@ -41,7 +53,7 @@ A real-time messaging app similar to Slack, supporting user registration, one-to
 ![Block Diagram](slack_application/Slack_Block_Diagram.png)
 
 
-### 4. Airline Check-in System
+### Airline Check-in System
 A distributed system for managing airline check-ins, bookings, and seat assignments. Supports passenger registration, flight booking, and check-in processes with distributed transactions to ensure consistency across services.
 
 - **Technologies**: FastAPI, MySQL, Kafka, Redis (assumed based on project patterns)
@@ -49,14 +61,14 @@ A distributed system for managing airline check-ins, bookings, and seat assignme
 - **Link to Implementation**: [./airline_checkin_system/](./airline_checkin_system/)
 
 
-### 5. Online Status Application
+### Online Status Application
 A REST API-based application for managing user online status. Users can update their status, and others can query online users, with data persisted in Redis for fast access.
 
 - **Technologies**: FastAPI, Redis
 - **Key Features**: Status updates, online user queries, TTL-based expiration
 - **Link to Implementation**: [./online_status_application/](./online_status_application/)
 
-### 6. Online Status Application WebSocket
+### Online Status Application WebSocket
 A WebSocket-based application for real-time online status updates. Users connect via WebSocket to receive live updates on online statuses, with broadcasting to connected clients.
 
 - **Technologies**: FastAPI, Redis, WebSockets
@@ -67,7 +79,7 @@ A WebSocket-based application for real-time online status updates. Users connect
 
 ![Block Diagram](online_status_application_websocket/Block_Diagram.png)
 
-### 7. Toy KV Store on MySQL
+### Toy KV Store on MySQL
 A simple key-value store implemented using MySQL for persistence. Demonstrates basic CRUD operations with a relational database backend, suitable for learning distributed storage concepts.
 
 - **Technologies**: Python, MySQL
@@ -76,21 +88,21 @@ A simple key-value store implemented using MySQL for persistence. Demonstrates b
 
 
 
-### 8. Two-Phase Commit Zomato Delivery
+### Two-Phase Commit Zomato Delivery
 An implementation of the two-phase commit protocol for a Zomato-like food delivery system. Ensures atomicity across multiple services (e.g., order placement, payment, restaurant confirmation) using distributed transactions.
 
 - **Technologies**: Python, MySQL, Kafka (assumed for coordination)
 - **Key Features**: Two-phase commit logic, order management, transaction rollback
 - **Link to Implementation**: [./two_phase_commit_zomato_delivery/](./two_phase_commit_zomato_delivery/)
 
-### 9. File Converter Webapp
+### File Converter Webapp
 A web application for uploading and converting files between different formats (e.g., XML, JSON , PARQUET, CSV). Supports asynchronous processing and download of converted files.
 
 - **Technologies**: FastAPI, Python libraries for file processing (e.g., pdf2image, Pillow)
 - **Key Features**: File upload, format conversion, asynchronous processing, download
 - **Link to Implementation**: [./file_convertor_webapp/](./file_convertor_webapp/)
 
-### 10. DynamoDB on MySQL
+### DynamoDB on MySQL
 A simulation of DynamoDB's API and features built on top of MySQL. Provides a NoSQL-like interface for tables, items, and queries using a relational database backend, including sharding and local secondary indexes.
 
 - **Technologies**: Python, MySQL, FastAPI (assumed for API)
@@ -103,7 +115,7 @@ A simulation of DynamoDB's API and features built on top of MySQL. Provides a No
 ![Flow Diagram](dynamodb_on_mysql/DynamoDB_on_MySQL_flow_diagram.png)
 
 
-### 11. MySQL Benchmark
+### MySQL Benchmark
 A benchmarking tool for MySQL sharding and ID generation. Implements sharded databases with auto-increment IDs across multiple shards, demonstrating distributed insertion and querying for performance testing.
 
 - **Technologies**: Python, PyMySQL, MySQL
@@ -118,17 +130,17 @@ A benchmarking tool for MySQL sharding and ID generation. Implements sharded dat
 Sharding, auto-increment ID generation, insertion benchmarking, max ID tracking
 - **Link to Implementation**: [./mysql_benchmark/](./mysql_benchmark/)
 
-### 12. User Recent Search Application
+### User Recent Search Application
 A web application for user registration and product search with recent search suggestions. Supports fuzzy and full-text search on Elasticsearch, recent searches stored in Redis with set-like behavior, and event logging to Kafka for analytics.
 
 - **Technologies**: FastAPI, MySQL, Redis, Elasticsearch, Kafka
 - **Key Features**: User registration, product search with dropdown recent searches, fuzzy search, event logging with user geography/IP
-- **Link to Implementation**: user_recent_search_app
+- **Link to Implementation**:  [./user_recent_search_app/](./user_recent_search_app/)
 - **README**: ReadMe.md
 
 ![Block Diagram](user_recent_search_app/recent_search_block_diagram.png)
 
-### 13. Hot Key Multi-Tenant Elasticsearch
+### Hot Key Multi-Tenant Elasticsearch
 A program for multi-tenant document indexing in Elasticsearch with hot tenant handling to prevent shard hotspots. Generates 100,000 documents for 50 tenants, distributing 80% to hot tenants across multiple shards using custom routing.
 
 - **Technologies**: Python, Elasticsearch
@@ -140,7 +152,7 @@ A program for multi-tenant document indexing in Elasticsearch with hot tenant ha
     - Tenants Index distribution on shards
     ![Tenant_distribution_on_shards](hotkey_multi_tanent_elasticseach/Tenant_distribution_on_shards.png)
 
-###  14. Bitcast Project
+###  Bitcast Project
 A project for bit-level operations and casting in distributed systems, demonstrating efficient data manipulation and type conversions across services.
 
 - **Technologies**: Python
@@ -149,7 +161,7 @@ A project for bit-level operations and casting in distributed systems, demonstra
 
 ![Bitcast_Block_Diagram](bitcask_implementation/Bitcast_Block_Diagram.png)
 
-###   15. Stream Ingestion
+###   Stream Ingestion
 A project for real-time stream data ingestion and processing in distributed systems. Handles high-volume data streams, processing and routing them to appropriate storage or analytics services.
 
 - **Technologies**: Python, Kafka, Redis
@@ -158,7 +170,7 @@ A project for real-time stream data ingestion and processing in distributed syst
 
 ![login_evert_stream_processing](stream_ingestion/login_evert_stream_processing.png)
 
-###    16. Word Dictionary Without DB
+###    Word Dictionary Without DB
 A project for implementing a word dictionary without using a database, utilizing in-memory data structures or file-based storage for fast word lookups and definitions.
 
 - **Technologies**: Python
@@ -170,7 +182,7 @@ A project for implementing a word dictionary without using a database, utilizing
 ![word_dictionary_without_database](word_dictionary_without_database/word_dictionary_block_diagram.png)
 
 
-###     17. Toy JWT Implementation
+### Toy JWT Implementation
 A simple implementation of JSON Web Tokens (JWT) for authentication and authorization in distributed systems. Demonstrates token generation, validation, and usage for secure user sessions.
 
 - **Technologies**: Python, PyJWT
@@ -179,7 +191,7 @@ A simple implementation of JSON Web Tokens (JWT) for authentication and authoriz
 
 ![Architecture Diagram](toy_jwt_implementation/JWT_Architechture_Diagram.png)
 
-### 18. Distributed Multitenant Task Scheduler
+### Distributed Multitenant Task Scheduler
 A tenant-aware task scheduling platform that shards task data across MySQL, uses ZooKeeper for tenant→shard and worker orchestration, materializes cron schedules, and routes prioritized work via Kafka to dynamically provisioned executors.
 
 - **Technologies**: FastAPI, PyMySQL, ZooKeeper, Kafka (confluent-kafka), croniter
@@ -188,7 +200,7 @@ A tenant-aware task scheduling platform that shards task data across MySQL, uses
 
 ![Scheduler Block Diagram](distributed_multitenant_task_scheduler/task_scheduler_architechture.png)
 
-### 19. Real-time Event Streaming Distinct Users Range Search
+### Real-time Event Streaming Distinct Users Range Search
 A system for efficiently counting distinct users in real-time event streams within specified time ranges. Uses Kafka for event ingestion, HyperLogLog for space-efficient distinct counting, and hierarchical time window aggregation (minute → hour → day → month → year) for optimal query performance.
 
 - **Technologies**: FastAPI, Kafka, Redis, MongoDB (DynamoDB), HyperLogLog, CDC via Redis Streams
@@ -204,7 +216,7 @@ A system for efficiently counting distinct users in real-time event streams with
 ![Distinct_Users_Architechture](realtime_event_streaming_distinct_users_range_search/Distinct_Users_Architechture.png)
 
 
-### 20. Dropbox File Sync Application
+### Dropbox File Sync Application
 A simplified Dropbox-like file synchronization application supporting chunk-based uploads, deduplication, user isolation, versioning, and reversion. Clients monitor local directories for changes and sync with the server, using a last-write-wins conflict resolution.
 
 - **Technologies**: FastAPI, MongoDB, Boto3 (S3),  Watchdog, Requests
@@ -215,7 +227,7 @@ A simplified Dropbox-like file synchronization application supporting chunk-base
 ![dropbox_architecture_diagram](dropbox_filesync_app/dropbox_architecture_diagram.png)
 
 
-### 21. Uber Driver-Rider Matching Application
+### Uber Driver-Rider Matching Application
 A microservices-based ride matching system similar to Uber, featuring real-time driver-rider matching using geospatial queries, city-based Redis sharding, WebSocket communication, and service discovery. Supports ride estimation, driver location updates, and real-time ride offers with distributed matching logic.
 
 - **Technologies**: FastAPI, MySQL, Redis (city-based sharding), WebSockets, Zookeeper (service discovery), Lua scripts
