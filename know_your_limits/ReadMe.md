@@ -71,7 +71,14 @@ The LB now acts as the client to the Backend Server (S). This is where the origi
 | Ephemeral Ports (LB's perspective) | $\approx 60,000$ (Tuned Range) | If the LB uses short-lived, non-persistent connections, the LB will quickly exhaust its pool of ephemeral ports (Source Ports) when making requests to Server S. |
 
 **Scenario**
-Even if the Load Balancer has the capacity to handle `4,000,000` client connections, it is constrained by the `~approx 60,000 outbound connections it can establish to Server S due to its own ephemeral port limit and the TCP ``TIME_WAIT` delay.
+Even if the Load Balancer has the capacity to handle `4,000,000` client connections, it is constrained by the `~approx 60,000 outbound connections it can establish to Server S due to its own ephemeral port limit` and the `TCP TIME_WAIT` delay.
+
+- The LB receives a new client request, but has no source port available to connect to Server S.(`$60,000$` active connections already exist).
+ -> Connection failure (`EADDRNOTAVAIL`). The request is dropped.
+`
+- The LB is stuck, waiting for the first batch of ports to exit the `TIME_WAIT` state (default 60s).
+->  System bottleneck. Millions of clients are waiting, but only the ports released after the TIME_WAIT delay can be reused.
+
 
 **Recommended Solution: Persistent Connections**
 

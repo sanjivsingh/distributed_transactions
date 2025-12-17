@@ -87,7 +87,6 @@ This is where the decoupled services communicate to push the offer to the driver
 
 ## Implementation Details
 
-
 ### Server:					
 - **match_service.py** -  Main Match Service handling ride requests and driver matching.
 -    **find_matching_drivers_script.lua** - Lua script for finding nearby drivers matching criteria.
