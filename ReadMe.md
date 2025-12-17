@@ -171,6 +171,11 @@ A Bitcast implementation for efficient storage and retrieval of key-value pairs 
 
 ![Bitcast_Block_Diagram](bitcask_implementation/Bitcast_Block_Diagram.png)
 
+![Bitcast_Block_Diagram](bitcask_implementation/Bitcast_architecture_diagram.png)
+
+![Bitcast_Block_Diagram](bitcask_implementation/Bitcast_Data_Structure.png)
+
+
 
 ###   Stream Ingestion
 A project for real-time stream data ingestion and processing in distributed systems. Handles high-volume data streams, processing and routing them to appropriate storage or analytics services.
