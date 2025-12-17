@@ -153,13 +153,20 @@ A program for multi-tenant document indexing in Elasticsearch with hot tenant ha
     ![Tenant_distribution_on_shards](hotkey_multi_tanent_elasticseach/Tenant_distribution_on_shards.png)
 
 ###  Bitcast Project
-A project for bit-level operations and casting in distributed systems, demonstrating efficient data manipulation and type conversions across services.
+
+A Bitcast implementation for efficient storage and retrieval of key-value pairs using bit manipulation and type casting techniques. Designed for high-performance distributed systems requiring compact data representation.
+ - `Embedded Key-Value (KV) Databases`
+ - `Log-Structured` :Hash Table for Fast Key/Value Data
+ - `Append-Only` File for Durability
+ - `In-Memory Index`for Low Latency Lookups
+ -  `Sequential Log Writing`: Data is written sequentially to an append-only log file and there will be pointers for each key pointing to the position of its log entry in the file.
+ - `Compaction and Merging`: Periodic compaction to merge log segments and remove deleted/expired entries and update the in-memory index accordingly.
 
 - **Technologies**: Python
-- **Key Features**: Bit manipulation, type casting, distributed data handling
-- **Link to Implementation**: [./bitcask_implementation/ReadMe.md](./bitcask_implementation/ReadMe.md) 
+- **Link to Implementation**: Python based Implementation code [./bitcask_implementation/ReadMe.md](./bitcask_implementation/ReadMe.md) 
 
 ![Bitcast_Block_Diagram](bitcask_implementation/Bitcast_Block_Diagram.png)
+
 
 ###   Stream Ingestion
 A project for real-time stream data ingestion and processing in distributed systems. Handles high-volume data streams, processing and routing them to appropriate storage or analytics services.
