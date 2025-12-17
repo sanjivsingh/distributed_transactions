@@ -162,6 +162,10 @@ A Bitcast implementation for efficient storage and retrieval of key-value pairs 
  -  `Sequential Log Writing`: Data is written sequentially to an append-only log file and there will be pointers for each key pointing to the position of its log entry in the file.
  - `Compaction and Merging`: Periodic compaction to merge log segments and remove deleted/expired entries and update the in-memory index accordingly.
 
+# Important : 
+ -  `Assumes that index fits in memory for fast lookups.`
+ -  `No range queries, only exact key lookups.`
+
 - **Technologies**: Python
 - **Link to Implementation**: Python based Implementation code [./bitcask_implementation/ReadMe.md](./bitcask_implementation/ReadMe.md) 
 

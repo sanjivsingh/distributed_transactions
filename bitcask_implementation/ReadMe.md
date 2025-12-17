@@ -49,6 +49,10 @@ This project implements a Bitcask-inspired key-value store on a local machine. B
 
 ![Bitcast_Block_Diagram](Bitcast_Block_Diagram.png)
 
+![Bitcast_Block_Diagram](Bitcast_Block_Diagram.png)
+
+![Bitcast_Block_Diagram](Bitcast_Data_Structure.png)
+
 
 ## Prerequisites
 
