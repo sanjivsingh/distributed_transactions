@@ -1,6 +1,6 @@
 # TCP Socket Limit Constraints
 
-![uber_driver_match_architecture](images/TCP_Socket_Limit_Constraints.png)
+![TCP_Socket_Limit_Constraints](images/TCP_Socket_Limit_Constraints.png)
 
 Key Constraints Summary
 
@@ -88,6 +88,8 @@ To bypass the ephemeral port limit, modern Load Balancers and proxies use persis
 This shifts the constraint from the ephemeral port limit back to the `File Descriptor limit on Server S` and the `memory/FD limit on the LB`, allowing the system to scale to hundreds of thousands or even millions of concurrent clients.
 
 
+# Operating System Limits on Concurrency
 
+![Operating_System_Limits_on_Concurrency](images/Operating_System_Limits_on_Concurrency.png)
 
-
+![Operating_System_Limits_on_Concurrency_details](images/Operating_System_Limits_on_Concurrency_details.png)
