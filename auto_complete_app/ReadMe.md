@@ -1,31 +1,3 @@
-# Design auto complete system
-
- -  Given a set of words (dictionary), design a data structure that supports the following two operations:
-   1. `insert(word)`: Inserts a word into the data structure.
-   2. `autoComplete(prefix)`: Returns all words in the data structure that start with the given prefix.
- -  Example:
-   ```
-   insert("apple")
-   insert("app")
-   autoComplete("ap") -> ["apple", "app"]
-   autoComplete("a") -> ["apple", "app"]
-   autoComplete("b") -> []
-   ```
- -  Constraints:
-   - The words consist of lowercase English letters only.
-   - The number of words inserted and the number of autoComplete queries can be large, so efficiency is important.
- -  Implementation details:
-   - Use a Trie (prefix tree) data structure to efficiently store and retrieve words based on their prefixes.
-   - Each node in the Trie will represent a character and will have a list of child nodes for each possible next character.
-   - The `insert` operation will traverse the Trie according to the characters in the word and create new nodes as necessary.
-   - The `autoComplete` operation will traverse the Trie according to the characters in the prefix and then perform a depth-first search from that point to collect all words that start with the given prefix.
- -  Time Complexity:
-   - `insert(word)`: O(m), where m is the length of the word being inserted.
-   - `autoComplete(prefix)`: O(p + k), where p is the length of the prefix and k is the number of words returned.
- -  Space Complexity:
-   - O(n * m), where n is the number of words inserted and m is the average length of the words.
- -  Example Implementation (Python):
-   
 # Prefix-Based Autocomplete System Design
 
 This system is designed for maximum read performance by pre-calculating results for every possible prefix up to 10 characters and storing them in a flat key-value structure.
@@ -60,6 +32,8 @@ Path Structure:
 
 ## 3. Multilingual Storage Expansion
 
+Transitioning to UTF-8 for Multilingual Expansion
+ 
 | Language Category |Est. Unique Prefixes |  Avg. Key Size `(UTF-8)` | Est. Storage |
 |-------------------|---------------------|------------------------|--------------|
 Latin-based (FR, ES, DE, IT)|4,000,000|8 bytes|~600 MB|
@@ -200,3 +174,47 @@ By splitting the map at `s` and `sa`:
 
 # Prefix-Based Autocomplete Implementation
  
+Implementation focus on search part. Index building part is similar to recent search system(is not repeated/implemented here).
+
+## Architecture Diagram
+
+![auto_complete_achitechture](auto_complete_achitechture.png)
+
+## User Interface
+
+![auto_complete_interface_design](auto_complete_interface_design.png)
+
+
+# Autocomplete with Redis
+
+
+
+# Future Growth & Scalability Considerations
+## 1. Growth Vectors
+ - Multilingual Expansion
+ - User-Generated Content (UGC) & Slang
+## 2. Technical Thresholds
+ - `< 2 GB`  : In-Memory (Single Node)
+ - `2 GB - 10 GB`  : Compressed Tries
+ - `10 GB - 50 GB` : Memory-Mapped Files
+ - `> 50 GB` : Distributed Sharding
+## 3. Optimization Strategies for Growth
+- **Adaptive Pruning** : Not every prefix deserves a permanent spot in the index.
+- **Frequency Thresholding**: Implement a "Minimum Search Volume" (MSV). Only prefixes searched more than $N$ times per month are kept in the primary index.
+- **TTL (Time to Live)**: Obsolete terms (e.g., seasonal event names) should be purged automatically to keep the 310 MB core "lean."
+## 4. Operational Scaling
+ - **Blue-Green Index Swapping**: As growth increases build times, use a "double buffering" approach where a new version of the 310MB+ index is built in the background and swapped in via a pointer update to ensure zero-downtime.
+ - **Cloud Elasticity**: Monitor Memory Utilization rather than CPU. Set auto-scaling triggers to spin up new replicas when memory pressure exceeds 70% due to index growth.
+
+
+#  Wrap up:
+How do you extend your design to support multiple language?
+We store Unicode characters in Trie nodes.
+Unicode: a encoding standard covers all characters for all writing systems of modern and ancient”
+What if top search queries in one country are different from other country users?
+We might build trie country wise.
+How can we support trending (Real time) search queries?
+Lambda Architecture:
+Reduce the working data set by sharding.
+Change the ranking model and assign more weight to recent queries.
+Data may come as stream(Spark streaming/Kafa Streaming etc.)
