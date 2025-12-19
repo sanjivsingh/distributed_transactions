@@ -83,9 +83,10 @@ export PYTHONPATH=/Users/sanjivsingh/Projects/VS_workspace/distributed_transacti
 For enhancements (e.g., authentication, cloud archival), let me know!
 
 
-# Amazon Recent Searches and autocomplete System
+# Real Example : Amazon Recent Searches and autocomplete System
 
-Interestingly, Amazon autocomplete system provides search suggestions as users type in the search box. It is designed for high performance and low latency, handling millions of queries per day.
+Interestingly, Amazon Recent Searches and autocomplete system provides search suggestions as users type in the search box. It is designed for high performance and low latency, handling millions of queries per day.
+
 Looks like both feature a recent searches dropdown and an autocomplete suggestions list are fetched from the following single endpoint:
 
 ```
@@ -98,4 +99,8 @@ When a user:
 - **Autocomplete suggestions**:
     `/suggestions` is called with `prefix=` set to the current user input.
 
-![Block Diagram](amazon_search.png)
+![amazon search](amazon_search.png)
+
+
+
+
