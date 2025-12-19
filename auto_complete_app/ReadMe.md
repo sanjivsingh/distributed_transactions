@@ -207,14 +207,16 @@ Implementation focus on search part. Index building part is similar to recent se
  - **Cloud Elasticity**: Monitor Memory Utilization rather than CPU. Set auto-scaling triggers to spin up new replicas when memory pressure exceeds 70% due to index growth.
 
 
-#  Wrap up:
-How do you extend your design to support multiple language?
-We store Unicode characters in Trie nodes.
-Unicode: a encoding standard covers all characters for all writing systems of modern and ancient”
-What if top search queries in one country are different from other country users?
-We might build trie country wise.
-How can we support trending (Real time) search queries?
-Lambda Architecture:
-Reduce the working data set by sharding.
-Change the ranking model and assign more weight to recent queries.
-Data may come as stream(Spark streaming/Kafa Streaming etc.)
+#  Followup Questions:
+
+ - **How do you extend your design to support multiple language?**
+    - We store Unicode characters in Trie nodes.
+    - Unicode: a encoding standard covers all characters for all writing systems of modern and ancient”
+ - **What if top search queries in one country are different from other country users?**
+    -   We might build trie country wise.
+ - **How can we support trending (Real time) search queries?**
+    - Lambda Architecture:
+        - Reduce the working data set by sharding.
+        - Change the ranking model and assign more weight to recent queries.
+        -  Data may come as stream(Spark streaming/Kafa Streaming etc.)
+
