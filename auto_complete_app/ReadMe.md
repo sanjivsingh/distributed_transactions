@@ -26,9 +26,10 @@
    - O(n * m), where n is the number of words inserted and m is the average length of the words.
  -  Example Implementation (Python):
    
-# Prefix-Based Autocomplete Implementation
+# Prefix-Based Autocomplete System Design
 
 This system is designed for maximum read performance by pre-calculating results for every possible prefix up to 10 characters and storing them in a flat key-value structure.
+Design focuses on a `precalculated prefix-to-results` pattern stored in a key-value store (like Redis or Firestore or mongodb). This approach ensures `O(1)` lookup time for the front-end, as the heavy lifting of matching and ranking is done during a background batch process.
 
 ## 1. Database Schema (Key-Value Store)
 
@@ -49,13 +50,17 @@ Path Structure:
 
 ##  2. Storage & Capacity Estimates (English Only)
 
-- **Assumption**: Indexing ~200,000 unique English words.
-- **Unique Prefixes**: ~1.5 to 2 million unique strings.
-- **Total Estimate**: ~310 MB (including overhead).
+- **Key Size**: Average prefix length ~5 characters (UTF-8), ~5 bytes.
+- **Value Size**: Average of 10 words per prefix, average word length ~7 characters → ~70 bytes.
+- **Total per Entry**: ~75 bytes (Key + Value).
+
+- **Assumption**: Indexing  `~200,000` unique English words.
+- **Unique Prefixes**: `~1.5 to 2` million unique strings.
+- **Total Estimate**:   `~310 MB` (including overhead).
 
 ## 3. Multilingual Storage Expansion
 
-| Language Category |Est. Unique Prefixes |  Avg. Key Size (UTF-8) | Est. Storage |
+| Language Category |Est. Unique Prefixes |  Avg. Key Size `(UTF-8)` | Est. Storage |
 |-------------------|---------------------|------------------------|--------------|
 Latin-based (FR, ES, DE, IT)|4,000,000|8 bytes|~600 MB|
 |Cyrillic & Middle East|2,000,000|12 bytes|~350 MB|
@@ -184,7 +189,7 @@ By splitting the map at `s` and `sa`:
 -   **Extract**: Gather searchable terms.
 -   **Score**: Assign popularity weights.
 -   **Generate Prefixes**: Up to 10 characters.
--   **Group & Rank**: Collect terms, sort by score, slice top $N$.
+-   **Group & Rank**: Collect terms, sort by score, slice top `N`.
 -   **Load**: Bulk upload to the specific Shard identified by the Shard Map.
 
 ## 6. Performance Analysis
@@ -193,4 +198,5 @@ By splitting the map at `s` and `sa`:
  - `Space Complexity`: `O(S X L)`.
  - `Scalability`: Horizontal. To add a new node, we simply split a `hot` range in the Shard Map and migrate the data.
 
-
+# Prefix-Based Autocomplete Implementation
+ 
