@@ -6,7 +6,7 @@ import time
 import threading
 from typing import Dict, List, Optional, Tuple
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 import uvicorn
 from commons import logger
@@ -351,16 +351,12 @@ async def autocomplete(query: str):
             raise HTTPException(status_code=400, detail="Query cannot be empty")
 
         result = search_service.get_suggestions(query.strip())
-        return result
+        return JSONResponse(content=result.dict(), headers={"Cache-Control": "public, max-age=300"})
         
     except HTTPException as e:
-        import traceback
-        traceback.print_exc()
         log.error(f"Error in autocomplete endpoint: {e}")
         raise HTTPException(status_code=500, detail="Internal server error : {e}")
     except Exception as e:
-        import traceback
-        traceback.print_exc()
         log.error(f"Error in autocomplete endpoint: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {e}")
 
@@ -369,5 +365,13 @@ if __name__ == "__main__":
         import uvicorn
         uvicorn.run(app, host="0.0.0.0", port=8000, log_level="trace")
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        log.error(f"Error : {e}")
+    finally:
+        if search_service:
+            try:
+                if hasattr(search_service, 'shard_manager'):
+                    search_service.shard_manager.close()
+                log.info("Auto-complete service shut down successfully")
+            except Exception as e:
+                log.error(f"Error during shutdown: {e}")
+
