@@ -218,6 +218,8 @@ Open browser to http://localhost:8000. Register, search products.
 
 ![auto_complete_interface|512x397,20%](auto_complete_interface.gif)
 
+<img src="auto_complete_interface.gif"  width="600" height="300">
+
 # Autocomplete with Redis
 
 # Future Growth & Scalability Considerations
