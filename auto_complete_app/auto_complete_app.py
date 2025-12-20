@@ -26,8 +26,6 @@ class AutoCompleteResponse(BaseModel):
     shard_used: str
     response_time_ms: float
 
-
-
 class UserSearchService:
     """Stateless service for handling user search requests"""
     

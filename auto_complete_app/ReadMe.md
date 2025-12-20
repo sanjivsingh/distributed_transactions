@@ -184,9 +184,7 @@ Implementation focus on search part. Index building part is similar to recent se
 
 ![auto_complete_achitechture](auto_complete_achitechture.png)
 
-## User Interface
 
-![auto_complete_interface_design](auto_complete_interface_design.png)
 
 # Run Application
 
@@ -217,6 +215,8 @@ source .venv/bin/activate
 
 ```
 Open browser to http://localhost:8000. Register, search products.
+
+![auto_complete_interface_design](auto_complete_interface.gif)
 
 # Autocomplete with Redis
 
