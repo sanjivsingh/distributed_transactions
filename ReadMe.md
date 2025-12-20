@@ -187,8 +187,8 @@ This approach ensures `O(1)` lookup time for the front-end, as the heavy lifting
 - **Link to Implementation**: Python based Implementation code [./auto_complete_app/ReadMe.md](./auto_complete_app/ReadMe.md) 
 - **Architecture**:
 ![auto_complete_achitechture](auto_complete_app/auto_complete_achitechture.png)
-- **User Interface**
-![auto_complete_interface_design](auto_complete_app/auto_complete_interface.gif)
+- **User Interface**:
+<img src="auto_complete_app/auto_complete_interface.gif"  width="450" height="450">
 
 
 ###   Stream Ingestion
