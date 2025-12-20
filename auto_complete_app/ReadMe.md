@@ -20,6 +20,10 @@ Path Structure:
     prefixes/abc = ["abcde", "abacus", "abdominal", ...]
 ```
 
+### Limit the max length of prefix.
+  User rarely type a long search query.it is safe to assume say `N` (small number ..say 10)
+  If. We limit the length on prefix, complexity `O(N)+ O(small Constants)` aka `O(1)`
+
 ##  2. Storage & Capacity Estimates (English Only)
 
 - **Key Size**: Average prefix length ~5 characters (UTF-8), ~5 bytes.
@@ -85,12 +89,12 @@ The Shard Map is a sorted list of range boundaries. We use a `Starting-Key` appr
 {
   "shard_version": "2023-10-27-v1",
   "mappings": [
-    { "start": "a",  "node": "node-01.internal.svc" },
-    { "start": "f",  "node": "node-02.internal.svc" },
-    { "start": "j",  "node": "node-03.internal.svc" },
-    { "start": "s",  "node": "node-04-hot.internal.svc" },
-    { "start": "sa", "node": "node-05.internal.svc" },
-    { "start": "t",  "node": "node-06.internal.svc" }
+    { "start": "a",  "node": "node-01.imp.com" },
+    { "start": "f",  "node": "node-02.imp.com" },
+    { "start": "j",  "node": "node-03.imp.com" },
+    { "start": "s",  "node": "node-04-hot.imp.com" },
+    { "start": "sa", "node": "node-05.imp.com" },
+    { "start": "t",  "node": "node-06.imp.com" }
   ]
 }
 ```
@@ -184,9 +188,29 @@ Implementation focus on search part. Index building part is similar to recent se
 
 ![auto_complete_interface_design](auto_complete_interface_design.png)
 
+# Run Application
+
+## How to Run
+
+Set `PYTHONPATH`:
+
+```
+# Set PYTHONPATH
+
+export PYTHONPATH=/Users/sanjivsingh/Projects/VS_workspace/distributed_transactions:$PYTHONPATH
+
+# Setup databse with sample data
+.venv/bin/python -m auto_complete_app.database_client
+
+# Setup app
+.venv/bin/python -m uvicorn auto_complete_app.auto_complete_app:app --reload --port 8000
+
+```
+Open browser to http://localhost:8000. Register, search products.
+
+
 
 # Autocomplete with Redis
-
 
 
 # Future Growth & Scalability Considerations

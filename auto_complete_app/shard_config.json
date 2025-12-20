@@ -1,0 +1,13 @@
+{
+    "shard_version": "2025-12-19-v1",
+    "mappings": [
+        { "prefix": "a",  "node": "localhost:27017", "data_base": "auto_complete1", "collection": "collection" },
+        { "prefix": "f",  "node": "localhost:27017", "data_base": "auto_complete2", "collection": "collection" },
+        { "prefix": "j",  "node": "localhost:27017", "data_base": "auto_complete3", "collection": "collection" },
+        { "prefix": "o",  "node": "localhost:27017", "data_base": "auto_complete4", "collection": "collection" },
+        { "prefix": "u",  "node": "localhost:27017", "data_base": "auto_complete5", "collection": "collection" },
+        { "prefix": "s",  "node": "localhost:27017", "data_base": "auto_complete6", "collection": "collection" },
+        { "prefix": "sa", "node": "localhost:27017", "data_base": "auto_complete7", "collection": "collection" },
+        { "prefix": "t",  "node": "localhost:27017", "data_base": "auto_complete8", "collection": "collection" }
+    ]
+}
