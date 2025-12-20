@@ -190,25 +190,33 @@ Implementation focus on search part. Index building part is similar to recent se
 
 # Run Application
 
+# Setup Instructions
+software requirements:
+ - Python 3.10+
+ - MongoDB instance
+ - zookeeper instance 
+
 ## How to Run
 
-Set `PYTHONPATH`:
-
-```
 # Set PYTHONPATH
-
+```
 export PYTHONPATH=/Users/sanjivsingh/Projects/VS_workspace/distributed_transactions:$PYTHONPATH
 
-# Setup databse with sample data
+cd /Users/sanjivsingh/Projects/VS_workspace/distributed_transactions
+source .venv/bin/activate
+```
+
+# Setup database with sample data
+```
 .venv/bin/python -m auto_complete_app.database_client
+```
 
 # Setup app
+```
 .venv/bin/python -m uvicorn auto_complete_app.auto_complete_app:app --reload --port 8000
 
 ```
 Open browser to http://localhost:8000. Register, search products.
-
-
 
 # Autocomplete with Redis
 
