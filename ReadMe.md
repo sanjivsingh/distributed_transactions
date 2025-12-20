@@ -176,21 +176,6 @@ A Bitcast implementation for efficient storage and retrieval of key-value pairs 
 ![Bitcast_Block_Diagram](bitcask_implementation/Bitcast_Data_Structure.png)
 
 
-###  Auto Complete Application
-
-This system is designed for maximum read performance by pre-calculating results for every possible prefix up to `10` characters and storing them in a flat key-value structure.
-Design focuses on a `precalculated prefix-to-results` pattern stored in a key-value store (like Redis or Firestore or mongodb). 
-
-This approach ensures `O(1)` lookup time for the front-end, as the heavy lifting of matching and ranking is done during a background batch process.
-
-- **Technologies**: FastAPI, MongoDB, Zookeeper, Kazoo
-- **Link to Implementation**: Python based Implementation code [./auto_complete_app/ReadMe.md](./auto_complete_app/ReadMe.md) 
-- **Architecture**:
-![auto_complete_achitechture](auto_complete_app/auto_complete_achitechture.png)
-- **User Interface**:
-<img src="auto_complete_app/auto_complete_interface.gif"  width="450" height="450">
-
-
 ###   Stream Ingestion
 A project for real-time stream data ingestion and processing in distributed systems. Handles high-volume data streams, processing and routing them to appropriate storage or analytics services.
 
@@ -272,6 +257,22 @@ A microservices-based ride matching system similar to Uber, featuring real-time 
 - **README**: [./uber_driver_riders_match_app/ReadMe.md](./uber_driver_riders_match_app/ReadMe.md)
 
 ![uber_driver_match_architecture](uber_driver_riders_match_app/uber_driver_match_architecture.png)
+
+
+###  Auto Complete Application
+
+This system is designed for maximum read performance by pre-calculating results for every possible prefix up to `10` characters and storing them in a flat key-value structure.
+Design focuses on a `precalculated prefix-to-results` pattern stored in a key-value store (like Redis or Firestore or mongodb). 
+
+This approach ensures `O(1)` lookup time for the front-end, as the heavy lifting of matching and ranking is done during a background batch process.
+
+- **Technologies**: FastAPI, MongoDB, Zookeeper, Kazoo
+- **Link to Implementation**: Python based Implementation code [./auto_complete_app/ReadMe.md](./auto_complete_app/ReadMe.md) 
+- **Architecture**:
+![auto_complete_achitechture](auto_complete_app/auto_complete_achitechture.png)
+- **User Interface**:
+<img src="auto_complete_app/auto_complete_interface.gif"  width="450" height="450">
+
 
 
 ## Prerequisites
