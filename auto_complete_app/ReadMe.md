@@ -8,11 +8,12 @@ Design focuses on a `precalculated prefix-to-results` pattern stored in a key-va
 Simple REST api to fetch suggestions for prefix
 
 - GET /autocomplete?query={prefix}
+- 200 OK
     Response Headers
     - cache-control : public, max-age=300
     - content-type : application/json
 
-## 1. Database Schema (Key-Value Store)
+## 2. Database Schema (Key-Value Store)
 
 We store pre-computed arrays of results. The `Key` is the prefix, and the `Value` is an array of the top `N` matching items.
 
@@ -33,7 +34,7 @@ Path Structure:
   User rarely type a long search query.it is safe to assume say `N` (small number ..say 10)
   If. We limit the length on prefix, complexity `O(N)+ O(small Constants)` aka `O(1)`
 
-##  2. Storage & Capacity Estimates (English Only)
+##  3. Storage & Capacity Estimates (English Only)
 
 - **Key Size**: Average prefix length ~5 characters (UTF-8), ~5 bytes.
 - **Value Size**: Average of 10 words per prefix, average word length ~7 characters → ~70 bytes.
@@ -43,7 +44,7 @@ Path Structure:
 - **Unique Prefixes**: `~1.5 to 2` million unique strings.
 - **Total Estimate**:   `~310 MB` (including overhead).
 
-## 3. Multilingual Storage Expansion
+## 4. Multilingual Storage Expansion
 
 Transitioning to UTF-8 for Multilingual Expansion
  
@@ -54,7 +55,7 @@ Latin-based (FR, ES, DE, IT)|4,000,000|8 bytes|~600 MB|
 |CJK (Asian)|1,500,000|18 bytes|~300 MB|
 |Total Global Index|~7.5 Million|-|~1.25 GB|
 
-## 4. Deep Dive: Static Key-Range Sharding
+## 5. Deep Dive: Static Key-Range Sharding
 
 When moving to a multi-node architecture, we use a Static Mapping (or Directory-based sharding) rather than consistent hashing. This allows us to manually balance the "Hot Keys" (like "s") across different physical hardware.
 
@@ -86,7 +87,7 @@ In English, "S" accounts for roughly 11% of words, while "J" accounts for less t
  - **Routing**: Gateway routes the request directly to Node-05.
  - **Caching**: The Shard Map is stored in the Gateway's memory (RAM) for `O(1)` routing overhead.
 
-## 5.  API Gateway: Shard Mapping & Routing Logic
+## 6.  API Gateway: Shard Mapping & Routing Logic
 
 How the API Gateway translates a user's prefix into a physical node address using the static mapping strategy.
 
@@ -171,7 +172,7 @@ By splitting the map at `s` and `sa`:
 - **Predictability**: You know exactly where the data for `Japan` is stored (`Node-03`).
 - **No Rehash**: If `Node-03` gets too full, you only need to split its range and move its specific data; you don't touch `Node-01` or `Node-06`.
 
-## 5. Batch Update Logic (The Processor)
+## 6. Batch Update Logic (The Processor)
 
 -   **Extract**: Gather searchable terms.
 -   **Score**: Assign popularity weights.
@@ -179,7 +180,7 @@ By splitting the map at `s` and `sa`:
 -   **Group & Rank**: Collect terms, sort by score, slice top `N`.
 -   **Load**: Bulk upload to the specific Shard identified by the Shard Map.
 
-## 6. Performance Analysis
+## 7. Performance Analysis
 
  - `Time Complexity (Read)`: `O(1)` - Routing lookup + direct key lookup.
  - `Space Complexity`: `O(S X L)`.
