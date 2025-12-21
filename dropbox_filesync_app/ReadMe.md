@@ -53,8 +53,6 @@ Here is `why this mechanism is preferred over a standard multipart file upload f
 So, while the final effect is that a large file's data is sent in multiple pieces, the critical difference is that Dropbox only sends the pieces that are new or changed, which is superior to sending the entire file in parts every time.
 
 
-
-
 ### Architecture Diagram
 
 ![dropbox_architecture_diagram](dropbox_architecture_diagram.png)
@@ -66,8 +64,6 @@ So, while the final effect is that a large file's data is sent in multiple piece
 ![dropbox_filedownload_flow](dropbox_filedownload_flow.png)
 
 ![dropbox_filesync_flow](dropbox_filesync_flow.png)
-
-
 
 
 
