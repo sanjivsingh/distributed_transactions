@@ -244,9 +244,11 @@ Open browser to http://localhost:8000. Register, search products.
 
 # Autocomplete with Redis
 
-Alternatively, we can use redis as key-value store to store prefix to suggestions mapping.
+Alternatively, we can use redis store to store prefix to suggestions mapping.
 
 Reference - [prefix matching on redis](https://redis.io/kb/doc/2g1x582jaf/how-to-perform-a-search-and-filter-by-exact-prefix-matching) 
+
+Reference - [prefix matching on redis](https://redis.io/docs/latest/develop/ai/search-and-query/advanced-concepts/autocomplete/)
 
 
 # Future Growth & Scalability Considerations
