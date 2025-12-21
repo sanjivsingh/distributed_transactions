@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 import uvicorn
 from commons import logger
-from shard_manager import ShardManager, ShardConfig
+from shard_manager import ConfigurationClient, ShardConfig
 from database_client import MongoShardClient
 from contextlib import asynccontextmanager
 
@@ -30,7 +30,7 @@ class UserSearchService:
     """Stateless service for handling user search requests"""
     
     def __init__(self):
-        self.shard_manager = ShardManager()
+        self.configuration_client = ConfigurationClient()
         self.current_config: Optional[ShardConfig] = None
         self.shard_clients: Dict[str, MongoShardClient] = {}
         self.config_lock = threading.RLock()
@@ -39,13 +39,13 @@ class UserSearchService:
         self.__refresh_config()
         
         # Watch for configuration changes
-        self.shard_manager.watch_shard_config(self.on_config_change)
+        self.configuration_client.watch_shard_config(self.on_config_change)
     
     def __refresh_config(self):
         """Refresh shard configuration from Zookeeper"""
         try:
             with self.config_lock:
-                config_data = self.shard_manager.get_shard_config()
+                config_data = self.configuration_client.get_shard_config()
                 if config_data:
                     self.current_config = config_data
                     self.__update_shard_clients()
@@ -99,7 +99,7 @@ class UserSearchService:
         try:
             if not self.current_config or not query:
                 raise ValueError("Invalid configuration or query")
-            shard_info = self.shard_manager.find_shard_for_prefix(query)
+            shard_info = self.configuration_client.find_shard_for_prefix(query)
             if shard_info:
                 prefix = shard_info["prefix"]
                 if prefix not in self.shard_clients:
@@ -160,8 +160,8 @@ async def lifespan(app: FastAPI):
     if search_service:
         # Close any resources if needed
         try:
-            if hasattr(search_service, 'shard_manager'):
-                search_service.shard_manager.close()
+            if hasattr(search_service, 'configuration_client'):
+                search_service.configuration_client.close()
             log.info("Auto-complete service shut down successfully")
         except Exception as e:
             log.error(f"Error during shutdown: {e}")
@@ -369,8 +369,8 @@ if __name__ == "__main__":
     finally:
         if search_service:
             try:
-                if hasattr(search_service, 'shard_manager'):
-                    search_service.shard_manager.close()
+                if hasattr(search_service, 'configuration_client'):
+                    search_service.configuration_client.close()
                 log.info("Auto-complete service shut down successfully")
             except Exception as e:
                 log.error(f"Error during shutdown: {e}")

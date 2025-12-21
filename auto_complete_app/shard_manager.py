@@ -26,6 +26,113 @@ class ShardConfig:
     mappings: List[ShardMapping]
 
 
+class ConfigurationClient:
+
+    def __init__(self):
+        self.zk : Optional[KazooClient] = None
+        self.shard_config : Optional[ShardConfig] = None
+        self.__initialise()
+
+    def __initialise(self):
+        """Connect to Zookeeper"""
+        try:
+            self.zk = KazooClient(hosts=config.ZOOKEEPER_HOSTS)
+            self.zk.start(timeout=10)
+            log.info("Connected to Zookeeper")
+            
+            # Ensure path exists
+            self.zk.ensure_path(config.SHARD_CONFIG_PATH)
+            
+        except Exception as e:
+            log.error(f"Failed to connect to Zookeeper: {e}")
+            raise RuntimeError(f"Failed to connect to Zookeeper: {e}")
+        self.refresh_shard_config()
+
+    def close(self):
+        """Close Zookeeper connection"""
+        if self.zk:
+            self.zk.stop()
+            self.zk.close()
+
+    def get_shard_config(self) -> Optional[ShardConfig]:
+        return self.shard_config
+
+    def refresh_shard_config(self):
+        """Update shard configuration version"""
+        try:
+            if not self.shard_config:
+                print("No existing configuration found")
+                data, _ = self.zk.get(config.SHARD_CONFIG_PATH)
+                config_json = json.loads(data.decode('utf-8'))
+                mappings = [ShardMapping(m['prefix'], m['node'], m['data_base'], m['collection']) for m in config_json['mappings']]
+                self.shard_config = ShardConfig(
+                    shard_version=config_json['shard_version'],
+                    mappings=mappings
+                )
+
+            else:
+                data, _ = self.zk.get(config.SHARD_CONFIG_PATH)
+                config_json = json.loads(data.decode('utf-8'))
+                mappings = [ShardMapping(m['prefix'], m['node'], m['data_base'], m['collection']) for m in config_json['mappings']]
+                current_shard_config = ShardConfig(
+                    shard_version=config_json['shard_version'],
+                    mappings=mappings
+                )
+                if current_shard_config and current_shard_config.shard_version > self.shard_config.shard_version:
+                    self.shard_config = current_shard_config
+                
+        except Exception as e:
+            log.error(f"Error updating config: {e}")
+            print(f"✗ Error: {e}")
+
+    def watch_shard_config(self, callback):
+        """Watch for shard configuration changes"""
+        @self.zk.DataWatch(config.SHARD_CONFIG_PATH)
+        def watch_config(data, stat):
+            if data:
+                try:
+                    config_json = json.loads(data.decode('utf-8'))
+                    mappings = [ShardMapping(m['prefix'], m['node'], m['data_base'], m['collection']) for m in config_json['mappings']]
+                    config = ShardConfig(
+                        shard_version=config_json['shard_version'],
+                        mappings=mappings
+                    )
+                    callback(config)
+                    log.info(f"Shard config updated: {config.shard_version}")
+                except Exception as e:
+                    log.error(f"Error processing config update: {e}")
+
+    def find_shard_for_prefix(self, query: str) -> dict[str, str]:
+        """Find the appropriate shard for a given query prefix"""
+        try:
+            search_term = query.lower()
+            
+            # 1. Use Binary Search (bisect_right) to find the insertion point
+            # This finds the first element > search_term
+            self.shard_config.mappings.sort(key=lambda m: m.prefix.lower())
+            shard_map = [{"prefix": m.prefix.lower(), "node": m.node , "data_base": m.data_base, "collection": m.collection} for m in self.shard_config.mappings] 
+            low = 0
+            high = len(shard_map)
+            
+            while low < high:
+                mid = (low + high) // 2
+                if search_term < shard_map[mid]["prefix"]:
+                    high = mid
+                else:
+                    low = mid + 1
+                    
+            # 2. The target is the element right before the insertion point
+            # If index is 0, the prefix comes before 'a' (handle as error or default)
+            target_index = low - 1
+            
+            if target_index < 0:
+                raise RuntimeError(f"No shard found for prefix '{query}'")
+
+            return shard_map[target_index]
+        except Exception as e:
+            log.error(f"Error finding shard for prefix '{query}': {e}")
+            raise RuntimeError(f"Error finding shard for prefix '{query}': {e}")
+
 class ShardManager:
     """Manages shard configuration in Zookeeper"""
     
@@ -74,22 +181,7 @@ class ShardManager:
             log.error(f"Error saving shard config: {e}")
             return False
     
-    def watch_shard_config(self, callback):
-        """Watch for shard configuration changes"""
-        @self.zk.DataWatch(config.SHARD_CONFIG_PATH)
-        def watch_config(data, stat):
-            if data:
-                try:
-                    config_json = json.loads(data.decode('utf-8'))
-                    mappings = [ShardMapping(m['prefix'], m['node'], m['data_base'], m['collection']) for m in config_json['mappings']]
-                    config = ShardConfig(
-                        shard_version=config_json['shard_version'],
-                        mappings=mappings
-                    )
-                    callback(config)
-                    log.info(f"Shard config updated: {config.shard_version}")
-                except Exception as e:
-                    log.error(f"Error processing config update: {e}")
+
     
     def close(self):
         """Close Zookeeper connection"""
@@ -177,36 +269,7 @@ class ShardManager:
             log.error(f"Error loading shard configuration from file: {e}")
             raise RuntimeError(f"Error loading shard configuration from file: {e}")
 
-    def find_shard_for_prefix(self, query: str) -> dict[str, str]:
-        """Find the appropriate shard for a given query prefix"""
-        try:
-            search_term = query.lower()
-            
-            # 1. Use Binary Search (bisect_right) to find the insertion point
-            # This finds the first element > search_term
-            self.shard_config.mappings.sort(key=lambda m: m.prefix.lower())
-            shard_map = [{"prefix": m.prefix.lower(), "node": m.node , "data_base": m.data_base, "collection": m.collection} for m in self.shard_config.mappings] 
-            low = 0
-            high = len(shard_map)
-            
-            while low < high:
-                mid = (low + high) // 2
-                if search_term < shard_map[mid]["prefix"]:
-                    high = mid
-                else:
-                    low = mid + 1
-                    
-            # 2. The target is the element right before the insertion point
-            # If index is 0, the prefix comes before 'a' (handle as error or default)
-            target_index = low - 1
-            
-            if target_index < 0:
-                raise RuntimeError(f"No shard found for prefix '{query}'")
 
-            return shard_map[target_index]
-        except Exception as e:
-            log.error(f"Error finding shard for prefix '{query}': {e}")
-            raise RuntimeError(f"Error finding shard for prefix '{query}': {e}")
 
 if __name__ == "__main__":
     shardManager = ShardManager()

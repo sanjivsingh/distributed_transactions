@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from pymongo import MongoClient
 from commons import logger
-from shard_manager import ShardManager
+from shard_manager import ConfigurationClient, ShardManager
 
 log = logger.setup_logger(__name__)
 
@@ -366,10 +366,10 @@ def insert_sample_data():
                 ]
             }
         ]
-        shard_manager = ShardManager()
+        configuration_clinet = ConfigurationClient()
         
         for doc in sample_data:
-            shard_info = shard_manager.find_shard_for_prefix(str(doc["prefix"]))
+            shard_info = configuration_clinet.find_shard_for_prefix(str(doc["prefix"]))
             
             node_url = shard_info["node"]
 

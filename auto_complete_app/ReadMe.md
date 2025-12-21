@@ -184,9 +184,23 @@ Implementation focus on search part. Index building part is similar to recent se
 
 ![auto_complete_achitechture](auto_complete_achitechture.png)
 
-
-
-# Run Application
+## Project Structure	
+-   **shard_manager.py**	
+    -  **shard_config.json** : static mapping of prefix ranges to nodes
+    -  `Zookeeper` based shard configuration management
+    -  [load config from static file](shard_manager.py#L214-L270)
+    -  [save config to Zookeeper](shard_manager.py#L162-L182)
+    -  [binary search based - find shard for prefix](shard_manager.py#L105-L134)
+-   **auto_complete_app.py**	
+    -  application server to handle search requests
+    -  [Cache-Control](auto_complete_app.py#L354) 
+    -  [find shard for prefix](auto_complete_app.py#L97) 
+    -  [fetch suggestions for prefix](auto_complete_app.py#L117) 
+-   **config.py**
+    -  configuration parameters
+-   **database_client.py**	
+    -  mongodb client to fetch suggestions from database
+    - load sample data into database
 
 # Setup Instructions
 software requirements:
