@@ -1,7 +1,16 @@
 # Prefix-Based Autocomplete System Design
 
 This system is designed for maximum read performance by pre-calculating results for every possible prefix up to 10 characters and storing them in a flat key-value structure.
+
 Design focuses on a `precalculated prefix-to-results` pattern stored in a key-value store (like Redis or Firestore or mongodb). This approach ensures `O(1)` lookup time for the front-end, as the heavy lifting of matching and ranking is done during a background batch process.
+
+## 1. API Design
+Simple REST api to fetch suggestions for prefix
+
+- GET /autocomplete?query={prefix}
+    Response Headers
+    - cache-control : public, max-age=300
+    - content-type : application/json
 
 ## 1. Database Schema (Key-Value Store)
 
@@ -81,7 +90,7 @@ In English, "S" accounts for roughly 11% of words, while "J" accounts for less t
 
 How the API Gateway translates a user's prefix into a physical node address using the static mapping strategy.
 
-### 1. The Shard Map Configuration Structure
+### A. The Shard Map Configuration Structure
 
 The Shard Map is a sorted list of range boundaries. We use a `Starting-Key` approach. `The gateway looks for the largest key that is less than or equal to the requested prefix.`
 
@@ -101,7 +110,7 @@ The Shard Map is a sorted list of range boundaries. We use a `Starting-Key` appr
 
 ***Note**: Prefix "j" shares a node with others, but `s` is isolated. Requests starting with `s` go to Node-04, but once the user types `sa`, the gateway shifts traffic to     `Node-05`.
 
-### 2. Gateway Routing Pseudo-code
+### B. Gateway Routing Pseudo-code
 
 The following logic runs in the API Gateway (e.g., a Go middleware or an Nginx Lua script) to perform `O(log N)` routing.
 
@@ -148,7 +157,7 @@ def get_target_node(user_prefix):
 # User types 'sky' -> target_index=4 -> Node-05
 ```
 
-### 3. High-Traffic "S" Prefix Handling
+### C. High-Traffic "S" Prefix Handling
 
 By splitting the map at `s` and `sa`:
 
@@ -157,7 +166,7 @@ By splitting the map at `s` and `sa`:
 
 **Result**: The massive volume of "San Francisco", "Samsung", and "Salesforce" queries are moved off the "General S" node to a dedicated node, preventing the "S" prefix from overwhelming the system.
 
-### 4. Operational Advantages
+### D. Operational Advantages
 
 - **Predictability**: You know exactly where the data for `Japan` is stored (`Node-03`).
 - **No Rehash**: If `Node-03` gets too full, you only need to split its range and move its specific data; you don't touch `Node-01` or `Node-06`.
