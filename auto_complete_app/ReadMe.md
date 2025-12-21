@@ -248,8 +248,17 @@ Alternatively, we can use redis store to store prefix to suggestions mapping.
 
 Reference - [prefix matching on redis](https://redis.io/kb/doc/2g1x582jaf/how-to-perform-a-search-and-filter-by-exact-prefix-matching) 
 
-Reference - [prefix matching on redis](https://redis.io/docs/latest/develop/ai/search-and-query/advanced-concepts/autocomplete/)
+Reference - [Autocomplete with Redis](https://redis.io/docs/latest/develop/ai/search-and-query/advanced-concepts/autocomplete/)
 
+Sample code to add and get suggestions from redis
+```
+FT.SUGADD autocomplete "hello world" 100
+FT.SUGADD autocomplete "help me" 80
+
+FT.SUGGET autocomplete "he" 
+1) "hello world"
+2) "help me"
+```
 
 # Future Growth & Scalability Considerations
 ## 1. Growth Vectors
