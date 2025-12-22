@@ -38,6 +38,9 @@
  - `Stateless Match Service`. 
     - one instance list of nearby and matching drivers and publish ride offers.
     - other instances can leverage to update and assign driver to ride.
+ - `Service Discovery` for dynamic service registration and discovery.
+    - Services register with a central registry (like `Zookeeper`).
+    - Clients discover service endpoints at runtime, enabling scalability and fault tolerance.
 
 ### Key concepts
 
