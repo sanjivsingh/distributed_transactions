@@ -51,10 +51,9 @@ See below for more details on `why Geo Index is preferred over traditional spati
 -   Gohash natually says that location close to each other will have similar prefix. This allows us to do prefix search to find nearby locations.
 -   **Scalability**: Geohashing is highly scalable and can be easily distributed across multiple nodes or shards. This is particularly useful for applications with a large number of users and locations, such as `ride-sharing services`, `proximity-based social networks`, and `location-based advertising`.
 
-![uber_driver_match_architecture](uber_driver_match_architecture.png)
+![uber_driver_match_architecture](geohash_calculation.png)
 
 If interested in deep dive of Geohash please refer to [commons/geohash.py](../commons/geohash.py) file for source code and explanation.
-
 
 #### Why WebSocket?
 WebSocket provides a persistent, full-duplex communication channel over a single TCP connection. This is ideal for real-time applications like ride matching, where low latency and bidirectional communication are essential.
