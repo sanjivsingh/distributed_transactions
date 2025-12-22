@@ -4,7 +4,7 @@
 ## Requirement Specifications:
 
 -  Develop a simplified version of a file synchronization application similar to Dropbox.
-    **DISCLAIMER**
+**DISCLAIMER**
     -  `this not a collaborative editor like Google Docs, but a file sync tool`.
     -  `this not GIT or version control system`.
     -  `this is a last-write wins file sync system`.
@@ -96,6 +96,22 @@ The application allows users to sync files across multiple devices:
 - Periodically checks with the server for updates to download 
 
 
+## Implementation Details
+
+### Architecture
+ - **Server**: FastAPI-based REST API handling metadata commits, chunk uploads/downloads, and file operations.
+ - **Client**: Daemon process that monitors a local directory, uploads changes, and downloads updates.
+ - **Database**: MongoDB for storing file metadata, chunk hashes, and user versions.
+ - **Storage**: Abstracted via ChunkBlobHandler to support local or S3 storage.
+
+### Code Structure
+
+dropbox_filesync_app/
+
+- **server.py** - FastAPI server implementation.
+- **config.py** - Configuration settings.
+- **client.py** - Client daemon for monitoring and syncing files
+
 ### Communication Diagram
 
 ![dropbox_fileupload_flow](dropbox_fileupload_flow.png)
@@ -104,15 +120,6 @@ The application allows users to sync files across multiple devices:
 
 ![dropbox_filesync_flow](dropbox_filesync_flow.png)
 
-
-# Implementation Details
-
-
-### Architecture
- - **Server**: FastAPI-based REST API handling metadata commits, chunk uploads/downloads, and file operations.
- - **Client**: Daemon process that monitors a local directory, uploads changes, and downloads updates.
- - **Database**: MongoDB for storing file metadata, chunk hashes, and user versions.
- - **Storage**: Abstracted via ChunkBlobHandler to support local or S3 storage.
 
 ### Technologies Used
 - **Backend**: FastAPI, Uvicorn
@@ -144,7 +151,7 @@ The application allows users to sync files across multiple devices:
 
 ## Running the Application
 
--   **Run the Server **:
+-   **Run the Server**:
 
     ```
     .venv/bin/python -m uvicorn dropbox_filesync_app.server:app --reload --port 8000
