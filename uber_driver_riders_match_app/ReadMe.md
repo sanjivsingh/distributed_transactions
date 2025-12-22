@@ -96,6 +96,7 @@ This is where the decoupled services communicate to push the offer to the driver
 - **Final Delivery**: The WGS consumes these final messages and pushes the confirmation/rejection over the WebSocket connections.
 
 
+
 ##### Communication Flow Summary Table
 
 | Flow Direction | 	Component| 	Mechanism | 	Purpose | 
