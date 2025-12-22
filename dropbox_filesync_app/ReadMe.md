@@ -1,4 +1,4 @@
-# Dropbox File Sync Application
+# Dropbox Remote File Sync Application
 
 
 ## Requirement Specifications:
@@ -79,19 +79,19 @@ The application maintains a version history for each file:
 -   **Simplicity**: It simplifies the client implementation, as clients do not need to handle direct storage interactions.
 -   **Scalability**: The server can manage load balancing and optimize storage interactions. 
 
-## Multi tenancy :
+### Multi tenancy :
 The application supports multiple users by isolating their data and operations:
 -   **User Identification**: Each user is identified by a unique user ID. All files and metadata are associated with this ID.
 -   **Data Isolation**: File chunks and metadata are stored in a way that ensures one user's data cannot be accessed by another user.
         -  `File Version` and `Chunk Hashes` are namespaced by `user ID`. 
 
-## More than one device per user :
+### More than one device per user :
 The application allows users to sync files across multiple devices:
 -   **Device Registration**: Each device can be registered under a user's account. The Server tracks version version per user.
 -   **Sync** Each device periodically checks for updates from the server based on the last known version.
 -   **Conflict Resolution**: If multiple devices modify the same file, the server employs a conflict resolution strategy (e.g., last-write-wins or conflict copies).
 
-# Drop boc client/Deomon:
+### Dropbox Client/Daemon:
 - Monitors a local mounted directory for file changes using `watchdog`.
 - Periodically checks with the server for updates to download 
 
