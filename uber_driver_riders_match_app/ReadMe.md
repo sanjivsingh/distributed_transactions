@@ -1,26 +1,24 @@
 # Uber Ride matching app
- - Focus only ride matching between drivers and riders.
- - Not a complete Uber clone.
-    - No ride tracking or navigation features.
-    - No payment gateway integration.
-    - No user authentication.
-
-
-## Objective:
  - Build a simple app to match Uber drivers with riders based on proximity.
+ - Focus only ride matching between drivers and riders.
  - Allow riders to request rides and drivers to accept them.
  - Ensure- 
      - Hih-availability
      - Scalability
      - Fault Tolerance
      - SLA (**ride match as early as possible**)
+ - Not a complete Uber clone.
+    - No ride tracking or navigation features.
+    - No payment gateway integration.
+    - No user authentication.
 
 ## Architecture Overview:
 
 ![uber_driver_match_architecture](uber_driver_match_architecture.png)
 
-### Design Design Considerations
- -  Websocket for real-time communication between drivers and the server.
+### Architecture Decisions
+
+ -  `Websocket` for real-time communication between drivers and the server.
     -   `Single persistent WebSocket connection per driver`.
  -  `Redis Geo Index` for efficient proximity searches.
     -  `Driver locations` stored with `TTL` to reflect availability.
@@ -41,18 +39,38 @@
     - one instance list of nearby and matching drivers and publish ride offers.
     - other instances can leverage to update and assign driver to ride.
 
-## Communication Flow Diagram
+### Key concepts
+
+#### Why Geo Index?
+
+Geohashing is a crucial technique for handling geospatial data, which is a common use case for a "very very large 2D matrix" (representing locations on Earth). It maps two-dimensional coordinates (latitude and longitude) to a one-dimensional string or number, which offers significant operational efficiencies. 
+
+See below for more details on `why Geo Index is preferred over traditional spatial databases for proximity searches`:
+-   **Simplicity and Speed**: Geohashing allows for quick proximity searches using simple string prefix matching. Traditional spatial databases often require complex spatial queries and indexing mechanisms, which can be slower and more resource-intensive.
+-   Geohash can be on length `1 to 12 characters`, with each additional character increasing precision. For example, a geohash of length 5 covers an area of about `4.9 km x 4.9 km`, while a length of 7 narrows it down to about `153 m x 153 m`.
+-   Gohash natually says that location close to each other will have similar prefix. This allows us to do prefix search to find nearby locations.
+-   **Scalability**: Geohashing is highly scalable and can be easily distributed across multiple nodes or shards. This is particularly useful for applications with a large number of users and locations, such as `ride-sharing services`, `proximity-based social networks`, and `location-based advertising`.
+
+![uber_driver_match_architecture](uber_driver_match_architecture.png)
+
+If interested in deep dive of Geohash please refer to [commons/geohash.py](../commons/geohash.py) file for source code and explanation.
+
+
+#### Why WebSocket?
+WebSocket provides a persistent, full-duplex communication channel over a single TCP connection. This is ideal for real-time applications like ride matching, where low latency and bidirectional communication are essential.
+
+#### Communication Flow 
 
 The key is that the driver's client establishes one single WebSocket connection to the WGS. All subsequent communication (both location data and match offers) flows through the WGS.
 
-### Phase 1: Driver Connection and Location Update
+##### Phase 1: Driver Connection and Location Update
 - **WS Connection**: The Driver Client establishes a persistent WebSocket connection to the WebSocket Gateway Service (WGS).
 - **Connection Mapping**: The WGS validates the driver's authentication token, extracts the DriverID, and stores this mapping in memory: Map<DriverID, WebSocket Object>.
 - **Location Stream**: Every 10 seconds, the Driver Client sends its location over this same WS connection to the WGS.
 - **Internal Routing**: The WGS routes the location payload to the Location Update Service (LUS).
 - **Geo Indexing**: The LUS extracts the data and updates the Redis Geo Index (with 30s TTL).
 
-### Phase 2: Ride Matching and Notification (Push Offer)
+##### Phase 2: Ride Matching and Notification (Push Offer)
 
 This is where the decoupled services communicate to push the offer to the driver.
 - **Rider Request**: Rider Client -> Match Service (MS).
@@ -63,7 +81,7 @@ This is where the decoupled services communicate to push the offer to the driver
 - **Driver Push**: The WGS looks up the DriverID in its internal connection map, finds the active WebSocket object, and pushes the ride offer payload directly to the driver's client.
 
 
-### Phase 3: Acceptance and Confirmation/Rejection (Race Condition)
+##### Phase 3: Acceptance and Confirmation/Rejection (Race Condition)
 -	**Driver Accepts**: The winning Driver Client taps "Accept" and sends an ACCEPT message back to the WGS over the same persistent WS connection.
 -   **Routing Acceptance**: The WGS routes the ACCEPT message to the Match Service (MS).
 -  **Transactional Lock**: The MS executes the critical transactional lock logic (as described in the previous answer):
@@ -76,7 +94,7 @@ This is where the decoupled services communicate to push the offer to the driver
 - **Final Delivery**: The WGS consumes these final messages and pushes the confirmation/rejection over the WebSocket connections.
 
 
-### Communication Flow Summary Table
+##### Communication Flow Summary Table
 
 | Flow Direction | 	Component| 	Mechanism | 	Purpose | 
 |---------------|--------|-------|------|
@@ -109,6 +127,7 @@ Current size of `find_matching_drivers_script.lua` is `~90 lines` and `~2.8KB`.
 
 When dealing with a large Lua script (e.g., several kilobytes of code), the difference between repeatedly using `EVAL` and using the production-ready `EVALSHA` pattern is substantial.
 
+
 #### Key Differences
 - 1. **The Network Bandwidth Saving (The Biggest Difference)** 
 
@@ -128,7 +147,7 @@ Impact: Medium to High. `Reduced CPU load on the Redis server`.
 
 #### Recommended Strategy: The Atomic EVALSHA Pattern
 
-![EVALSHA Implementation](match_service.py#L111-L145)
+[EVALSHA Implementation](match_service.py#L111-L145)
 
 - Load the Script (Once): 
 - Store the Hash:
@@ -245,8 +264,6 @@ Sample console output for rider client app:
 
  Ride booked successfully: 4a277ed6-bfd4-401b-aa71-a4191b744717
 ```
-
-
 
 
 ## Debug 
