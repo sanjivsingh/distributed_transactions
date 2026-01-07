@@ -1,7 +1,13 @@
 # User Recent Search Application
 
+
+
 ## Overview
-This is a web-based application for user registration and product search with recent search suggestions. It uses a distributed architecture with RestAPI, Elasticsearch, Kafka, Redis, and MySQL for scalable and efficient operations. The app allows users to register, search for products, view recent searches in a dropdown, and logs search events for analysis.
+This is a web-based application for user registration and product search with recent search suggestions. It uses a distributed architecture with RestAPI, Elasticsearch, Kafka, Redis, and MySQL for scalable and efficient operations. The app allows search for products, view recent searches in a dropdown, and logs search events for analysis.
+
+## Scope
+- Focus only on recent searches feature with a realistic distributed architecture.
+- User registration, authentication for simplicity; can be added later.
 
 ## Features
 - **User Registration**: Register users and store in MySQL.
@@ -16,19 +22,56 @@ This is a web-based application for user registration and product search with re
 ![Block Diagram](recent_search_block_diagram.png)
 
 ## Design Decisions
+
 - **FastAPI for Backend**: Lightweight, async support for high-performance web API.
-- **Elasticsearch for Search**: Full-text search on products; separate index for analysis to avoid impacting main search.
-- **Redis for Recent Searches**: In-memory storage for user-specific and global search history; uses list with lrem/lpush for uniqueness and order.
+
+#### Redis for Recent Searches: 
+**Why Redis?**
+-  Recent User Searches: in something that we want to very fast when user start typing in the search box. 
+-  Getting recent searches from database on every request is slow. We need something fast and in-memory (in milliseconds) to provide a good user experience.
+- Redis provides low-latency access to recent search data.
+- Global Popular Searches: also stored in Redis for quick access when user has no recent searches.
+- **Note:** Redis is chosen over Memcached because of its data structures and persistence options.
+    -  Even if we lose recent searches in Redis, it's not critical as they can be rebuilt from logs if needed.
+**Why Redis Lists?**
+- In-memory storage for user-specific and global search history; uses list with LREM/LRUSH for uniqueness and order.
+- Why not Sorted Set? Sorted Sets don't maintain insertion order well when updating scores.
+
+#### Elasticsearch for Product Search**: 
+    - Full-text/Fuzzy search on products; separate index for analysis to avoid impacting main search.
 - **Kafka for Event Streaming**: Ensures durability and decoupling; workers can scale independently.
 - **MySQL for Relational Data**: Structured storage for users and products.
 - **Workers Split**: Insert worker for real-time indexing; cleanup worker for periodic archival to reduce load.
 - **Local Archival**: Simple file-based storage for old records instead of cloud for ease of setup.
-- **No Authentication**: Simplified for demo; add JWT/OAuth for production.
+#### Elasticsearch for Business Analysis**:
+    - Separate index for business analysis to see what user is searching for.
+    - We choose Elasticsearch because it provides powerful search and aggregation capabilities to analyze user search patterns effectively.
+        -Term Query
+        -Match Query
+        -Range Query
+        -Terms Aggregation
 
+## Implementation Details
+
+- **search_app.py** : FastAPI app with endpoints for recent searches and search products.
+    - /recent_searches : Get recent searches for user.
+        -  Fetches from Redis; falls back to global popular searches.
+    - /search : Search products and log event.
+        -  Searches Elasticsearch for products.
+        -  Publishes search event to Kafka.
+        -  Fast Path : Update Redis recent searches and global popular searches - 
+    - /register : Register new user.
+- **worker_analysis_elastic_insert.py** : Kafka consumer worker to read search events and index into analysis Elasticsearch.
+    - Consumes from "user_searches" topic.
+    - Indexes into "search_analysis" index.
+    - Slow Path : Update Redis recent searches and global popular searches - 
+- **worker_analysis_elastic_cleanup.py** : Periodic worker to archive old analysis records to local files. 
+- **add_and_index_products.py** : Script to create DB/tables and insert dummy products into MySQL and Elasticsearch. 
+    -  Simulation of realistic 100 products with attributes.    
 
 ## Prerequisites
 - Python 3.8+
-- MySQL Server (with SSL enabled for auth)
+- MySQL Server
 - Redis Server
 - Elasticsearch Cluster
 - Kafka Cluster

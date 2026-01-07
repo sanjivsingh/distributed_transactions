@@ -4,10 +4,12 @@
 ## Requirement Specifications:
 
 -  Develop a simplified version of a file synchronization application similar to Dropbox.
+
 **DISCLAIMER**
     -  `this not a collaborative editor like Google Docs, but a file sync tool`.
     -  `this not GIT or version control system`.
     -  `this is a last-write wins file sync system`.
+
 -  `Focus only on file upload, download, and synchronization across multiple clients`.
 -  **Optimization for efficient storage and bandwidth usage**
     -  upload file efficiently.
