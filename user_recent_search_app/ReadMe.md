@@ -20,27 +20,6 @@ This is a web-based application for user registration and product search with re
 
 ![Block Diagram](recent_search_block_diagram.png)
 
-#### Search Flow
-
-##### `/recent_searches` API Flow
-1. **Client Request**: User opens the search page or interacts with the search box, triggering a GET request to `/recent_searches?username=<username>`.
-2. **Redis Lookup**: Query Redis for user-specific recent searches using a key like `recent_searches:<username>`.
-   - If found, return the list of recent searches (up to a limit, e.g., 10).
-   - If not found or empty, fall back to global popular searches stored in Redis under a key like `global_popular_searches`.
-3. **Response**: Return JSON with the list of searches. If no data, return an empty list.
-4. **Caching**: Results are cached in Redis for fast access; no additional processing needed.
-
-##### `/search` API Flow
-1. **Client Request**: User submits a search query via POST to `/search` with body containing `query` and `username`.
-2. **Elasticsearch Search**: Query the "products" index in Elasticsearch for matching products based on the query (full-text search, fuzzy matching).
-   - Retrieve top results (e.g., up to 20 products) with attributes like name, price, category.
-3. **Publish Event to Kafka**: Send a search event to the "user_searches" Kafka topic with details (username, query, timestamp, results count).
-4. **Update Redis (Fast Path)**: Atomically update user recent searches and global popular searches in Redis.
-   - For user searches: Use Redis list operations (LREM + LPUSH) to maintain unique, ordered list by recency.
-   - For global: Increment popularity scores and update the sorted list.
-   - Use Lua scripts for atomicity to avoid race conditions.
-5. **Response**: Return JSON with search results (products list) and metadata (e.g., total hits, response time).
-6. **Async Processing**: Kafka consumers (workers) handle event indexing to analysis Elasticsearch and periodic cleanup, ensuring the main API remains fast.
 
 #### Design Decisions
 
@@ -76,6 +55,30 @@ This is a web-based application for user registration and product search with re
     -Match Query
     -Range Query 
     -Terms Aggregation
+
+#### Search Flow
+
+##### `/recent_searches` API Flow
+1. **Client Request**: User opens the search page or interacts with the search box, triggering a GET request to `/recent_searches?username=<username>`.
+2. **Redis Lookup**: Query Redis for user-specific recent searches using a key like `recent_searches:<username>`.
+   - If found, return the list of recent searches (up to a limit, e.g., 10).
+   - If not found or empty, fall back to global popular searches stored in Redis under a key like `global_popular_searches`.
+3. **Response**: Return JSON with the list of searches. If no data, return an empty list.
+4. **Caching**: Results are cached in Redis for fast access; no additional processing needed.
+
+##### `/search` API Flow
+1. **Client Request**: User submits a search query via POST to `/search` with body containing `query` and `username`.
+2. **Elasticsearch Search**: Query the "products" index in Elasticsearch for matching products based on the query (full-text search, fuzzy matching).
+   - Retrieve top results (e.g., up to 20 products) with attributes like name, price, category.
+3. **Publish Event to Kafka**: Send a search event to the "user_searches" Kafka topic with details (username, query, timestamp, results count).
+4. **Update Redis (Fast Path)**: Atomically update user recent searches and global popular searches in Redis.
+   - For user searches: Use Redis list operations (LREM + LPUSH) to maintain unique, ordered list by recency.
+   - For global: Increment popularity scores and update the sorted list.
+   - Use Lua scripts for atomicity to avoid race conditions.
+5. **Response**: Return JSON with search results (products list) and metadata (e.g., total hits, response time).
+6. **Async Processing**: Kafka consumers (workers) handle event indexing to analysis Elasticsearch and periodic cleanup, ensuring the main API remains fast.
+
+
 
 ## Implementation Details
 
