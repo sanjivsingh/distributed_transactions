@@ -26,6 +26,7 @@ This is a web-based application for user registration and product search with re
 - **FastAPI for Backend**: Lightweight, async support for high-performance web API.
 
 #### Redis for Recent Searches: 
+
 **Why Redis?**
 -  Recent User Searches: in something that we want to very fast when user start typing in the search box. 
 -  Getting recent searches from database on every request is slow. We need something fast and in-memory (in milliseconds) to provide a good user experience.
@@ -33,6 +34,7 @@ This is a web-based application for user registration and product search with re
 - Global Popular Searches: also stored in Redis for quick access when user has no recent searches.
 - **Note:** Redis is chosen over Memcached because of its data structures and persistence options.
     -  Even if we lose recent searches in Redis, it's not critical as they can be rebuilt from logs if needed.
+
 **Why Redis Lists?**
 - In-memory storage for user-specific and global search history; uses list with LREM/LRUSH for uniqueness and order.
 - Why not Sorted Set? Sorted Sets don't maintain insertion order well when updating scores.
@@ -43,13 +45,14 @@ This is a web-based application for user registration and product search with re
 - **MySQL for Relational Data**: Structured storage for users and products.
 - **Workers Split**: Insert worker for real-time indexing; cleanup worker for periodic archival to reduce load.
 - **Local Archival**: Simple file-based storage for old records instead of cloud for ease of setup.
+
 #### Elasticsearch for Business Analysis**:
-    - Separate index for business analysis to see what user is searching for.
-    - We choose Elasticsearch because it provides powerful search and aggregation capabilities to analyze user search patterns effectively.
-        -Term Query
-        -Match Query
-        -Range Query
-        -Terms Aggregation
+- Separate index for business analysis to see what user is searching for.
+- We choose Elasticsearch because it provides powerful search and aggregation capabilities to analyze user search patterns effectively.
+    -Term Query
+    -Match Query
+    -Range Query
+    -Terms Aggregation
 
 ## Implementation Details
 
@@ -91,7 +94,7 @@ This is a web-based application for user registration and product search with re
 ## How to Run
 Set `PYTHONPATH`:
 ```
-export PYTHONPATH=/Users/sanjivsingh/Projects/VS_workspace/distributed_transactions:$PYTHONPATH
+export PYTHONPATH=./distributed_transactions:$PYTHONPATH
 ```
 
 1. **Start Backend**: `.venv/bin/python -m uvicorn user_recent_search_app.search_app:app --reload --port 8000`
