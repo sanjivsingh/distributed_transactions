@@ -6,22 +6,43 @@ This is a web-based application for user registration and product search with re
 
 ## Scope
 - Focus only on recent searches feature with a realistic distributed architecture.
-- User registration, authentication for simplicity; can be added later.
+- Authentication, other product features; can be added later.
 
 ## Features
-- **User Registration**: Register users and store in MySQL.
 - **Product Search**: Search products indexed in Elasticsearch, with results displayed.
 - **Recent Searches**: Dropdown shows user's recent searches (from Redis), falling back to global popular searches. Uses list with set-like behavior (unique, ordered by recency).
 - **Event Logging**: Search events sent to Kafka for durability and analysis.
 - **Analysis and Archival**: Workers process events into analysis Elasticsearch, with periodic cleanup to local files.
 - **Realistic Products**: 100 dummy products with attributes like price, category, etc.
-
+- **User Registration**: Register users and store in MySQL.
 
 ### Architecture Diagram
 
 ![Block Diagram](recent_search_block_diagram.png)
 
-## Design Decisions
+#### Search Flow
+
+##### `/recent_searches` API Flow
+1. **Client Request**: User opens the search page or interacts with the search box, triggering a GET request to `/recent_searches?username=<username>`.
+2. **Redis Lookup**: Query Redis for user-specific recent searches using a key like `recent_searches:<username>`.
+   - If found, return the list of recent searches (up to a limit, e.g., 10).
+   - If not found or empty, fall back to global popular searches stored in Redis under a key like `global_popular_searches`.
+3. **Response**: Return JSON with the list of searches. If no data, return an empty list.
+4. **Caching**: Results are cached in Redis for fast access; no additional processing needed.
+
+##### `/search` API Flow
+1. **Client Request**: User submits a search query via POST to `/search` with body containing `query` and `username`.
+2. **Elasticsearch Search**: Query the "products" index in Elasticsearch for matching products based on the query (full-text search, fuzzy matching).
+   - Retrieve top results (e.g., up to 20 products) with attributes like name, price, category.
+3. **Publish Event to Kafka**: Send a search event to the "user_searches" Kafka topic with details (username, query, timestamp, results count).
+4. **Update Redis (Fast Path)**: Atomically update user recent searches and global popular searches in Redis.
+   - For user searches: Use Redis list operations (LREM + LPUSH) to maintain unique, ordered list by recency.
+   - For global: Increment popularity scores and update the sorted list.
+   - Use Lua scripts for atomicity to avoid race conditions.
+5. **Response**: Return JSON with search results (products list) and metadata (e.g., total hits, response time).
+6. **Async Processing**: Kafka consumers (workers) handle event indexing to analysis Elasticsearch and periodic cleanup, ensuring the main API remains fast.
+
+#### Design Decisions
 
 - **FastAPI for Backend**: Lightweight, async support for high-performance web API.
 
@@ -81,7 +102,7 @@ This is a web-based application for user registration and product search with re
     - Indexes into "search_analysis" index.
     - **Slow Path** : Update Redis recent searches and global popular searches - 
         -  Uses Redis LREM and LPUSH to maintain unique, ordered recent searches.
-        -  leverage [Lua Script](worker_analysis_elastic_insert.py#L119-L126) to make it atomic.
+        -  leverage [Lua Script](worker_analysis_elastic_insert.py#L70-L76) to make it atomic.
 
 - **[worker_analysis_elastic_cleanup.py](worker_analysis_elastic_cleanup.py)** : Periodic worker to archive old analysis records to local files. 
     - Can be scheduled to run every hour; archives records older than 7 days.
