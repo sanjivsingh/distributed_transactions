@@ -139,6 +139,11 @@ export PYTHONPATH=./distributed_transactions:$PYTHONPATH
 3. **Start Cleanup Worker**: `.venv/bin/python -m user_recent_search_app.worker_analysis_elastic_cleanup`
 4. **Access App**: Open browser to http://localhost:8000. Register, search products.
 
+
+
+![User_recent_search_ui](User_recent_search_ui.gif)
+
+
 ### Running Components Separately
 - For testing, run workers in separate terminals.
 - Use `uvicorn` for development.
