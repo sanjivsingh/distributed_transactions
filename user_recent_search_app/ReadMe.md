@@ -40,7 +40,8 @@ This is a web-based application for user registration and product search with re
 - Why not Sorted Set? Sorted Sets don't maintain insertion order well when updating scores.
 
 #### Elasticsearch for Product Search**: 
-    - Full-text/Fuzzy search on products; separate index for analysis to avoid impacting main search.
+- Full-text/Fuzzy search on products; separate index for analysis to avoid impacting main search.
+
 - **Kafka for Event Streaming**: Ensures durability and decoupling; workers can scale independently.
 - **MySQL for Relational Data**: Structured storage for users and products.
 - **Workers Split**: Insert worker for real-time indexing; cleanup worker for periodic archival to reduce load.
@@ -51,25 +52,40 @@ This is a web-based application for user registration and product search with re
 - We choose Elasticsearch because it provides powerful search and aggregation capabilities to analyze user search patterns effectively.
     -Term Query
     -Match Query
-    -Range Query
+    -Range Query 
     -Terms Aggregation
 
 ## Implementation Details
 
-- **search_app.py** : FastAPI app with endpoints for recent searches and search products.
+### API Endpoints
+- `GET /`: Home page with registration/search form.
+- `POST /register`: Register user (username).
+- `GET /recent_searches?username=<id>`: Get recent searches.
+- `POST /search`: Search products (query, username).
+
+### Code Structure
+
+- **[search_app.py](search_app.py)** : FastAPI app with endpoints for recent searches and search products.
     - /recent_searches : Get recent searches for user.
         -  Fetches from Redis; falls back to global popular searches.
     - /search : Search products and log event.
         -  Searches Elasticsearch for products.
         -  Publishes search event to Kafka.
         -  Fast Path : Update Redis recent searches and global popular searches - 
-    - /register : Register new user.
-- **worker_analysis_elastic_insert.py** : Kafka consumer worker to read search events and index into analysis Elasticsearch.
+             -  Uses Redis LREM and LPUSH to maintain unique, ordered recent searches.
+             -  leverage lua script to make it atomic.
+    - /register  : Register new user.
+- **[worker_analysis_elastic_insert.py](worker_analysis_elastic_insert.py)   ** : Kafka consumer worker to read search events and index into analysis Elasticsearch.
     - Consumes from "user_searches" topic.
     - Indexes into "search_analysis" index.
     - Slow Path : Update Redis recent searches and global popular searches - 
-- **worker_analysis_elastic_cleanup.py** : Periodic worker to archive old analysis records to local files. 
-- **add_and_index_products.py** : Script to create DB/tables and insert dummy products into MySQL and Elasticsearch. 
+        -  Uses Redis LREM and LPUSH to maintain unique, ordered recent searches.
+        -  leverage lua script to make it atomic.
+
+- **[worker_analysis_elastic_cleanup.py](worker_analysis_elastic_cleanup.py)** : Periodic worker to archive old analysis records to local files. 
+    - Runs every hour; archives records older than 7 days.
+    - Deletes archived records from Elasticsearch.
+- **[add_and_index_products.py](add_and_index_products.py)** : Script to create DB/tables and insert dummy products into MySQL and Elasticsearch. 
     -  Simulation of realistic 100 products with attributes.    
 
 ## Prerequisites
@@ -106,11 +122,7 @@ export PYTHONPATH=./distributed_transactions:$PYTHONPATH
 - For testing, run workers in separate terminals.
 - Use `uvicorn` for development.
 
-## API Endpoints
-- `GET /`: Home page with registration/search form.
-- `POST /register`: Register user (username).
-- `GET /recent_searches?username=<id>`: Get recent searches.
-- `POST /search`: Search products (query, username).
+
 
 ## Technologies Used
 - **Backend**: FastAPI, Python
