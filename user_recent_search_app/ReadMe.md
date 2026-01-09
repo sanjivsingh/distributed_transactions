@@ -79,7 +79,6 @@ This is a web-based application for user registration and product search with re
 6. **Async Processing**: Kafka consumers (workers) handle event indexing to analysis Elasticsearch and periodic cleanup, ensuring the main API remains fast.
 
 
-
 ## Implementation Details
 
 ### API Endpoints
