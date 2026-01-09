@@ -155,11 +155,11 @@ If you have 100 WebSocket servers and each subscribes to a single global Redis c
 
 -   **Scaling Solutions:**
 
-- **Topic Sharding**: Instead of one channel, use thousands of channels based on a hash of the UserID: `user_updates:{hash(userId) % 1024}`.
+    - **Topic Sharding**: Instead of one channel, use thousands of channels based on a hash of the UserID: `user_updates:{hash(userId) % 1024}`.
 
-- **Server-Specific Channels**: Each server subscribes to a channel named after itself (`server:node_abc_123`). When the system needs to send a message to User A, it looks up User A's current node in a Global Registry (Redis) and sends only to that node's channel.
+    - **Server-Specific Channels**: Each server subscribes to a channel named after itself (`server:node_abc_123`). When the system needs to send a message to User A, it looks up User A's current node in a Global Registry (Redis) and sends only to that node's channel.
 
-- **Local Filtering**: Use a Bloom Filter on the server to quickly check if a UserID is currently connected to that node before doing any heavy processing of a backplane message.
+    - **Local Filtering**: Use a Bloom Filter on the server to quickly check if a UserID is currently connected to that node before doing any heavy processing of a backplane message.
 
 ### 3. **Comparative Architecture**
 
