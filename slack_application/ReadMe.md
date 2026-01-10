@@ -128,6 +128,10 @@ This is a real-time messaging application similar to Slack, built with Python. U
 The app will start on http://localhost:8000.
 --reload enables auto-restart on code changes.
 
+
+![demo](slack_app_demo.mov)
+
+
 ## Usage
 
 # Web Interface
