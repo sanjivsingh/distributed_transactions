@@ -29,11 +29,12 @@ This is a real-time messaging application similar to Slack, built with Python. U
 
 ![Block Diagram](Slack_Block_Diagram.png)
 
-
 ### Components
 
 - **Backend**: FastAPI handles REST APIs, WebSocket connections, and serves the frontend.
-- **Database**: MySQL for users, groups, group members, and messages.
+- **Database**: 
+    - MySQL for users, groups, group members, and messages(optional).
+    - MongoDB for offline message storage.
 - **Pubsub**: Redis for publishing messages to group-specific channels.
 - **Frontend**: HTML/JS with WebSocket for real-time messaging.
 - **Communication**:
@@ -41,16 +42,7 @@ This is a real-time messaging application similar to Slack, built with Python. U
   - WebSocket for real-time message delivery and heartbeats.
   - Redis pubsub for decoupling message persistence from delivery and communication between multiple disconnected websocket server instances.
 
-
 ## Implementation Details
-
-### Prerequisites
-
-- Python 3.8+
-- MySQL server running on localhost:3306
-- Redis server running on localhost:6379
-- MongoDB server running on localhost:27017 
-- Virtual environment (recommended)
 
 ###  API Endpoints
 
@@ -136,8 +128,6 @@ This is a real-time messaging application similar to Slack, built with Python. U
 The app will start on http://localhost:8000.
 --reload enables auto-restart on code changes.
 
-
-
 ## Usage
 
 # Web Interface
@@ -145,7 +135,6 @@ The app will start on http://localhost:8000.
 2.  Create Group: Enter a group name and the other user's ID to create a one-to-one conversation.
 3.  Send Message: Enter the group ID and message content to send.
 4.  Real-time Messages: Messages appear instantly in the messages div.
-
 
 ## Troubleshooting
 
@@ -155,7 +144,6 @@ The app will start on http://localhost:8000.
 No Messages Received: Ensure user is connected via WebSocket and subscribed to group channels.
 -   **Import Errors**: Activate virtual environment and install dependencies.
 Logs: Check console for errors; logging via commons.logger.
-
 
 
 ##  WebSocket Operations: Scaling & Maintenance
