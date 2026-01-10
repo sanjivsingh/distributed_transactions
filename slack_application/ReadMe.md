@@ -133,6 +133,7 @@ The app will start on http://localhost:8000.
 
 ![demo](slack_app_demo.mp4)
 
+![demo](slack_app_demo.gif)
 
 ## Usage
 
