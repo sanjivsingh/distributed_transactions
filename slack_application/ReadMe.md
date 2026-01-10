@@ -214,6 +214,7 @@ If tasked how to handle a server failure, emphasize that the **Presence Store** 
 ##  References:
 
 https://www.haproxy.com/documentation/haproxy-configuration-tutorials/protocol-support/websocket/
+
 https://ably.com/topic/the-challenge-of-scaling-websockets
 
 

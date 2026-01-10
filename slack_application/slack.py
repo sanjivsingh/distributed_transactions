@@ -38,6 +38,22 @@ def get_db_connection():
         charset="utf8mb4",
     )
 
+def setup_db():
+    connection =  pymysql.connect(
+        host=mysql_config.configurations[mysql_constants.HOST],
+        user=mysql_config.configurations[mysql_constants.USER],
+        password=mysql_config.configurations[mysql_constants.PASSWORD],
+        port=mysql_config.configurations[mysql_constants.PORT],
+        charset="utf8mb4",
+    )
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            CREATE DATABASE IF NOT EXISTS slack_db
+        """
+        )
+    connection.commit()
+    connection.close()
 
 # MongoDB connection
 from setup.mongodb_setup import config as mongodb_config, constants as mongodb_constants
@@ -63,6 +79,7 @@ user_locks = {}
 
 # Initialize DB
 def init_db():
+    setup_db()
     conn = get_db_connection()
     with conn.cursor() as cursor:
         cursor.execute(
@@ -180,7 +197,7 @@ def get_offline_members(cursor, group_id: int) -> list[int]:
 async def broadcast_online_users():
     """Broadcast the current online users to all connected clients."""
     try:
-        keys = redis_client.keys("*")
+        keys = redis_client.keys("online_users:*")
         online_users = [key.decode("utf-8") for key in keys if redis_client.get(key)]
         message = json.dumps({"type": "online_users", "users": online_users})
         for user_id in connected_clients.keys():
@@ -288,6 +305,7 @@ async def create_group(
 @app.post("/send_message")
 async def send_message(
     sender_id: int = Form(...),
+    # The above code is a Python code snippet with the comment "content" and "
     content: str = Form(...),
     receiver_id: int = Form(None),
     group_id: int = Form(None),
@@ -342,9 +360,10 @@ async def send_message(
                 "SELECT COUNT(*) FROM group_members WHERE group_id = %s AND user_id = %s",
                 (group_id, sender_id),
             )
+
             if cursor.fetchone()[0] == 0:
                 raise HTTPException(status_code=403, detail="Not a member of the group")
-            # persistening all messages to mysql, can be removed if not needed
+            # persisting all messages to mysql, can be removed if not needed
             cursor.execute(
                 "INSERT INTO messages (group_id, content) VALUES ( %s, %s)",
                 (group_id, content),
