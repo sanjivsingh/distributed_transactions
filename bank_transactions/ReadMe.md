@@ -92,58 +92,57 @@ batch job :
 ## Lets look at how we reached to this architecture
 
 **RDBMD or NOSQL ?**
-		Banking need ACID  - so RDBMS (postgress/mysql)
-    
+Banking need ACID  - so RDBMS (postgress/mysql)
+
 **But RDBMS have scalability issue?**
-        So we shard the database.
-    
+So we shard the database.
+
 **how to shard ? time based sharding ? no, account based sharding ? user_based sharding ?**
-        based on query pattern  most of the query is account based transaction.
-        so we want to shard based on account_id. for all transaction of an account will go to same shard. 
-        Answer : shard by account_id. account_id (hash(account_id) % N)
+based on query pattern  most of the query is account based transaction.
+so we want to shard based on account_id. for all transaction of an account will go to same shard. 
+Answer : shard by account_id. account_id (hash(account_id) % N)
 
 **Now, you can have N shards. there are 2 accounts involved in transaction from different shard. how to handle dual write problem?**
-        use saga pattern with outbox and kafka.
-        (Shard A - debit account , transaction -pending) -> (kafka) -> (Shard B - credit account , transaction - success/failed)  -> (kafka) -> (Shard A update transaction status) -> (kafka) -> notification service.
-        Response : `202 Accepted`  after first step.
+use saga pattern with outbox and kafka.
+(Shard A - debit account , transaction -pending) -> (kafka) -> (Shard B - credit account , transaction - success/failed)  -> (kafka) -> (Shard A update transaction status) -> (kafka) -> notification service.
+Response : `202 Accepted`  after first step.
 
 **what is user retry transactions?**
         idempotency_key in request body.
    
 **how to generate transfer_id ?**
-        snowflake_id_generator(worker=N)
+snowflake_id_generator(worker=N)
 
-** how to get transaction status ?**
-
-        GET /api/v1/transactions/{transfer_id}/status
+**how to get transaction status ?**
+GET /api/v1/transactions/{transfer_id}/status
 
 **how to get account transaction history ?**
-        latest 20 transaction in redis cache.
+latest 20 transaction in redis cache.
 
 **how to get monthly report ?**
-        generate report on this fly, NO it would be expensive.
-        YES , monthly batch job generate pdf report and store in s3.
-        signed url to download report through CDN.
+generate report on this fly, NO it would be expensive.
+YES , monthly batch job generate pdf report and store in s3.
+signed url to download report through CDN.
 
 **how if user wants to download report for multiple months ?**
-        batch job generate report for multiple months and store in s3.
-        signed url to download report through CDN.
+batch job generate report for multiple months and store in s3.
+signed url to download report through CDN.
 
 **but with time, transaction table will grow large ?**
-        YES, we can archive old data to s3 using monthly batch job.
+YES, we can archive old data to s3 using monthly batch job.
 
 **now, User wants to query old transaction data?**
-        For any query on old data, we can use athena/bigquery on s3 data.
+For any query on old data, we can use athena/bigquery on s3 data.
 
 	
 ##  Summary of User Experience Flow:
 			
-**User clicks "Send"**: App sends POST + Idempotency_Key.
-**Gateway**: Forwards to Transaction Service.
-**Transaction Service**: Commits Shard A, puts message in Outbox, returns 202 Accepted.
-**App UI**: Shows "Money Sent! We're updating the recipient's balance now."
-**Background**: Saga completes on Shard B.
-**Push Notification**: "Success! Your transfer to [User B] is complete."
+ - **User clicks "Send"**: App sends POST + Idempotency_Key.
+ - **Gateway**: Forwards to Transaction Service.
+ - **Transaction Service**: Commits Shard A, puts message in Outbox, returns 202 Accepted.
+ - **App UI**: Shows "Money Sent! We're updating the recipient's balance now."
+ - **Background**: Saga completes on Shard B.
+ - **Push Notification**: "Success! Your transfer to [User B] is complete."
 
 
 ##  System Summary Table
