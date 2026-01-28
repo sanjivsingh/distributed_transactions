@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -15,10 +19,14 @@ app = FastAPI()
 
 # Redis connection
 from setup.redis_setup import config as redis_config, constants as redis_constants
+import os
+
+redis_host = os.environ.get('REDIS_HOST', redis_config.configurations[redis_constants.REDIS_SERVER])
+redis_port = int(os.environ.get('REDIS_PORT', redis_config.configurations[redis_constants.REDIS_PORT]))
 
 redis_client = redis.Redis(
-    host=redis_config.configurations[redis_constants.REDIS_SERVER],
-    port=redis_config.configurations[redis_constants.REDIS_PORT],
+    host=redis_host,
+    port=redis_port,
     db=0,
 )
 
@@ -40,11 +48,14 @@ async def get_home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+def get_user_key(user_id: str) -> str:
+    return f"online_user:{user_id}"
+
 async def broadcast_online_users():
     """Broadcast the current online users to all connected clients."""
     try:
-        keys = redis_client.keys("*")
-        online_users = [key.decode("utf-8") for key in keys if redis_client.get(key)]
+        keys = redis_client.keys("online_user:*")
+        online_users = [key.decode("utf-8").split(":")[1] for key in keys if redis_client.get(key)]
         message = json.dumps({"type": "online_users", "users": online_users})
         for user_id in connected_clients.keys():
             user_id_connections = connected_clients[user_id]
@@ -52,9 +63,9 @@ async def broadcast_online_users():
             for client in user_id_connections:
                 try:
                     await client.send_text(message)
-                except:
+                except Exception as e:
                     # Client may have disconnected
-                    log.warning("error in sending msg : {e}")
+                    log.warning(f"error in sending msg : {e}")
                     # remove connection
                     disconnected_connections.append(client)
             for client in disconnected_connections:
@@ -84,7 +95,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     try:
         # Set initial online status
         ttl_time_in_sec = 10
-        redis_client.setex(user_id, ttl_time_in_sec, "online")
+        redis_client.setex(get_user_key(user_id), ttl_time_in_sec, "online")
         await broadcast_online_users()
 
         while True:
@@ -92,7 +103,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             data = await websocket.receive_text()
             if data == "heartbeat":
                 # Refresh TTL
-                redis_client.setex(user_id, ttl_time_in_sec, "online")
+                redis_client.setex(get_user_key(user_id), ttl_time_in_sec, "online")
                 log.info(f"Heartbeat from {user_id}")
                 # Optionally send confirmation
                 await websocket.send_text(json.dumps({"type": "heartbeat_ack"}))
